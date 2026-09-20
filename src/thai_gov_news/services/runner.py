@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 from thai_gov_news.collectors.base import ParsedArticle
 from thai_gov_news.collectors.prd import PrdCollector
 from thai_gov_news.collectors.rss import FeedConfig, RssCollector, parse_feed
-from thai_gov_news.models import Article, CollectorRun, Source
+from thai_gov_news.collectors.thaigov import ThaigovCollector
+from thai_gov_news.models import Article, Attachment, CollectorRun, Source
 from thai_gov_news.services.dedupe import content_hash
 from thai_gov_news.services.ingest import ingest
 
@@ -40,6 +41,17 @@ async def _collect_prd() -> list[ParsedArticle]:
     return parsed
 
 
+async def _collect_thaigov() -> list[ParsedArticle]:
+    collector = ThaigovCollector()
+    parsed: list[ParsedArticle] = []
+    for item in await collector.discover():
+        raw = await collector.fetch(item)
+        if raw.status != 200:
+            continue
+        parsed.append(collector.parse(raw))
+    return parsed
+
+
 async def _collect_rss(source: Source) -> list[ParsedArticle]:
     config = FeedConfig(
         slug=source.slug,
@@ -53,6 +65,8 @@ async def _collect_rss(source: Source) -> list[ParsedArticle]:
 
 
 async def _collect(source: Source) -> list[ParsedArticle]:
+    if source.collector == "thaigov":
+        return await _collect_thaigov()
     if source.collector == "prd":
         return await _collect_prd()
     if source.collector == "rss":
@@ -95,30 +109,34 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
         if exists is not None:
             continue
         published = article.get("published_at")
-        session.add(
-            Article(
-                source_id=source.id,
-                external_id=str(article.get("external_id", "")),
-                canonical_url=str(article["canonical_url"]),
-                title=str(article.get("title", "")),
-                summary=None,
-                body_text=str(article.get("body_text", "")),
-                language=str(article.get("language", "th")),
-                category=str(article.get("category", "")),
-                agency_name=str(article.get("agency_name", "")),
-                published_at=published if isinstance(published, datetime) else None,
-                published_raw=str(article.get("published_raw", "")),
-                first_seen_at=_utcnow(),
-                last_seen_at=_utcnow(),
-                content_hash=str(
-                    article.get("content_hash")
-                    or content_hash(
-                        str(article.get("title", "")),
-                        str(article.get("body_text", "")),
-                    )
-                ),
-            )
+        summary = article.get("summary")
+        db_article = Article(
+            source_id=source.id,
+            external_id=str(article.get("external_id", "")),
+            canonical_url=str(article["canonical_url"]),
+            title=str(article.get("title", "")),
+            summary=str(summary) if summary else None,
+            body_text=str(article.get("body_text", "")),
+            language=str(article.get("language", "th")),
+            category=str(article.get("category", "")),
+            agency_name=str(article.get("agency_name", "")),
+            published_at=published if isinstance(published, datetime) else None,
+            published_raw=str(article.get("published_raw", "")),
+            first_seen_at=_utcnow(),
+            last_seen_at=_utcnow(),
+            content_hash=str(
+                article.get("content_hash")
+                or content_hash(
+                    str(article.get("title", "")),
+                    str(article.get("body_text", "")),
+                )
+            ),
         )
+        session.add(db_article)
+        session.flush()
+        attachments = article.get("attachments") or []
+        for attachment_url in attachments:
+            session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
         inserted += 1
 
     source.last_success_at = _utcnow()

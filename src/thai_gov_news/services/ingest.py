@@ -27,6 +27,11 @@ def ingest(parsed: list[ParsedArticle]) -> IngestResult:
         normalize_record(asdict(item)) for item in parsed
     ]
     rows: list[Article] = [dict(record) for record in records]
+    for row, item in zip(rows, parsed):
+        if item.summary:
+            row["summary"] = item.summary
+        if item.attachments:
+            row["attachments"] = list(item.attachments)
     kept = dedupe(rows)
     found = len(parsed)
     return IngestResult(
