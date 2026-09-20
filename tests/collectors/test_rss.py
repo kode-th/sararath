@@ -30,3 +30,23 @@ def test_feed_dates_parse():
     dated = [a for a in articles if a.published_at is not None]
     assert len(dated) > 100
     assert all(a.published_raw for a in dated)
+
+
+RD = FeedConfig(
+    slug="rd",
+    feed_url="https://www.rd.go.th/publish.xml",
+    agency_name="กรมสรรพากร",
+    category="ข่าวประชาสัมพันธ์",
+)
+
+
+def test_parse_rd_feed():
+    payload = (FIXTURES / "rd-publish.xml").read_bytes()
+    articles = parse_feed(payload, RD)
+    assert len(articles) == 30
+    first = articles[0]
+    assert first.external_id == "rd-news-12313"
+    assert first.canonical_url.endswith("news22_2569.pdf")
+    assert first.published_raw == "Tue, 15 Sep 2026 10:55:00 +0700"
+    assert first.published_at is not None
+    assert first.published_at.tzinfo is not None

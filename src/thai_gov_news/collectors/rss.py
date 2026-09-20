@@ -31,6 +31,19 @@ def _entry_id(entry: feedparser.FeedParserDict, index: int, slug: str) -> str:
     return f"{slug}-{raw or index}"
 
 
+def _published(entry: feedparser.FeedParserDict, raw_date: str) -> datetime | None:
+    thai = parse_thai_date(raw_date)
+    if thai is not None:
+        return thai
+    parsed = entry.get("published_parsed") or entry.get("updated_parsed")
+    if parsed is None:
+        return None
+    try:
+        return datetime(*parsed[:6], tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
 def _entries(payload: str | bytes) -> list[feedparser.FeedParserDict]:
     feed = feedparser.parse(payload)
     return cast("list[feedparser.FeedParserDict]", feed.get("entries", []))
@@ -59,7 +72,7 @@ def parse_feed(payload: str | bytes, config: FeedConfig) -> list[ParsedArticle]:
                 language=config.language,
                 category=config.category,
                 agency_name=config.agency_name,
-                published_at=parse_thai_date(raw_date),
+                published_at=_published(entry, raw_date),
                 published_raw=raw_date,
             )
         )
