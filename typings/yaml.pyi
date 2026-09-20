@@ -1,0 +1,3 @@
+from typing import IO, Any
+
+def safe_load(stream: str | bytes | IO[str]) -> Any: ...

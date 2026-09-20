@@ -35,6 +35,7 @@ class Source(Base):
     collector: Mapped[str] = mapped_column(Text)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     crawl_interval_minutes: Mapped[int] = mapped_column(Integer, default=60)
+    category: Mapped[str] = mapped_column(Text, default="")
     last_attempt_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

@@ -18,3 +18,25 @@ sources:
     collector: prd
     enabled: true
     crawl_interval_minutes: 60
+
+  - slug: moac
+    name_th: กระทรวงเกษตรและสหกรณ์
+    name_en: Ministry of Agriculture and Cooperatives
+    agency_type: ministry
+    homepage_url: https://www.moac.go.th
+    feed_url: https://www.moac.go.th/all_rss/news-type-382791791792-382791791792.xml
+    collector: rss
+    category: ข่าวสารเกษตร
+    enabled: true
+    crawl_interval_minutes: 120
+
+  - slug: rd
+    name_th: กรมสรรพากร
+    name_en: Revenue Department
+    agency_type: department
+    homepage_url: https://www.rd.go.th
+    feed_url: https://www.rd.go.th/publish.xml
+    collector: rss
+    category: ข่าวประชาสัมพันธ์
+    enabled: true
+    crawl_interval_minutes: 120

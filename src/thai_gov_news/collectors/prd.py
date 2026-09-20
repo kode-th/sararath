@@ -105,5 +105,5 @@ class PrdCollector:
         headers = {"User-Agent": USER_AGENT}
         if self._client is not None:
             return await self._client.get(url, headers=headers, timeout=15)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
             return await client.get(url, headers=headers, timeout=15)

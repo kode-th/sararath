@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-python.python",
     "charliermarsh.ruff",
-    "astral-sh.ty",
     "SonarSource.sonarlint-vscode"
   ]
 }

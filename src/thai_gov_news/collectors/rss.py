@@ -101,7 +101,7 @@ class RssCollector:
         if self._client is not None:
             response = await self._client.get(url, headers=headers, timeout=15)
         else:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(follow_redirects=True) as client:
                 response = await client.get(url, headers=headers, timeout=15)
         response.raise_for_status()
         return RawArticle(
