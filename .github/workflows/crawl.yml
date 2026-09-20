@@ -16,6 +16,8 @@ jobs:
         with:
           python-version-file: .python-version
       - run: uv sync --no-dev
-      - run: uv run python -m thai_gov_news crawl-due
+      - run: uv run python -m thai_gov_news crawl-due --source moac --source rd --source prd
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+# thaigov excluded: its API 403s datacenter IPs (bot protection).
+# Crawl thaigov from residential/TH networks (local compose scheduler covers it).

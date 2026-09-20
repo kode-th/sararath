@@ -19,6 +19,8 @@ def test_parser_crawl_args():
 
 def test_parser_crawl_due_and_check():
     assert build_parser().parse_args(["crawl-due"]).command == "crawl-due"
+    args = build_parser().parse_args(["crawl-due", "--source", "rd"])
+    assert args.source == ["rd"]
     args = build_parser().parse_args(["check"])
     assert args.command == "check"
     assert args.max_age_hours == 26

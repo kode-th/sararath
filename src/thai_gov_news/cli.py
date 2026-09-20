@@ -35,7 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--host", default="0.0.0.0")
     serve.add_argument("--port", type=int, default=8000)
 
-    sub.add_parser("crawl-due", help="Crawl enabled sources past interval")
+    crawl_due = sub.add_parser("crawl-due", help="Crawl enabled sources past interval")
+    crawl_due.add_argument("--source", action="append", default=None)
 
     check = sub.add_parser("check", help="Exit 1 when a source is stale")
     check.add_argument("--max-age-hours", type=int, default=26)
@@ -92,9 +93,12 @@ def _crawl_one(slug: str) -> tuple[str, bool]:
     )
 
 
-def _cmd_crawl_due() -> int:
+def _cmd_crawl_due(args: argparse.Namespace) -> int:
     with get_session() as session:
         due = due_sources(session)
+    if args.source:
+        wanted = set(args.source)
+        due = [s for s in due if s.slug in wanted]
     failed = 0
     for source in due:
         message, bad = _crawl_one(source.slug)
@@ -124,7 +128,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "serve":
         return _cmd_serve(args)
     if args.command == "crawl-due":
-        return _cmd_crawl_due()
+        return _cmd_crawl_due(args)
     if args.command == "check":
         return _cmd_check(args)
     return 2

@@ -95,27 +95,20 @@ def _save_raw(slug: str, url: str, day: str, ext: str, raw: str) -> str:
     return str(path)
 
 
-def _insert_article(
-    session: Session,
+def _build_article(
     source_id: uuid.UUID,
     slug: str,
     day: str,
     raws: dict[str, tuple[str | None, str]],
     article: dict[str, Any],
-) -> bool:
-    existing = session.scalar(
-        select(Article).where(Article.canonical_url == article["canonical_url"])
-    )
-    if existing is not None:
-        existing.last_seen_at = _utcnow()
-        return False
+) -> Article:
     published = article.get("published_at")
     summary = article.get("summary")
     raw, ext = raws.get(str(article["canonical_url"]), (None, EXT_HTML))
     raw_path = (
         _save_raw(slug, str(article["canonical_url"]), day, ext, raw) if raw else None
     )
-    db_article = Article(
+    return Article(
         source_id=source_id,
         external_id=str(article.get("external_id", "")),
         canonical_url=str(article["canonical_url"]),
@@ -138,11 +131,35 @@ def _insert_article(
             )
         ),
     )
-    session.add(db_article)
+
+
+def _store_articles(
+    session: Session,
+    source: Source,
+    slug: str,
+    day: str,
+    raws: dict[str, tuple[str | None, str]],
+    articles: list[dict[str, Any]],
+) -> int:
+    urls = [str(a["canonical_url"]) for a in articles]
+    seen: dict[str, Article] = {}
+    if urls:
+        rows = session.scalars(
+            select(Article).where(Article.canonical_url.in_(urls))
+        ).all()
+        seen = {a.canonical_url: a for a in rows}
+    now = _utcnow()
+    for known in seen.values():
+        known.last_seen_at = now
+    fresh = [a for a in articles if str(a["canonical_url"]) not in seen]
+    built = [(_build_article(source.id, slug, day, raws, a), a) for a in fresh]
+    for db_article, _ in built:
+        session.add(db_article)
     session.flush()
-    for attachment_url in article.get("attachments") or []:
-        session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
-    return True
+    for db_article, article in built:
+        for attachment_url in article.get("attachments") or []:
+            session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
+    return len(built)
 
 
 def run_crawl(session: Session, slug: str) -> CrawlResult:
@@ -174,10 +191,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
     day = started.date().isoformat()
     raws = {normalize_url(p.canonical_url): (raw, ext) for p, raw, ext in collected}
     result = ingest([p for p, _, _ in collected])
-    inserted = 0
-    for article in result.articles:
-        if _insert_article(session, source.id, slug, day, raws, article):
-            inserted += 1
+    inserted = _store_articles(session, source, slug, day, raws, result.articles)
 
     source.last_success_at = _utcnow()
     source.last_error = None
