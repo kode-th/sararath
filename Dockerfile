@@ -12,6 +12,8 @@ COPY --chown=app:app pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY --chown=app:app src ./src
+COPY --chown=app:app alembic.ini ./alembic.ini
+COPY --chown=app:app migrations ./migrations
 RUN uv sync --frozen --no-dev
 
 CMD ["uv", "run", "--no-sync", "python", "-m", "thai_gov_news"]
