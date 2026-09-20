@@ -18,4 +18,4 @@ run = "pyright"
 
 [tasks.test]
 description = "Run pytest"
-run = "uv run pytest"
+run = "uv run python -m pytest"
