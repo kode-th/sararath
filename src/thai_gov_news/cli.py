@@ -30,6 +30,10 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--out", required=True, help="Output JSON path")
     export.add_argument("--manifest", default=None, help="Manifest path to update")
 
+    serve = sub.add_parser("serve", help="Run read API")
+    serve.add_argument("--host", default="0.0.0.0")
+    serve.add_argument("--port", type=int, default=8000)
+
     return parser
 
 
@@ -55,5 +59,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.manifest:
             update_manifest(args.manifest, Path(args.out).name)
         print(f"export-legacy date={args.date} posts={len(payload['posts'])} out={out}")
+        return 0
+    if args.command == "serve":
+        import uvicorn
+
+        uvicorn.run("thai_gov_news.api.app:app", host=args.host, port=args.port)
         return 0
     return 2

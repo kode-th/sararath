@@ -19,6 +19,7 @@ services:
 
   api:
     build: .
+    command: ["uv", "run", "--no-sync", "python", "-m", "thai_gov_news", "serve"]
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-govnews}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-govnews}
     ports:
