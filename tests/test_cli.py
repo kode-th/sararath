@@ -1,9 +1,14 @@
-from thai_gov_news.cli import build_parser, main
+from thai_gov_news.cli import build_parser
 
 
-def test_export_legacy_stub(capsys):
-    assert main(["export-legacy", "--date", "2026-09-19"]) == 0
-    assert "date=2026-09-19" in capsys.readouterr().out
+def test_parser_export_legacy_args():
+    args = build_parser().parse_args(
+        ["export-legacy", "--date", "2026-09-19", "--out", "data/x.json"]
+    )
+    assert args.command == "export-legacy"
+    assert args.date == "2026-09-19"
+    assert args.out == "data/x.json"
+    assert args.manifest is None
 
 
 def test_parser_crawl_args():

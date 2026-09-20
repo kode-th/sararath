@@ -3,8 +3,14 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from thai_gov_news.database import get_session
+from thai_gov_news.services.export_legacy import (
+    export_date,
+    update_manifest,
+    write_export,
+)
 from thai_gov_news.services.runner import run_crawl
 from thai_gov_news.services.seed import DEFAULT_PATH, seed_sources
 
@@ -21,6 +27,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     export = sub.add_parser("export-legacy", help="Export daily legacy JSON")
     export.add_argument("--date", required=True, help="Target date YYYY-MM-DD")
+    export.add_argument("--out", required=True, help="Output JSON path")
+    export.add_argument("--manifest", default=None, help="Manifest path to update")
 
     return parser
 
@@ -41,6 +49,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.command == "export-legacy":
-        print(f"export-legacy stub: date={args.date}")
+        with get_session() as session:
+            payload = export_date(session, args.date)
+        out = write_export(payload, args.out)
+        if args.manifest:
+            update_manifest(args.manifest, Path(args.out).name)
+        print(f"export-legacy date={args.date} posts={len(payload['posts'])} out={out}")
         return 0
     return 2
