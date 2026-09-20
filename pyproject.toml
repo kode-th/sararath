@@ -5,7 +5,7 @@ description = "Independent index of Thai government news"
 readme = "README.md"
 authors = [{ name = "Pongsakorn Thipayanate", email = "contact@fasu.dev" }]
 requires-python = ">=3.13"
-dependencies = ["httpx>=0.28.1", "selectolax>=0.4.12"]
+dependencies = ["feedparser>=6.0.14", "httpx>=0.28.1", "selectolax>=0.4.12"]
 
 [project.scripts]
 thai-gov-news = "thai_gov_news:main"
@@ -23,3 +23,6 @@ src = ["src"]
 
 [tool.ruff.lint]
 select = ["E", "F"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning:feedparser.*"]
