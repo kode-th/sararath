@@ -11,10 +11,10 @@ import feedparser
 import httpx
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from thai_gov_news.collectors.http import USER_AGENT
+from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.services.normalize import normalize_whitespace
 from thai_gov_news.services.thai_date import parse_thai_date
-
-USER_AGENT = "ThaiGovNewsBot/1.0 (+research)"
 
 
 @dataclass(frozen=True)
@@ -96,13 +96,8 @@ class RssCollector:
         ]
 
     async def fetch_raw(self) -> RawArticle:
-        headers = {"User-Agent": USER_AGENT}
         url = self._config.feed_url
-        if self._client is not None:
-            response = await self._client.get(url, headers=headers, timeout=15)
-        else:
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                response = await client.get(url, headers=headers, timeout=15)
+        response = await http_fetch(self._client, url, {"User-Agent": USER_AGENT})
         response.raise_for_status()
         return RawArticle(
             url=url,

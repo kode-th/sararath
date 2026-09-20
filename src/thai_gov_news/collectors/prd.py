@@ -10,6 +10,8 @@ import httpx
 from selectolax.parser import HTMLParser, Node
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from thai_gov_news.collectors.http import USER_AGENT
+from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.services.normalize import normalize_whitespace
 from thai_gov_news.services.thai_date import parse_thai_date
 
@@ -18,7 +20,6 @@ LIST_URL = f"{BASE}/th/content/category/index/id/39"
 AGENCY = "กรมประชาสัมพันธ์"
 CATEGORY = "ข่าวภาครัฐ"
 LANGUAGE = "th"
-USER_AGENT = "ThaiGovNewsBot/1.0 (+research)"
 
 _DETAIL_RE = re.compile(r"/th/content/category/detail/id/\d+/iid/(?P<iid>\d+)")
 
@@ -102,8 +103,4 @@ class PrdCollector:
         return response.text
 
     async def _get_response(self, url: str) -> httpx.Response:
-        headers = {"User-Agent": USER_AGENT}
-        if self._client is not None:
-            return await self._client.get(url, headers=headers, timeout=15)
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            return await client.get(url, headers=headers, timeout=15)
+        return await http_fetch(self._client, url, {"User-Agent": USER_AGENT})

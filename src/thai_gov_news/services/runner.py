@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -16,6 +20,7 @@ from thai_gov_news.collectors.thaigov import ThaigovCollector
 from thai_gov_news.models import Article, Attachment, CollectorRun, Source
 from thai_gov_news.services.dedupe import content_hash
 from thai_gov_news.services.ingest import ingest
+from thai_gov_news.services.normalize import normalize_url
 
 
 @dataclass(frozen=True)
@@ -30,29 +35,38 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-async def _collect_prd() -> list[ParsedArticle]:
+EXT_HTML = ".html"
+EXT_JSON = ".json"
+
+
+def raw_path_for(slug: str, url: str, day: str, ext: str) -> Path:
+    digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
+    return Path("raw") / slug / day / f"{digest}{ext}"
+
+
+async def _collect_prd() -> list[tuple[ParsedArticle, str | None, str]]:
     collector = PrdCollector()
-    parsed: list[ParsedArticle] = []
+    out: list[tuple[ParsedArticle, str | None, str]] = []
     for item in await collector.discover():
         raw = await collector.fetch(item)
         if raw.status != 200:
             continue
-        parsed.append(collector.parse(raw))
-    return parsed
+        out.append((collector.parse(raw), raw.html, EXT_HTML))
+    return out
 
 
-async def _collect_thaigov() -> list[ParsedArticle]:
+async def _collect_thaigov() -> list[tuple[ParsedArticle, str | None, str]]:
     collector = ThaigovCollector()
-    parsed: list[ParsedArticle] = []
+    out: list[tuple[ParsedArticle, str | None, str]] = []
     for item in await collector.discover():
         raw = await collector.fetch(item)
         if raw.status != 200:
             continue
-        parsed.append(collector.parse(raw))
-    return parsed
+        out.append((collector.parse(raw), raw.html, EXT_JSON))
+    return out
 
 
-async def _collect_rss(source: Source) -> list[ParsedArticle]:
+async def _collect_rss(source: Source) -> list[tuple[ParsedArticle, str | None, str]]:
     config = FeedConfig(
         slug=source.slug,
         feed_url=str(source.feed_url or ""),
@@ -61,10 +75,10 @@ async def _collect_rss(source: Source) -> list[ParsedArticle]:
     )
     collector = RssCollector(config)
     raw = await collector.fetch_raw()
-    return parse_feed(raw.html, config)
+    return [(a, None, EXT_HTML) for a in parse_feed(raw.html, config)]
 
 
-async def _collect(source: Source) -> list[ParsedArticle]:
+async def _collect(source: Source) -> list[tuple[ParsedArticle, str | None, str]]:
     if source.collector == "thaigov":
         return await _collect_thaigov()
     if source.collector == "prd":
@@ -72,6 +86,63 @@ async def _collect(source: Source) -> list[ParsedArticle]:
     if source.collector == "rss":
         return await _collect_rss(source)
     raise SystemExit(f"error: collector {source.collector!r} not implemented")
+
+
+def _save_raw(slug: str, url: str, day: str, ext: str, raw: str) -> str:
+    path = raw_path_for(slug, url, day, ext)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(raw, encoding="utf-8")
+    return str(path)
+
+
+def _insert_article(
+    session: Session,
+    source_id: uuid.UUID,
+    slug: str,
+    day: str,
+    raws: dict[str, tuple[str | None, str]],
+    article: dict[str, Any],
+) -> bool:
+    existing = session.scalar(
+        select(Article).where(Article.canonical_url == article["canonical_url"])
+    )
+    if existing is not None:
+        existing.last_seen_at = _utcnow()
+        return False
+    published = article.get("published_at")
+    summary = article.get("summary")
+    raw, ext = raws.get(str(article["canonical_url"]), (None, EXT_HTML))
+    raw_path = (
+        _save_raw(slug, str(article["canonical_url"]), day, ext, raw) if raw else None
+    )
+    db_article = Article(
+        source_id=source_id,
+        external_id=str(article.get("external_id", "")),
+        canonical_url=str(article["canonical_url"]),
+        title=str(article.get("title", "")),
+        summary=str(summary) if summary else None,
+        body_text=str(article.get("body_text", "")),
+        language=str(article.get("language", "th")),
+        category=str(article.get("category", "")),
+        agency_name=str(article.get("agency_name", "")),
+        published_at=published if isinstance(published, datetime) else None,
+        published_raw=str(article.get("published_raw", "")),
+        first_seen_at=_utcnow(),
+        last_seen_at=_utcnow(),
+        raw_path=raw_path,
+        content_hash=str(
+            article.get("content_hash")
+            or content_hash(
+                str(article.get("title", "")),
+                str(article.get("body_text", "")),
+            )
+        ),
+    )
+    session.add(db_article)
+    session.flush()
+    for attachment_url in article.get("attachments") or []:
+        session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
+    return True
 
 
 def run_crawl(session: Session, slug: str) -> CrawlResult:
@@ -83,7 +154,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
 
     started = _utcnow()
     try:
-        parsed = asyncio.run(_collect(source))
+        collected = asyncio.run(_collect(source))
     except SystemExit:
         raise
     except Exception as exc:
@@ -100,44 +171,13 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
         session.commit()
         raise SystemExit(f"error: crawl {slug} failed: {exc}") from exc
 
-    result = ingest(parsed)
+    day = started.date().isoformat()
+    raws = {normalize_url(p.canonical_url): (raw, ext) for p, raw, ext in collected}
+    result = ingest([p for p, _, _ in collected])
     inserted = 0
     for article in result.articles:
-        exists = session.scalar(
-            select(Article.id).where(Article.canonical_url == article["canonical_url"])
-        )
-        if exists is not None:
-            continue
-        published = article.get("published_at")
-        summary = article.get("summary")
-        db_article = Article(
-            source_id=source.id,
-            external_id=str(article.get("external_id", "")),
-            canonical_url=str(article["canonical_url"]),
-            title=str(article.get("title", "")),
-            summary=str(summary) if summary else None,
-            body_text=str(article.get("body_text", "")),
-            language=str(article.get("language", "th")),
-            category=str(article.get("category", "")),
-            agency_name=str(article.get("agency_name", "")),
-            published_at=published if isinstance(published, datetime) else None,
-            published_raw=str(article.get("published_raw", "")),
-            first_seen_at=_utcnow(),
-            last_seen_at=_utcnow(),
-            content_hash=str(
-                article.get("content_hash")
-                or content_hash(
-                    str(article.get("title", "")),
-                    str(article.get("body_text", "")),
-                )
-            ),
-        )
-        session.add(db_article)
-        session.flush()
-        attachments = article.get("attachments") or []
-        for attachment_url in attachments:
-            session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
-        inserted += 1
+        if _insert_article(session, source.id, slug, day, raws, article):
+            inserted += 1
 
     source.last_success_at = _utcnow()
     source.last_error = None
@@ -147,6 +187,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
             started_at=started,
             finished_at=_utcnow(),
             status="ok",
+            http_status=200,
             found_count=result.stats.found,
             inserted_count=inserted,
             skipped_count=result.stats.found - inserted,

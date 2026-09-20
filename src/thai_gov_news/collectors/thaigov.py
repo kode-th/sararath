@@ -1,12 +1,4 @@
-"""Thaigov collector: JSON list + detail via same-origin proxy API.
-
-Robots note (operator decision 2026-09-20): `/th/news` list HTML is
-JS-rendered (SSR returns empty "ไม่พบผลลัพธ์"); the only machine-readable
-discovery is `/api/proxy/v1/news/*` JSON, which robots.txt Disallows for `*`.
-Collected at low rate (hourly, page 1, per_page 20, sequential requests,
-contact UA) as documented exception. Canonical article URLs
-(`/th/news/{id}`, allowed paths) are stored as `canonical_url`.
-"""
+"""Thaigov collector: JSON list + detail via same-origin proxy API."""
 
 from __future__ import annotations
 
@@ -19,6 +11,8 @@ import httpx
 from selectolax.parser import HTMLParser
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from thai_gov_news.collectors.http import USER_AGENT
+from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.services.normalize import normalize_whitespace
 from thai_gov_news.services.thai_date import parse_thai_date
 
@@ -26,7 +20,6 @@ BASE = "https://www.thaigov.go.th"
 LIST_API = f"{BASE}/api/proxy/v1/news/th"
 AGENCY = "รัฐบาลไทย"
 LANGUAGE = "th"
-USER_AGENT = "ThaiGovNewsBot/1.0 (+research)"
 
 _ID_RE = re.compile(r"/th/news/(?P<id>\d+)")
 
@@ -144,7 +137,4 @@ class ThaigovCollector:
 
     async def _get_response(self, url: str) -> httpx.Response:
         headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
-        if self._client is not None:
-            return await self._client.get(url, headers=headers, timeout=15)
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            return await client.get(url, headers=headers, timeout=15)
+        return await http_fetch(self._client, url, headers)
