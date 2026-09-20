@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Mapping
 from typing import Any
 
 Article = dict[str, Any]
@@ -17,7 +18,7 @@ def _norm(value: Any) -> str:
     return str(value or "").strip().lower()
 
 
-def _digest(article: Article) -> str:
+def _digest(article: Mapping[str, Any]) -> str:
     if article.get("content_hash"):
         return str(article["content_hash"])
     return content_hash(
