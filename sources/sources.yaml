@@ -1,0 +1,20 @@
+sources:
+  - slug: thaigov
+    name_th: รัฐบาลไทย
+    name_en: Royal Thai Government
+    agency_type: central
+    homepage_url: https://www.thaigov.go.th/th/news
+    feed_url: null
+    collector: thaigov
+    enabled: true
+    crawl_interval_minutes: 60
+
+  - slug: prd
+    name_th: กรมประชาสัมพันธ์
+    name_en: Public Relations Department
+    agency_type: department
+    homepage_url: https://www.prd.go.th/th/content/category/index/id/39
+    feed_url: null
+    collector: prd
+    enabled: true
+    crawl_interval_minutes: 60

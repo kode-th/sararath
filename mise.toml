@@ -13,3 +13,7 @@ run = "uv run ruff format ."
 [tasks.typecheck]
 description = "Run ty check"
 run = "uv run ty check src"
+
+[tasks.test]
+description = "Run pytest"
+run = "uv run pytest"
