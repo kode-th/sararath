@@ -126,3 +126,9 @@ def test_reference():
     assert res.status_code == 200
     assert "scalar" in res.text
     assert "/openapi.json" in res.text
+
+
+def test_runs_empty_and_limit():
+    api = client()
+    assert api.get("/v1/runs").json() == {"items": []}
+    assert api.get("/v1/runs", params={"limit": "0"}).status_code == 422

@@ -17,6 +17,13 @@ def test_parser_crawl_args():
     assert args.source == "prd"
 
 
+def test_parser_crawl_due_and_check():
+    assert build_parser().parse_args(["crawl-due"]).command == "crawl-due"
+    args = build_parser().parse_args(["check"])
+    assert args.command == "check"
+    assert args.max_age_hours == 26
+
+
 def test_parser_requires_command():
     parser = build_parser()
     try:

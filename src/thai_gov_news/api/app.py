@@ -12,7 +12,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from thai_gov_news.database import get_session
-from thai_gov_news.models import Article, Source
+from thai_gov_news.models import Article, CollectorRun, Source
 
 app = FastAPI(title="thai-gov-news")
 
@@ -161,6 +161,40 @@ def get_article(article_id: str, session: Session = Depends(get_db)) -> dict:
         raise HTTPException(404, "article not found")
     article, slug, name_th = row
     return article_out(article, slug, name_th)
+
+
+@app.get("/v1/runs", responses={422: {"description": "Bad limit"}})
+def list_runs(
+    source: str | None = None,
+    limit: int = 20,
+    session: Session = Depends(get_db),
+) -> dict:
+    if not 1 <= limit <= 100:
+        raise HTTPException(422, "limit must be 1..100")
+    stmt = (
+        select(CollectorRun, Source.slug)
+        .join(Source, CollectorRun.source_id == Source.id)
+        .order_by(CollectorRun.started_at.desc())
+    )
+    if source:
+        stmt = stmt.where(Source.slug == source)
+    rows = session.execute(stmt.limit(limit)).all()
+    return {
+        "items": [
+            {
+                "source": slug,
+                "started_at": run.started_at,
+                "finished_at": run.finished_at,
+                "status": run.status,
+                "http_status": run.http_status,
+                "found_count": run.found_count,
+                "inserted_count": run.inserted_count,
+                "skipped_count": run.skipped_count,
+                "error": run.error,
+            }
+            for run, slug in rows
+        ]
+    }
 
 
 @app.get("/v1/sources")

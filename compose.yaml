@@ -27,6 +27,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    command:
+      - sh
+      - -c
+      - while true; do uv run --no-sync python -m thai_gov_news crawl-due; sleep 3600; done
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-govnews}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-govnews}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   pgdata:
