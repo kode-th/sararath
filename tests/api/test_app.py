@@ -113,8 +113,16 @@ def test_detail_and_errors():
 
 
 def test_sources_and_health():
-    sources = client().get("/v1/sources").json()["items"]
+    api = client()
+    sources = api.get("/v1/sources").json()["items"]
     assert [s["slug"] for s in sources] == ["thaigov"]
-    health = client().get("/v1/health").json()
+    health = api.get("/v1/health").json()
     assert health["db"] == "ok"
     assert health["sources"][0]["slug"] == "thaigov"
+
+
+def test_reference():
+    res = client().get("/reference")
+    assert res.status_code == 200
+    assert "scalar" in res.text
+    assert "/openapi.json" in res.text

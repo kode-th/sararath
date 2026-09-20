@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException
+from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
@@ -14,6 +15,11 @@ from thai_gov_news.database import get_session
 from thai_gov_news.models import Article, Source
 
 app = FastAPI(title="thai-gov-news")
+
+
+@app.get("/reference", include_in_schema=False)
+def reference():  # type: ignore[no-untyped-def]
+    return get_scalar_api_reference(openapi_url="/openapi.json", title="thai-gov-news")
 
 
 def get_db() -> Iterator[Session]:
