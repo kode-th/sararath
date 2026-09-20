@@ -18,5 +18,9 @@ def database_url() -> str:
 
 
 def get_session() -> Session:
-    engine = create_engine(database_url(), pool_pre_ping=True)
+    engine = create_engine(
+        database_url(),
+        pool_pre_ping=True,
+        connect_args={"prepare_threshold": None},
+    )
     return sessionmaker(bind=engine, expire_on_commit=False)()

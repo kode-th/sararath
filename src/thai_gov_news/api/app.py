@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from collections.abc import Iterator
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
@@ -15,6 +17,12 @@ from thai_gov_news.database import get_session
 from thai_gov_news.models import Article, CollectorRun, Source
 
 app = FastAPI(title="thai-gov-news")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/reference", include_in_schema=False)

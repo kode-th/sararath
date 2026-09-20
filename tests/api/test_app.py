@@ -132,3 +132,8 @@ def test_runs_empty_and_limit():
     api = client()
     assert api.get("/v1/runs").json() == {"items": []}
     assert api.get("/v1/runs", params={"limit": "0"}).status_code == 422
+
+
+def test_cors_allowlist():
+    res = client().get("/v1/health", headers={"Origin": "https://example.com"})
+    assert res.headers["access-control-allow-origin"] == "*"
