@@ -1,0 +1,2 @@
+# Test fixtures mirror live source HTML byte-for-byte. Never format.
+tests/fixtures/

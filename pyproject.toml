@@ -5,7 +5,7 @@ description = "Independent index of Thai government news"
 readme = "README.md"
 authors = [{ name = "Pongsakorn Thipayanate", email = "contact@fasu.dev" }]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["httpx>=0.28.1", "selectolax>=0.4.12"]
 
 [project.scripts]
 thai-gov-news = "thai_gov_news:main"
