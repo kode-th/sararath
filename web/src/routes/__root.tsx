@@ -13,7 +13,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'ข่าวภาครัฐไทย',
+        title: 'สาระรัฐ · ข่าวจากหน่วยงานภาครัฐต้นทาง',
       },
     ],
     links: [

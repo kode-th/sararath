@@ -152,7 +152,7 @@ function Feed() {
                 rel="noreferrer"
                 className="font-medium text-teal"
               >
-                อ่านจากต้นทาง
+                อ่านจากต้นฉบับ
               </a>
             </div>
           </article>
