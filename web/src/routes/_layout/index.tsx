@@ -118,7 +118,7 @@ function Feed() {
       <section className="mt-10">
         <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1 font-mono text-[11px] text-ink-soft">
           <span className="size-1.5 rounded-full bg-coral" />
-          ข่าวล่าสุด ·{' '}
+          อัปเดตล่าสุด ·{' '}
           {newest ? `${formatDate(newest)} · ${formatTime(newest)} น.` : 'กำลังอัปเดต'}
         </p>
         <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.08] text-ink sm:text-5xl">
