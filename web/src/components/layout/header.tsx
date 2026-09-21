@@ -20,7 +20,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
         <a href="/" className="mr-auto flex items-center gap-3">
           <img src="/logo.png" alt="สาระรัฐ" className="size-10 rounded-xl" />
           <span className="leading-tight">
-            <strong className="block text-[15px] text-ink">สาระรัฐ</strong>
+            <strong className="block font-display text-[15px] text-ink">สาระรัฐ</strong>
             <span className="font-mono text-[9px] uppercase text-ink-soft">
               Thailand Gov Wire
             </span>

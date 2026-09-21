@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 @theme {
+  --font-sans: 'IBM Plex Sans Thai', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'IBM Plex Sans Thai', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
   --color-background: oklch(0.955 0.012 255);
   --color-foreground: oklch(0.22 0.047 256);
   --color-card: oklch(0.98 0.008 255);

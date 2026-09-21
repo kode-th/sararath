@@ -125,7 +125,7 @@ function Newsroom() {
           ข่าวล่าสุด ·{' '}
           {newest ? `${formatDate(newest)} · ${formatTime(newest)} น.` : 'กำลังอัปเดต'}
         </p>
-        <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] text-ink sm:text-5xl">
+        <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.08] text-ink sm:text-5xl">
           ข่าวราชการไทย <span className="text-gold">ตรงจากต้นทาง</span>
         </h1>
       </section>

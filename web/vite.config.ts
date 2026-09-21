@@ -14,18 +14,24 @@ const config = defineConfig({
     tailwindcss(),
     fonts({
       families: {
+        display: {
+          family: 'Space Grotesk',
+          weights: [500, 600, 700],
+          subsets: ['latin'],
+          variable: '--font-display',
+        },
         sans: {
-          family: 'Noto Sans Thai',
+          family: 'IBM Plex Sans Thai',
           weights: [300, 400, 500, 600, 700],
           subsets: ['thai', 'latin'],
           variable: '--font-sans',
           preload: true,
         },
-        serif: {
-          family: 'Noto Serif Thai',
-          weights: [600, 700, 800],
-          subsets: ['thai', 'latin'],
-          variable: '--font-serif',
+        mono: {
+          family: 'IBM Plex Mono',
+          weights: [400, 500],
+          subsets: ['latin'],
+          variable: '--font-mono',
         },
       },
     }),

@@ -22,6 +22,10 @@ export const Route = createRootRoute({
         href: appCss,
       },
       {
+        rel: 'stylesheet',
+        href: '/fonts.css',
+      },
+      {
         rel: 'icon',
         type: 'image/png',
         sizes: '32x32',
