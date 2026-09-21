@@ -48,7 +48,11 @@ function NotFound() {
     <main className="px-4 py-16 text-center">
       <p className="text-sm text-neutral-500">404 — ไม่พบหน้านี้</p>
       <p className="mt-4">
-        <Link to="/" search={{ q: undefined }} className="underline">
+        <Link
+          to="/"
+          search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+          className="underline"
+        >
           กลับหน้าแรก
         </Link>
       </p>

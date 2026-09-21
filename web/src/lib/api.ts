@@ -12,6 +12,7 @@ export interface ArticleItem {
   canonical_url: string
   published_at: string | null
   published_raw: string
+  retrieved_at: string | null
 }
 
 export interface ArticlesPage {
@@ -22,12 +23,14 @@ export interface ArticlesPage {
 export async function fetchArticles(params: {
   q?: string
   source?: string
+  category?: string
   limit?: number
   cursor?: string
 }): Promise<ArticlesPage> {
   const query = new URLSearchParams()
   if (params.q) query.set('q', params.q)
   if (params.source) query.set('source', params.source)
+  if (params.category) query.set('category', params.category)
   query.set('limit', String(params.limit ?? 20))
   if (params.cursor) query.set('cursor', params.cursor)
   const res = await fetch(`${API_URL}/v1/articles?${query}`)
