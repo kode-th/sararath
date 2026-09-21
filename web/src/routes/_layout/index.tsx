@@ -1,4 +1,5 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { ArrowRight } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense, useEffect, useState } from 'react'
 import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
@@ -203,9 +204,9 @@ function Feed() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="h-11 rounded-lg border border-line bg-paper px-6 disabled:opacity-60"
+                className="inline-flex h-11 items-center gap-2 rounded-lg border border-line bg-paper px-6 disabled:opacity-60"
               >
-                {loadingMore ? 'กำลังโหลด...' : 'ดูข่าวถัดไป →'}
+                {loadingMore ? 'กำลังโหลด...' : (<>ดูข่าวถัดไป <ArrowRight className="size-4" /></>)}
               </button>
             </div>
           )}

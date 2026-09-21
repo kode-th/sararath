@@ -1,3 +1,5 @@
+import { ArrowUpRight } from 'lucide-react'
+
 export function Footer() {
   return (
     <footer className="mt-10 flex flex-col gap-3 border-t border-line py-6 text-[11px] text-ink-soft sm:flex-row sm:items-center sm:justify-between">
@@ -13,7 +15,7 @@ export function Footer() {
           rel="noreferrer"
           className="inline-flex items-center gap-1 hover:text-ink"
         >
-          API ↗
+          API <ArrowUpRight className="size-3" />
         </a>
       </div>
     </footer>
