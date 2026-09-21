@@ -15,7 +15,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
   }
 
   return (
-    <header className="sticky top-3 z-30 mx-auto mt-3 max-w-6xl rounded-2xl border border-line bg-paper/85 shadow-lg shadow-ink/10 backdrop-blur-xl">
+    <header className="sticky top-3 z-30 mx-auto max-w-6xl rounded-2xl border border-line bg-paper/85 shadow-lg shadow-ink/10 backdrop-blur-xl">
       <div className="flex items-center gap-3 px-4 py-3 sm:px-5">
         <a href="/" className="mr-auto flex items-center gap-3">
           <img src="/logo.png" alt="สาระรัฐ" className="size-10 rounded-xl" />
