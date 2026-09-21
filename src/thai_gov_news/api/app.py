@@ -14,7 +14,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from thai_gov_news.database import get_session
-from thai_gov_news.models import Article, CollectorRun, Source
+from thai_gov_news.models import Article, Attachment, CollectorRun, Source
 
 app = FastAPI(title="thai-gov-news")
 app.add_middleware(
@@ -38,7 +38,9 @@ def get_db() -> Iterator[Session]:
         session.close()
 
 
-def article_out(article: Article, slug: str, name_th: str) -> dict:
+def article_out(
+    article: Article, slug: str, name_th: str, attachments: list[str] | None = None
+) -> dict:
     return {
         "id": str(article.id),
         "source": {"slug": slug, "name_th": name_th},
@@ -52,7 +54,22 @@ def article_out(article: Article, slug: str, name_th: str) -> dict:
         "published_at": article.published_at,
         "published_raw": article.published_raw,
         "retrieved_at": article.first_seen_at,
+        "attachments": attachments or [],
     }
+
+
+def attachment_map(session: Session, ids: list) -> dict:
+    if not ids:
+        return {}
+    rows = session.execute(
+        select(Attachment.article_id, Attachment.url).where(
+            Attachment.article_id.in_(ids)
+        )
+    ).all()
+    grouped: dict = {}
+    for article_id, url in rows:
+        grouped.setdefault(str(article_id), []).append(url)
+    return grouped
 
 
 def _parse_date(value: str | None, name: str) -> str:
@@ -142,8 +159,9 @@ def list_articles(
     rows = session.execute(stmt.limit(limit + 1)).all()
     page = rows[:limit]
     next_cursor = str(page[-1][0].id) if len(rows) > limit else None
+    attached = attachment_map(session, [a.id for a, _, _ in page])
     return {
-        "items": [article_out(a, s, n) for a, s, n in page],
+        "items": [article_out(a, s, n, attached.get(str(a.id))) for a, s, n in page],
         "next_cursor": next_cursor,
     }
 
@@ -168,7 +186,8 @@ def get_article(article_id: str, session: Session = Depends(get_db)) -> dict:
     if row is None:
         raise HTTPException(404, "article not found")
     article, slug, name_th = row
-    return article_out(article, slug, name_th)
+    attached = attachment_map(session, [article.id])
+    return article_out(article, slug, name_th, attached.get(str(article.id)))
 
 
 @app.get("/v1/runs", responses={422: {"description": "Bad limit"}})
