@@ -5,7 +5,15 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -51,7 +59,10 @@ class Source(Base):
 
 class Article(Base):
     __tablename__ = "articles"
-    __table_args__ = (UniqueConstraint("source_id", "external_id"),)
+    __table_args__ = (
+        UniqueConstraint("source_id", "external_id"),
+        Index("ix_articles_published_at", "published_at", "id"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
