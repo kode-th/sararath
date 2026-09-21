@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: thai-gov-news-api
     runtime: python
+    name: Thai Gov News APIs
+    region: singapore
     plan: free
     buildCommand: pip install .
     startCommand: python -m thai_gov_news serve --host 0.0.0.0 --port $PORT

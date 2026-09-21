@@ -1,10 +1,18 @@
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
 import { setFeedCount } from '@/lib/feed-meta'
 
+interface FeedSearch {
+  q?: string
+  category?: string
+  source?: string
+  cursor?: string
+}
+
 export const Route = createFileRoute('/_layout/')({
-  validateSearch: (raw: Record<string, unknown>) => ({
+  validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
     q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
     category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
@@ -30,61 +38,69 @@ function formatTime(value: string | null) {
   }).format(new Date(value))
 }
 
+const feedQuery = (search: FeedSearch) =>
+  queryOptions({
+    queryKey: ['articles', search],
+    queryFn: () =>
+      fetchArticles({
+        q: search.q,
+        category: search.category,
+        source: search.source,
+        cursor: search.cursor,
+        limit: 12,
+      }),
+    staleTime: 60_000,
+  })
+
+const sourcesQuery = queryOptions({
+  queryKey: ['news-sources'],
+  queryFn: fetchSources,
+  staleTime: 300_000,
+})
+
 function Newsroom() {
+  return (
+    <Suspense
+      fallback={
+        <main className="grid min-h-[60vh] place-items-center">
+          <p className="text-sm text-ink-soft">กำลังรับข่าวจากต้นทาง</p>
+        </main>
+      }
+    >
+      <Feed />
+    </Suspense>
+  )
+}
+
+function Feed() {
   const search = Route.useSearch()
-  const [items, setItems] = useState<ArticleItem[]>([])
-  const [cursor, setCursor] = useState<string | null>(null)
-  const [sources, setSources] = useState<{ slug: string; name_th: string }[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: page } = useSuspenseQuery(feedQuery(search))
+  const { data: sources } = useSuspenseQuery(sourcesQuery)
+  const [extra, setExtra] = useState<ArticleItem[]>([])
+  const [cursor, setCursor] = useState(page.next_cursor)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    let cancelled = false
-    async function run() {
-      setLoading(true)
-      setError('')
-      try {
-        const [page, sourceList] = await Promise.all([
-          fetchArticles({
-            q: search.q,
-            category: search.category,
-            source: search.source,
-            cursor: search.cursor,
-            limit: 12,
-          }),
-          fetchSources(),
-        ])
-        if (cancelled) return
-        setItems(page.items)
-        setCursor(page.next_cursor)
-        setSources(sourceList)
-        setFeedCount(page.items.length)
-      } catch {
-        if (!cancelled) setError('ไม่สามารถเชื่อมต่อแหล่งข่าวได้')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    run()
-    return () => {
-      cancelled = true
-    }
-  }, [search])
+    setExtra([])
+    setCursor(page.next_cursor)
+    setFeedCount(page.items.length)
+  }, [page])
 
   async function loadMore() {
     if (!cursor || loadingMore) return
     setLoadingMore(true)
     try {
-      const page = await fetchArticles({
+      const next = await fetchArticles({
         q: search.q,
         category: search.category,
         source: search.source,
         cursor,
         limit: 12,
       })
-      setItems((prev) => [...prev, ...page.items])
-      setCursor(page.next_cursor)
+      setExtra((prev) => [...prev, ...next.items])
+      setCursor(next.next_cursor)
+      setFeedCount(page.items.length + extra.length + next.items.length)
     } catch {
       setError('ไม่สามารถเชื่อมต่อแหล่งข่าวได้')
     } finally {
@@ -92,28 +108,7 @@ function Newsroom() {
     }
   }
 
-  if (loading) {
-    return (
-      <main className="grid min-h-[60vh] place-items-center">
-        <p className="text-sm text-ink-soft">กำลังรับข่าวจากต้นทาง</p>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="grid min-h-[60vh] place-items-center px-4">
-        <div
-          role="alert"
-          className="max-w-md rounded-2xl border border-line bg-paper p-8 text-center"
-        >
-          <h1 className="text-xl font-bold text-ink">แหล่งข่าวไม่ตอบสนอง</h1>
-          <p className="mt-2 text-sm text-ink-soft">{error}</p>
-        </div>
-      </main>
-    )
-  }
-
+  const items = [...page.items, ...extra]
   const [lead, ...rest] = items
   const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null
 
@@ -129,6 +124,15 @@ function Newsroom() {
           ข่าวราชการไทย <span className="text-gold">ตรงจากต้นทาง</span>
         </h1>
       </section>
+
+      {error && (
+        <div
+          role="alert"
+          className="mt-6 rounded-2xl border border-line bg-paper p-6 text-center"
+        >
+          <p className="text-sm text-ink-soft">{error}</p>
+        </div>
+      )}
 
       {lead ? (
         <div className="mt-7 grid gap-5 lg:grid-cols-3">
