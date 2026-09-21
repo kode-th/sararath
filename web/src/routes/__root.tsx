@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
 import type { PropsWithChildren } from 'react'
 
 import appCss from '../styles.css?url'
@@ -25,7 +25,21 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
+
+function NotFound() {
+  return (
+    <main style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+      <p style={{ fontSize: '0.85rem', color: '#666' }}>404 — ไม่พบหน้านี้</p>
+      <p style={{ marginTop: '1rem' }}>
+        <Link to="/" style={{ textDecoration: 'underline' }}>
+          กลับหน้าแรก
+        </Link>
+      </p>
+    </main>
+  )
+}
 
 function RootDocument({ children }: Readonly<PropsWithChildren>) {
   return (
@@ -35,7 +49,6 @@ function RootDocument({ children }: Readonly<PropsWithChildren>) {
       </head>
       <body>
         {children}
-
         <Scripts />
       </body>
     </html>
