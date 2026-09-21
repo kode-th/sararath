@@ -1,7 +1,6 @@
 import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
 import type { PropsWithChildren } from 'react'
-
-import appCss from '../styles.css?url'
+import appCss from '@/styles.css?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -49,7 +48,7 @@ function NotFound() {
     <main className="px-4 py-16 text-center">
       <p className="text-sm text-neutral-500">404 — ไม่พบหน้านี้</p>
       <p className="mt-4">
-        <Link to="/" className="underline">
+        <Link to="/" search={{ q: undefined }} className="underline">
           กลับหน้าแรก
         </Link>
       </p>

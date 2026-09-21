@@ -1,5 +1,29 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-background: oklch(0.955 0.012 255);
+  --color-foreground: oklch(0.22 0.047 256);
+  --color-card: oklch(0.98 0.008 255);
+  --color-primary: oklch(0.68 0.145 80);
+  --color-secondary: oklch(0.84 0.09 84);
+  --color-muted: oklch(0.93 0.016 255);
+  --color-muted-foreground: oklch(0.43 0.048 256);
+  --color-accent: oklch(0.55 0.08 195);
+  --color-destructive: oklch(0.57 0.17 32);
+  --color-border: oklch(0.86 0.025 255);
+  --color-ring: oklch(0.68 0.145 80);
+  --color-ink: oklch(0.22 0.047 256);
+  --color-ink-soft: oklch(0.43 0.048 256);
+  --color-mist: oklch(0.955 0.012 255);
+  --color-paper: oklch(0.98 0.008 255);
+  --color-gold: oklch(0.68 0.145 80);
+  --color-gold-soft: oklch(0.84 0.09 84);
+  --color-line: oklch(0.86 0.025 255);
+  --color-coral: oklch(0.57 0.17 32);
+  --color-teal: oklch(0.55 0.08 195);
+  --color-navy: oklch(0.22 0.047 256);
+}
+
 @layer base {
   body {
     font-family: var(--font-sans);

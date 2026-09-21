@@ -1,8 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { fetchArticles, fetchSources, type ArticleItem } from '../lib/api'
+import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
 
-export const Route = createFileRoute('/')({ component: Home })
+export const Route = createFileRoute('/_layout/')({
+  validateSearch: (raw: Record<string, unknown>) => ({
+    q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
+  }),
+  component: Home,
+})
 
 function Card({ item }: Readonly<{ item: ArticleItem }>) {
   const [open, setOpen] = useState(false)
@@ -36,10 +41,11 @@ function Card({ item }: Readonly<{ item: ArticleItem }>) {
 }
 
 function Home() {
+  const search = Route.useSearch()
   const [items, setItems] = useState<ArticleItem[]>([])
   const [cursor, setCursor] = useState<string | null>(null)
   const [sources, setSources] = useState<{ slug: string; name_th: string }[]>([])
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(search.q ?? '')
   const [source, setSource] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
