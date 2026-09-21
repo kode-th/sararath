@@ -1,12 +1,13 @@
 import { useState, type SubmitEvent } from 'react'
+import { useFeedCount } from '@/lib/feed-meta'
 
 interface HeaderProps {
   onSearch: (q: string) => void
-  count?: number
 }
 
-export function Header({ onSearch, count }: Readonly<HeaderProps>) {
+export function Header({ onSearch }: Readonly<HeaderProps>) {
   const [value, setValue] = useState('')
+  const count = useFeedCount()
 
   function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()

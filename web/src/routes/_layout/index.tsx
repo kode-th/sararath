@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
+import { setFeedCount } from '@/lib/feed-meta'
 
 export const Route = createFileRoute('/_layout/')({
   validateSearch: (raw: Record<string, unknown>) => ({
@@ -58,6 +59,7 @@ function Newsroom() {
         setItems(page.items)
         setCursor(page.next_cursor)
         setSources(sourceList)
+        setFeedCount(page.items.length)
       } catch {
         if (!cancelled) setError('ไม่สามารถเชื่อมต่อแหล่งข่าวได้')
       } finally {
