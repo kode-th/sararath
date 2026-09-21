@@ -8,7 +8,7 @@ export function Footer() {
       <div className="flex items-center gap-4 font-mono">
         <span>อัปเดตตามแหล่งเผยแพร่</span>
         <a
-          href="https://thai-gov-news-api.onrender.com/reference"
+          href="https://thai-gov-news-apis.onrender.com/reference"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1 hover:text-ink"

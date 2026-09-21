@@ -11,7 +11,7 @@ Independent index of Thai government news. Collectors → Postgres → FastAPI r
 | API       | Render free        | Blueprint in `render.yaml`, keep-alive via cron-job.org every 10 min                             |
 | Frontend  | Cloudflare Workers | Separate app, CORS open for GET                                                                  |
 
-Live API: `https://thai-gov-news-api.onrender.com` (`/v1/articles`, `/v1/sources`, `/v1/health`, `/v1/runs`, `/reference`).
+Live API: `https://thai-gov-news-apis.onrender.com` (`/v1/articles`, `/v1/sources`, `/v1/health`, `/v1/runs`, `/reference`).
 
 ## Local dev
 

@@ -1,5 +1,5 @@
 export const API_URL =
-  import.meta.env.VITE_API_URL ?? 'https://thai-gov-news-api.onrender.com'
+  import.meta.env.VITE_API_URL ?? 'https://thai-gov-news-apis.onrender.com'
 
 export interface ArticleItem {
   id: string
