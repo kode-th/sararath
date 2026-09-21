@@ -30,6 +30,10 @@ function formatDate(value: string | null) {
   }).format(new Date(value))
 }
 
+function leadImage(item: ArticleItem) {
+  return (item.attachments ?? [])[0]
+}
+
 function formatTime(value: string | null) {
   if (!value) return ''
   return new Intl.DateTimeFormat('th-TH', {
@@ -37,6 +41,30 @@ function formatTime(value: string | null) {
     minute: '2-digit',
     timeZone: 'Asia/Bangkok',
   }).format(new Date(value))
+}
+
+function cleanText(value: string) {
+  return value
+    .replace(/<[^>]*>/g, ' ')
+    .replaceAll('&nbsp;', ' ')
+    .replaceAll('&amp;', '&')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function excerpt(value: string, length = 220) {
+  const text = cleanText(value)
+  return text.length > length ? `${text.slice(0, length).trim()}…` : text
+}
+
+function dedupe(items: ArticleItem[]) {
+  const seen = new Set<string>()
+  return items.filter((item) => {
+    const key = `${item.source.slug}|${item.title.trim()}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 const feedQuery = (search: FeedSearch) =>
@@ -109,7 +137,7 @@ function Feed() {
     }
   }
 
-  const items = [...page.items, ...extra]
+  const items = dedupe([...page.items, ...extra])
   const [lead, ...rest] = items
   const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null
 
@@ -137,24 +165,34 @@ function Feed() {
 
       {lead ? (
         <div className="mt-7 grid gap-5 lg:grid-cols-3">
-          <article className="rounded-2xl border border-line bg-paper p-6 md:p-8 lg:col-span-2">
-            <p className="text-[15px] font-semibold text-ink">{lead.agency_name}</p>
-            <h2 className="mt-3 text-2xl font-bold leading-snug text-ink sm:text-3xl">
-              {lead.title}
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-ink-soft">
-              {lead.summary || lead.body_text.slice(0, 220)}
-            </p>
-            <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-xs text-ink-soft">
-              <span>{formatDate(lead.published_at)}</span>
-              <a
-                href={lead.canonical_url}
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-teal"
-              >
-                อ่านจากต้นฉบับ
-              </a>
+          <article className="overflow-hidden rounded-2xl border border-line bg-paper lg:col-span-2">
+            {leadImage(lead) && (
+              <img
+                src={leadImage(lead)}
+                alt={lead.title}
+                loading="lazy"
+                className="h-64 w-full object-cover md:h-80"
+              />
+            )}
+            <div className="p-6 md:p-8">
+              <p className="text-[15px] font-semibold text-ink">{lead.agency_name}</p>
+              <h2 className="mt-3 text-2xl font-bold leading-snug text-ink sm:text-3xl">
+                {lead.title}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-ink-soft">
+                {excerpt(lead.summary || lead.body_text)}
+              </p>
+              <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-xs text-ink-soft">
+                <span>{formatDate(lead.published_at)}</span>
+                <a
+                  href={lead.canonical_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-teal"
+                >
+                  อ่านจากต้นฉบับ
+                </a>
+              </div>
             </div>
           </article>
           <aside className="rounded-2xl border border-line bg-paper p-5">

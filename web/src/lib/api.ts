@@ -13,6 +13,7 @@ export interface ArticleItem {
   published_at: string | null
   published_raw: string
   retrieved_at: string | null
+  attachments?: string[]
 }
 
 export interface ArticlesPage {
