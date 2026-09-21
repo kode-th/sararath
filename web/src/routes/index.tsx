@@ -1,32 +1,34 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import {
-  fetchArticles,
-  fetchSources,
-  type ArticleItem,
-} from '../lib/api'
+import { fetchArticles, fetchSources, type ArticleItem } from '../lib/api'
 
 export const Route = createFileRoute('/')({ component: Home })
-
-function fmtDate(raw: string | null, published: string | null) {
-  const value = published ?? raw ?? ''
-  return value.slice(0, 10) || '—'
-}
 
 function Card({ item }: Readonly<{ item: ArticleItem }>) {
   const [open, setOpen] = useState(false)
   return (
-    <article className="card">
-      <div className="card-top">
-        <span className="agency">{item.agency_name || item.source.name_th}</span>
-        <span className="date">{fmtDate(item.published_raw, item.published_at)}</span>
+    <article className="rounded-lg border border-neutral-200 p-4">
+      <div className="flex items-center justify-between text-sm text-neutral-500">
+        <span>{item.agency_name || item.source.name_th}</span>
+        <span>{(item.published_at ?? item.published_raw ?? '').slice(0, 10)}</span>
       </div>
-      <h2 className="headline" onClick={() => setOpen(!open)}>
-        {item.title}
+      <h2 className="mt-2 text-lg font-semibold">
+        <button
+          className="cursor-pointer text-left"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+        >
+          {item.title}
+        </button>
       </h2>
-      {item.category && <div className="topic">{item.category}</div>}
-      {open && <p className="body">{item.body_text}</p>}
-      <a href={item.canonical_url} target="_blank" rel="noreferrer" className="src">
+      {item.category && <p className="mt-1 text-sm text-neutral-500">{item.category}</p>}
+      {open && <p className="mt-2 whitespace-pre-wrap text-[15px]">{item.body_text}</p>}
+      <a
+        href={item.canonical_url}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-2 inline-block text-sm text-blue-700 underline"
+      >
         แหล่งข่าวต้นฉบับ
       </a>
     </article>
@@ -68,16 +70,21 @@ function Home() {
   }, [])
 
   return (
-    <main>
-      <h1>ข่าวภาครัฐไทย</h1>
-      <div className="filters">
+    <main className="mx-auto my-10 w-[min(42rem,calc(100%-2rem))]">
+      <h1 className="text-2xl font-bold">ข่าวภาครัฐไทย</h1>
+      <div className="mt-4 flex gap-2">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && load(undefined, true)}
           placeholder="ค้นหาข่าว..."
+          className="flex-1 rounded-md border border-neutral-300 px-3 py-2"
         />
-        <select value={source} onChange={(e) => setSource(e.target.value)}>
+        <select
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+          className="rounded-md border border-neutral-300 px-2 py-2"
+        >
           <option value="">ทุกหน่วยงาน</option>
           {sources.map((s) => (
             <option key={s.slug} value={s.slug}>
@@ -85,15 +92,29 @@ function Home() {
             </option>
           ))}
         </select>
-        <button onClick={() => load(undefined, true)}>ค้นหา</button>
+        <button
+          onClick={() => load(undefined, true)}
+          className="rounded-md bg-neutral-900 px-4 py-2 text-white"
+        >
+          ค้นหา
+        </button>
       </div>
-      {error && <p className="error">{error}</p>}
-      <p className="count">{items.length} ข่าว</p>
-      {items.map((item) => (
-        <Card key={item.id} item={item} />
-      ))}
+      {error && <p className="mt-3 text-red-700">{error}</p>}
+      <p className="mt-3 text-sm text-neutral-500">{items.length} ข่าว</p>
+      <div className="mt-3 grid gap-3">
+        {items.map((item) => (
+          <Card key={item.id} item={item} />
+        ))}
+      </div>
+      {!loading && items.length === 0 && !error && (
+        <p className="py-10 text-center text-neutral-500">ไม่พบข่าว</p>
+      )}
       {cursor && (
-        <button disabled={loading} onClick={() => load(cursor)}>
+        <button
+          disabled={loading}
+          onClick={() => load(cursor)}
+          className="mt-4 w-full rounded-md border border-neutral-300 py-2"
+        >
           {loading ? 'กำลังโหลด...' : 'โหลดเพิ่มเติม'}
         </button>
       )}
