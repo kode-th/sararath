@@ -60,6 +60,8 @@ def parse_article(html: str, url: str) -> ParsedArticle:
     title = _text(tree, ".article-title .title") or _text(tree, "title")
     date = _text(tree, ".article-date-date").split("|")[0].strip()
     body = _text(tree, ".article-detail")
+    image = tree.css_first('meta[property="og:image"]')
+    image_url = str(image.attributes.get("content") or "") if image else ""
     match = _DETAIL_RE.search(url)
     external_id = f"prd-{match.group('iid')}" if match else url
     return ParsedArticle(
@@ -73,6 +75,7 @@ def parse_article(html: str, url: str) -> ParsedArticle:
         agency_name=AGENCY,
         published_at=parse_thai_date(date),
         published_raw=date,
+        attachments=(image_url,) if image_url.startswith("http") else (),
     )
 
 

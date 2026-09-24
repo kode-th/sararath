@@ -151,6 +151,11 @@ def _store_articles(
     now = _utcnow()
     for known in seen.values():
         known.last_seen_at = now
+    for article in articles:
+        known = seen.get(str(article["canonical_url"]))
+        if known is not None and not known.attachments:
+            for attachment_url in article.get("attachments") or []:
+                session.add(Attachment(article_id=known.id, url=str(attachment_url)))
     fresh = [a for a in articles if str(a["canonical_url"]) not in seen]
     built = [(_build_article(source.id, slug, day, raws, a), a) for a in fresh]
     for db_article, _ in built:

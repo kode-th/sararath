@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 
 import feedparser
 import httpx
+from selectolax.parser import HTMLParser
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
 from thai_gov_news.collectors.http import USER_AGENT
@@ -49,6 +50,24 @@ def _entries(payload: str | bytes) -> list[feedparser.FeedParserDict]:
     return cast("list[feedparser.FeedParserDict]", feed.get("entries", []))
 
 
+def _html_parts(entry: feedparser.FeedParserDict) -> list[str]:
+    content = [str(c.get("value", "")) for c in entry.get("content", [])]
+    return [str(entry.get("summary", entry.get("description", ""))), *content]
+
+
+def _image(parts: list[str], base: str) -> str:
+    for html in parts:
+        img = HTMLParser(html).css_first("img[src]")
+        if img is not None:
+            return urljoin(base, str(img.attributes.get("src") or ""))
+    return ""
+
+
+def _body(parts: list[str]) -> str:
+    texts = [normalize_whitespace(HTMLParser(html).text()) for html in parts]
+    return max(texts, key=len, default="")
+
+
 def parse_feed(payload: str | bytes, config: FeedConfig) -> list[ParsedArticle]:
     articles: list[ParsedArticle] = []
     for index, entry in enumerate(_entries(payload)):
@@ -56,9 +75,8 @@ def parse_feed(payload: str | bytes, config: FeedConfig) -> list[ParsedArticle]:
         title = normalize_whitespace(str(entry.get("title", "")))
         if not title or not link:
             continue
-        body = normalize_whitespace(
-            str(entry.get("summary", entry.get("description", "")))
-        )
+        parts = _html_parts(entry)
+        image = _image(parts, link)
         raw_date = normalize_whitespace(
             str(entry.get("published", entry.get("updated", "")))
         )
@@ -68,12 +86,13 @@ def parse_feed(payload: str | bytes, config: FeedConfig) -> list[ParsedArticle]:
                 canonical_url=urljoin(config.feed_url, link),
                 title=title,
                 summary="",
-                body_text=body,
+                body_text=_body(parts),
                 language=config.language,
                 category=config.category,
                 agency_name=config.agency_name,
                 published_at=_published(entry, raw_date),
                 published_raw=raw_date,
+                attachments=(image,) if image.startswith("http") else (),
             )
         )
     return articles

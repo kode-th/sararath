@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from thai_gov_news.collectors.base import ParsedArticle
-from thai_gov_news.models import Article, Base, CollectorRun, Source
+from thai_gov_news.models import Article, Attachment, Base, CollectorRun, Source
 from thai_gov_news.services import runner
 
 
@@ -24,7 +24,7 @@ def seed(session: Session) -> None:
     session.commit()
 
 
-def item() -> ParsedArticle:
+def item(attachments: tuple[str, ...] = ()) -> ParsedArticle:
     return ParsedArticle(
         external_id="prd-1",
         canonical_url="https://www.prd.go.th/th/content/detail/1",
@@ -36,7 +36,7 @@ def item() -> ParsedArticle:
         agency_name="กรมประชาสัมพันธ์",
         published_at=None,
         published_raw="",
-        attachments=(),
+        attachments=attachments,
     )
 
 
@@ -68,3 +68,20 @@ def test_crawl_inserts_then_bumps(monkeypatch, tmp_path):
     assert again.last_seen_at is not None
     assert again.last_seen_at.replace(tzinfo=None) >= first_seen
     assert session.scalar(select(Article).where(Article.raw_path.is_(None))) is None
+
+
+def test_crawl_backfills_missing_attachments(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    session = memory_session()
+    seed(session)
+    monkeypatch.setattr(runner, "_collect_prd", one)
+    runner.run_crawl(session, "prd")
+    image = "https://www.prd.go.th/th/file/get/file/a.jpeg"
+
+    async def with_image() -> list[tuple[ParsedArticle, str | None, str]]:
+        return [(item((image,)), "<html>ข่าว</html>", ".html")]
+
+    monkeypatch.setattr(runner, "_collect_prd", with_image)
+    runner.run_crawl(session, "prd")
+    runner.run_crawl(session, "prd")
+    assert session.scalars(select(Attachment.url)).all() == [image]

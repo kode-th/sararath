@@ -22,6 +22,8 @@ def test_parse_moac_feed():
     assert first.title
     assert first.agency_name == "กระทรวงเกษตรและสหกรณ์"
     assert first.language == "th"
+    assert first.attachments[0].endswith(".jpg")
+    assert "<img" not in first.body_text
 
 
 def test_feed_dates_parse():

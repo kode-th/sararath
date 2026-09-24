@@ -33,3 +33,4 @@ def test_parse_article():
     assert article.published_at == datetime(2026, 9, 19, 17, 0, tzinfo=timezone.utc)
     assert article.language == "th"
     assert article.agency_name == "กรมประชาสัมพันธ์"
+    assert article.attachments[0].startswith("https://www.prd.go.th/")
