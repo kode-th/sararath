@@ -16,8 +16,8 @@ export function SourceChip({ slug, name, active }: Readonly<SourceChipProps>) {
       className={cn(
         'rounded-full border px-3 py-1 text-sm',
         active
-          ? 'border-ink bg-ink text-paper'
-          : 'border-line bg-paper/60 text-ink-soft transition hover:border-teal/50 hover:text-ink',
+          ? 'border-primary bg-primary text-primary-foreground'
+          : 'border-border bg-card/60 text-muted-foreground transition hover:border-secondary/50 hover:text-foreground',
       )}
     >
       {name}

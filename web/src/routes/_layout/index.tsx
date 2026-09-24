@@ -67,7 +67,7 @@ function Newsroom() {
     <Suspense
       fallback={
         <main className="grid min-h-[60vh] place-items-center">
-          <p className="text-sm text-ink-soft">กำลังโหลดข่าว…</p>
+          <p className="text-sm text-muted-foreground">กำลังโหลดข่าว…</p>
         </main>
       }
     >
@@ -122,19 +122,19 @@ function Feed() {
   return (
     <main className="mx-auto max-w-6xl px-4 pb-16 sm:px-8">
       <section className="mt-10">
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1 font-mono text-[11px] text-ink-soft">
+        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-[11px] text-muted-foreground">
           <LiveDot />
           อัปเดตล่าสุด ·{' '}
           {newest ? `${formatDate(newest)} · ${formatTime(newest)} น.` : 'ยังไม่มีข่าว'}
         </p>
-        <h1 className="max-w-3xl text-balance font-display text-4xl font-bold leading-[1.15] text-ink sm:text-5xl">
-          <span className="whitespace-nowrap">ข่าวภาครัฐไทย</span> <span className="whitespace-nowrap text-gold">ตรงจากต้นทาง</span>
+        <h1 className="max-w-3xl text-balance font-display text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl">
+          <span className="whitespace-nowrap">ข่าวภาครัฐไทย</span> <span className="whitespace-nowrap text-accent-foreground">ตรงจากต้นทาง</span>
         </h1>
       </section>
 
       {error && (
-        <Card role="alert" className="mt-6 border-coral/30 p-6 text-center">
-          <p className="text-sm text-ink-soft">{error}</p>
+        <Card role="alert" className="mt-6 border-destructive/30 p-6 text-center">
+          <p className="text-sm text-muted-foreground">{error}</p>
         </Card>
       )}
 
@@ -142,11 +142,11 @@ function Feed() {
         <div className="mt-7 grid gap-5 lg:grid-cols-3">
           <LeadStory article={lead} className="lg:col-span-2" />
           <Card className="p-5 lg:self-start">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-ink">
+            <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
               <LiveDot />
               ข่าวล่าสุด
             </h2>
-            <div className="mt-1 divide-y divide-line">
+            <div className="mt-1 divide-y divide-border">
               {rest.slice(0, ASIDE_COUNT).map((article) => (
                 <StoryRow key={article.id} article={article} />
               ))}
@@ -155,13 +155,13 @@ function Feed() {
         </div>
       ) : (
         <Card className="mt-8 p-10 text-center">
-          <h2 className="text-xl font-bold text-ink">
+          <h2 className="text-xl font-bold text-foreground">
             {search.q ? `ไม่พบข่าวที่ตรงกับ “${search.q}”` : 'ยังไม่มีข่าวในหมวดนี้'}
           </h2>
           <Link
             to="/"
             search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
-            className="mt-3 inline-block text-sm font-medium text-teal hover:underline"
+            className="mt-3 inline-block text-sm font-medium text-accent-foreground hover:underline"
           >
             ดูข่าวทั้งหมด
           </Link>
@@ -170,7 +170,7 @@ function Feed() {
 
       {rest.length > ASIDE_COUNT && (
         <section className="mt-12">
-          <h2 className="text-lg font-bold text-ink">ข่าวอื่น ๆ</h2>
+          <h2 className="text-lg font-bold text-foreground">ข่าวอื่น ๆ</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {rest.slice(ASIDE_COUNT).map((article) => (
               <StoryCard key={article.id} article={article} />
@@ -187,7 +187,7 @@ function Feed() {
       )}
 
       <section className="mt-12">
-        <h2 className="text-lg font-bold text-ink">กรองตามหน่วยงาน</h2>
+        <h2 className="text-lg font-bold text-foreground">กรองตามหน่วยงาน</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {sources.map((s) => (
             <SourceChip key={s.slug} slug={s.slug} name={s.name_th} active={search.source === s.slug} />
