@@ -2,12 +2,16 @@ import { ArrowUpRight } from 'lucide-react'
 import type { ArticleItem } from '@/lib/api'
 import { excerpt, formatDate, leadImage } from '@/lib/format'
 import { Card } from '@/components/ui/card'
+import { cn } from '@/lib/cn'
 
-export function LeadStory({ article, className = '' }: Readonly<{ article: ArticleItem; className?: string }>) {
+export function LeadStory({ article, className }: Readonly<{ article: ArticleItem; className?: string }>) {
   const image = leadImage(article)
   return (
     <Card
-      className={`group relative flex flex-col overflow-hidden transition-shadow hover:shadow-lg hover:shadow-ink/5 ${className}`}
+      className={cn(
+        'group relative flex flex-col overflow-hidden transition-shadow hover:shadow-lg hover:shadow-ink/5',
+        className,
+      )}
     >
       {image && <img src={image} alt="" loading="lazy" className="h-64 w-full object-cover md:h-80" />}
       <div className="flex flex-1 flex-col p-6 md:p-8">
