@@ -21,7 +21,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
           <img src="/logo.png" alt="สาระรัฐ" className="size-10 rounded-xl" />
           <span className="leading-tight">
             <strong className="block font-display text-[15px] text-ink">สาระรัฐ</strong>
-            <span className="text-[11px] text-ink-soft">ข่าวจากหน่วยงานภาครัฐต้นทาง</span>
+            <span className="text-[11px] text-ink-soft">ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
           </span>
         </a>
         <form
@@ -40,9 +40,9 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
             className="h-9 w-44 bg-transparent px-2 text-sm text-ink outline-none placeholder:text-ink-soft/60 md:w-60"
           />
         </form>
-        {count !== undefined && (
+        {count != null && (
           <span className="rounded-lg bg-primary/15 px-3 py-2 font-mono text-[10px] text-ink">
-            {count} ข่าว
+            แสดง {count} ข่าว
           </span>
         )}
       </div>

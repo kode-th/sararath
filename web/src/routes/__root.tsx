@@ -13,7 +13,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'สาระรัฐ · ข่าวจากหน่วยงานภาครัฐต้นทาง',
+        title: 'สาระรัฐ · ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ',
       },
     ],
     links: [
@@ -50,7 +50,7 @@ export const Route = createRootRoute({
 function NotFound() {
   return (
     <main className="px-4 py-16 text-center">
-      <p className="text-sm text-neutral-500">404 — ไม่พบหน้านี้</p>
+      <p className="text-sm text-ink-soft">ไม่พบหน้าที่คุณต้องการ (404)</p>
       <p className="mt-4">
         <Link
           to="/"
