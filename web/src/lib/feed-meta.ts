@@ -17,6 +17,6 @@ export function useFeedCount() {
       }
     },
     () => count,
-    () => count,
+    () => null,
   )
 }
