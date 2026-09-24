@@ -1,49 +1,87 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'IBM Plex Sans Thai', system-ui, sans-serif;
-  --font-display: 'Space Grotesk', 'IBM Plex Sans Thai', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-  --color-background: oklch(0.972 0.008 251);
+  --font-sans: 'IBM Plex Sans Thai Looped', system-ui, sans-serif;
+  --font-display: 'Anuphan', 'IBM Plex Sans Thai Looped', sans-serif;
+  --color-background: oklch(0.985 0.004 251);
   --color-foreground: oklch(0.323 0.074 251);
-  --color-card: oklch(0.99 0.004 251);
+  --color-card: oklch(0.985 0.004 251);
   --color-card-foreground: oklch(0.323 0.074 251);
   --color-primary: oklch(0.323 0.074 251);
-  --color-primary-foreground: oklch(0.99 0.004 251);
+  --color-primary-foreground: oklch(0.985 0.004 251);
   --color-secondary: oklch(0.726 0.138 89);
   --color-secondary-foreground: oklch(0.323 0.074 251);
-  --color-muted: oklch(0.94 0.012 251);
+  --color-muted: oklch(0.955 0.01 251);
   --color-muted-foreground: oklch(0.48 0.045 251);
-  --color-accent: oklch(0.95 0.035 89);
+  --color-accent: oklch(0.94 0.05 89);
   --color-accent-foreground: oklch(0.55 0.115 83);
+  --color-highlight: oklch(0.86 0.12 92);
   --color-destructive: oklch(0.55 0.19 27);
-  --color-border: oklch(0.9 0.018 251);
-  --color-input: oklch(0.9 0.018 251);
-  --color-ring: oklch(0.62 0.125 85);
+  --color-border: oklch(0.88 0.02 251);
+  --color-input: oklch(0.88 0.02 251);
+  --color-ring: oklch(0.323 0.074 251);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   body {
     margin: 0;
     font-family: var(--font-sans);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.75;
+    font-variant-numeric: tabular-nums;
   }
-}
 
-@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
   ::selection {
-    background: color-mix(in oklab, var(--color-secondary) 35%, transparent);
+    background: var(--color-highlight);
+    color: var(--color-foreground);
   }
 
   :focus-visible {
     outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
-}
-
-@layer base {
 
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
+  }
+
+  a {
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 2px;
+  }
+}
+
+@keyframes highlight-sweep {
+  from {
+    background-size: 0% 0.5em;
+  }
+
+  to {
+    background-size: 100% 0.5em;
+  }
+}
+
+@utility highlight {
+  background-image: linear-gradient(var(--color-highlight), var(--color-highlight));
+  background-repeat: no-repeat;
+  background-size: 100% 0.5em;
+  background-position: 0 92%;
+  box-decoration-break: clone;
+}
+
+@utility highlight-sweep {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: highlight-sweep 900ms var(--ease-out-expo) 200ms both;
   }
 }

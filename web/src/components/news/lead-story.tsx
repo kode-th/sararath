@@ -1,42 +1,50 @@
 import { ArrowUpRight } from 'lucide-react'
-import type { ArticleItem } from '@/lib/api'
-import { excerpt, formatDate, leadImage } from '@/lib/format'
-import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/cn'
+import type { FeedItem } from '@/lib/format'
+import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format'
 
-export function LeadStory({ article, className }: Readonly<{ article: ArticleItem; className?: string }>) {
+export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
   const image = leadImage(article)
   return (
-    <Card
-      className={cn(
-        'group relative flex flex-col overflow-hidden transition-shadow hover:shadow-lg hover:shadow-foreground/5',
-        className,
-      )}
-    >
-      {image && <img src={image} alt="" loading="lazy" className="h-64 w-full object-cover md:h-80" />}
-      <div className="flex flex-1 flex-col p-6 md:p-8">
-        <p className="text-[15px] font-semibold text-muted-foreground">{article.agency_name}</p>
-        <h2 className="mt-3 text-pretty text-2xl font-bold leading-snug text-foreground sm:text-3xl">
+    <article className="group relative grid gap-x-6 gap-y-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      <div className="md:col-start-2">
+        <h2 className="text-[1.75rem] font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-[2.125rem]">
           <a
             href={article.canonical_url}
             target="_blank"
             rel="noreferrer"
-            className="after:absolute after:inset-0 group-hover:text-accent-foreground"
+            className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
-            {article.title}
+            <span className="highlight highlight-sweep">{article.title}</span>
           </a>
         </h2>
-        <p className="mt-4 mb-6 line-clamp-4 max-w-[65ch] text-[15px] leading-7 text-muted-foreground lg:line-clamp-8">
-          {excerpt(article.summary || article.body_text, image ? 220 : 600)}
+        <p className="mt-3 text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{article.agencies.join(' · ')}</span>
+          {' · '}
+          <time dateTime={article.published_at ?? undefined}>{formatDate(article.published_at)}</time>
         </p>
-        <div className="mt-auto flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground">
-          <span>{formatDate(article.published_at)}</span>
-          <span className="inline-flex items-center gap-1 font-medium text-accent-foreground">
-            อ่านต่อที่ต้นฉบับ
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </span>
-        </div>
       </div>
-    </Card>
+      {image && (
+        <img
+          src={image}
+          alt=""
+          onError={hideBrokenImage}
+          className="aspect-2/1 w-full border border-foreground/15 object-cover md:col-start-1 md:row-span-2 md:row-start-1 md:aspect-auto md:h-full md:max-h-104"
+        />
+      )}
+      <div className="flex flex-col md:col-start-2">
+        <p className="line-clamp-4 hidden max-w-[62ch] text-base text-muted-foreground sm:block">
+          {excerpt(article.summary || article.body_text, 320)}
+        </p>
+        <p className="mt-auto flex items-center gap-1 pt-4 font-display text-sm font-semibold text-foreground">
+          อ่านต่อที่ต้นฉบับ
+          <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none" />
+          {article.retrieved_at && (
+            <span className="ml-auto font-sans text-xs font-normal text-muted-foreground">
+              ดึงข่าวเมื่อ {formatTime(article.retrieved_at)} น.
+            </span>
+          )}
+        </p>
+      </div>
+    </article>
   )
 }

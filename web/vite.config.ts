@@ -15,23 +15,17 @@ const config = defineConfig({
     fonts({
       families: {
         display: {
-          family: 'Space Grotesk',
+          family: 'Anuphan',
           weights: [500, 600, 700],
-          subsets: ['latin'],
+          subsets: ['thai', 'latin'],
           variable: '--font-display',
         },
         sans: {
-          family: 'IBM Plex Sans Thai',
-          weights: [300, 400, 500, 600, 700],
+          family: 'IBM Plex Sans Thai Looped',
+          weights: [400, 500, 600],
           subsets: ['thai', 'latin'],
           variable: '--font-sans',
           preload: true,
-        },
-        mono: {
-          family: 'IBM Plex Mono',
-          weights: [400, 500],
-          subsets: ['latin'],
-          variable: '--font-mono',
         },
       },
     }),

@@ -1,24 +1,49 @@
-import type { ArticleItem } from '@/lib/api'
-import { formatDate, leadImage } from '@/lib/format'
+import type { FeedItem } from '@/lib/format'
+import { formatShortDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format'
+import { cn } from '@/lib/cn'
 
-export function StoryRow({ article }: Readonly<{ article: ArticleItem }>) {
-  const image = leadImage(article)
+interface StoryRowProps {
+  article: FeedItem
+  thumbnail?: boolean
+}
+
+export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>) {
+  const image = thumbnail ? leadImage(article) : undefined
   return (
-    <a
-      href={article.canonical_url}
-      target="_blank"
-      rel="noreferrer"
-      className="group flex gap-3 py-4 last:pb-0"
-    >
-      {image && <img src={image} alt="" loading="lazy" className="size-16 shrink-0 rounded-lg object-cover" />}
-      <div className="min-w-0">
-        <p className="truncate text-[11px] text-muted-foreground">
-          {article.agency_name} · {formatDate(article.published_at)}
-        </p>
-        <p className="mt-1 line-clamp-2 text-sm font-medium leading-6 text-foreground group-hover:text-accent-foreground">
-          {article.title}
-        </p>
-      </div>
-    </a>
+    <li className="border-b border-foreground/15">
+      <a
+        href={article.canonical_url}
+        target="_blank"
+        rel="noreferrer"
+        className={cn(
+          'group grid gap-3 py-3 transition-colors duration-150 hover:bg-accent',
+          image ? 'grid-cols-[3.5rem_minmax(0,1fr)_4.5rem]' : 'grid-cols-[3.5rem_minmax(0,1fr)]',
+        )}
+      >
+        <time dateTime={article.published_at ?? undefined} className="leading-tight">
+          <span className="block text-sm font-semibold text-foreground">
+            {formatTime(article.published_at) || '—'}
+          </span>
+          <span className="block text-xs text-muted-foreground">{formatShortDate(article.published_at)}</span>
+        </time>
+        <span className="min-w-0">
+          <span className="line-clamp-2 font-display text-[15px] font-semibold leading-6 text-foreground group-hover:underline group-hover:decoration-highlight">
+            {article.title}
+          </span>
+          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+            {article.agencies.join(' · ')}
+          </span>
+        </span>
+        {image && (
+          <img
+            src={image}
+            alt=""
+            loading="lazy"
+            onError={hideBrokenImage}
+            className="aspect-square w-full border border-foreground/15 object-cover"
+          />
+        )}
+      </a>
+    </li>
   )
 }

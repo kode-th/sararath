@@ -1,17 +1,15 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { ArrowRight } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Suspense, useEffect, useState } from 'react'
+import { AgencyTabs } from '@/components/news/agency-tabs'
 import { LeadStory } from '@/components/news/lead-story'
-import { SourceChip } from '@/components/news/source-chip'
-import { StoryCard } from '@/components/news/story-card'
 import { StoryRow } from '@/components/news/story-row'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { LiveDot } from '@/components/ui/live-dot'
+import { SectionTab } from '@/components/ui/section-tab'
 import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
-import { setFeedCount } from '@/lib/feed-meta'
-import { formatDate, formatTime } from '@/lib/format'
+import { formatTime, mergeDuplicates } from '@/lib/format'
 
 interface FeedSearch {
   q?: string
@@ -30,16 +28,6 @@ export const Route = createFileRoute('/_layout/')({
   component: Newsroom,
 })
 
-function dedupe(items: ArticleItem[]) {
-  const seen = new Set<string>()
-  return items.filter((item) => {
-    const key = `${item.source.slug}|${item.title.trim()}`
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
-}
-
 const feedQuery = (search: FeedSearch) =>
   queryOptions({
     queryKey: ['articles', search],
@@ -54,7 +42,7 @@ const feedQuery = (search: FeedSearch) =>
     staleTime: 60_000,
   })
 
-const ASIDE_COUNT = 5
+const ASIDE_COUNT = 4
 
 const sourcesQuery = queryOptions({
   queryKey: ['news-sources'],
@@ -111,89 +99,88 @@ function Feed() {
     }
   }
 
-  const items = dedupe([...page.items, ...extra])
+  const items = mergeDuplicates([...page.items, ...extra])
   const [lead, ...rest] = items
   const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null
 
-  useEffect(() => {
-    setFeedCount(items.length)
-  }, [items.length])
+  const latest = rest.slice(0, ASIDE_COUNT)
+  const more = rest.slice(ASIDE_COUNT)
+  const today = new Intl.DateTimeFormat('th-TH', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok',
+  }).format(new Date())
 
   return (
-    <main className="mx-auto max-w-6xl px-4 pb-16 sm:px-8">
-      <section className="mt-10">
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 font-mono text-[11px] text-muted-foreground">
-          <LiveDot />
-          อัปเดตล่าสุด ·{' '}
-          {newest ? `${formatDate(newest)} · ${formatTime(newest)} น.` : 'ยังไม่มีข่าว'}
-        </p>
-        <h1 className="max-w-3xl text-balance font-display text-4xl font-bold leading-[1.15] text-foreground sm:text-5xl">
-          <span className="whitespace-nowrap">ข่าวภาครัฐไทย</span> <span className="whitespace-nowrap text-accent-foreground">ตรงจากต้นทาง</span>
+    <main className="mx-auto max-w-6xl px-4 sm:px-8">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
+        <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">
+          {search.q ? `ผลการค้นหา “${search.q}”` : 'สรุปข่าวรัฐวันนี้'}
         </h1>
-      </section>
+        <p className="text-sm text-muted-foreground">
+          {today}
+          {newest && ` · อัปเดต ${formatTime(newest)} น.`}
+        </p>
+      </div>
+
+      <div className="mt-6">
+        <AgencyTabs sources={sources} active={search.source} />
+      </div>
 
       {error && (
-        <Card role="alert" className="mt-6 border-destructive/30 p-6 text-center">
-          <p className="text-sm text-muted-foreground">{error}</p>
+        <Card role="alert" className="mt-6 border-destructive p-4 text-sm text-destructive">
+          {error}
         </Card>
       )}
 
       {lead ? (
-        <div className="mt-7 grid gap-5 lg:grid-cols-3">
-          <LeadStory article={lead} className="lg:col-span-2" />
-          <Card className="p-5 lg:self-start">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <LiveDot />
-              ข่าวล่าสุด
-            </h2>
-            <div className="mt-1 divide-y divide-border">
-              {rest.slice(0, ASIDE_COUNT).map((article) => (
-                <StoryRow key={article.id} article={article} />
-              ))}
-            </div>
-          </Card>
+        <div className="grid gap-8 pt-6 sm:pt-8 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-8">
+            <LeadStory article={lead} />
+          </div>
+          {latest.length > 0 && (
+            <section aria-labelledby="latest-heading" className="lg:col-span-4">
+              <SectionTab id="latest-heading">ล่าสุด</SectionTab>
+              <ol>
+                {latest.map((article) => (
+                  <StoryRow key={article.id} article={article} />
+                ))}
+              </ol>
+            </section>
+          )}
         </div>
       ) : (
-        <Card className="mt-8 p-10 text-center">
-          <h2 className="text-xl font-bold text-foreground">
-            {search.q ? `ไม่พบข่าวที่ตรงกับ “${search.q}”` : 'ยังไม่มีข่าวในหมวดนี้'}
+        <div className="py-16">
+          <h2 className="text-2xl font-bold text-foreground">
+            {search.q ? `ไม่พบข่าวที่ตรงกับ “${search.q}”` : 'ยังไม่มีข่าวจากหน่วยงานนี้'}
           </h2>
           <Link
             to="/"
             search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
-            className="mt-3 inline-block text-sm font-medium text-accent-foreground hover:underline"
+            className="mt-3 inline-block font-display font-semibold text-foreground underline decoration-highlight"
           >
-            ดูข่าวทั้งหมด
+            ดูข่าวจากทุกหน่วยงาน
           </Link>
-        </Card>
+        </div>
       )}
 
-      {rest.length > ASIDE_COUNT && (
-        <section className="mt-12">
-          <h2 className="text-lg font-bold text-foreground">ข่าวอื่น ๆ</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.slice(ASIDE_COUNT).map((article) => (
-              <StoryCard key={article.id} article={article} />
+      {more.length > 0 && (
+        <section aria-labelledby="more-heading" className="mt-10">
+          <SectionTab id="more-heading">ข่าวก่อนหน้า</SectionTab>
+          <ol className="grid gap-x-12 md:grid-cols-2">
+            {more.map((article) => (
+              <StoryRow key={article.id} article={article} thumbnail />
             ))}
-          </div>
+          </ol>
           {cursor && (
-            <div className="mt-8 flex justify-center">
-              <Button onClick={loadMore} disabled={loadingMore}>
-                {loadingMore ? 'กำลังโหลด…' : (<>โหลดข่าวเพิ่ม <ArrowRight className="size-4" /></>)}
-              </Button>
-            </div>
+            <Button onClick={loadMore} disabled={loadingMore} className="mt-6 w-full">
+              {loadingMore ? 'กำลังโหลด…' : (<>โหลดข่าวเพิ่ม <ArrowDown aria-hidden="true" className="size-4" /></>)}
+            </Button>
           )}
         </section>
       )}
-
-      <section className="mt-12">
-        <h2 className="text-lg font-bold text-foreground">กรองตามหน่วยงาน</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {sources.map((s) => (
-            <SourceChip key={s.slug} slug={s.slug} name={s.name_th} active={search.source === s.slug} />
-          ))}
-        </div>
-      </section>
     </main>
   )
 }

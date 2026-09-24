@@ -1,5 +1,5 @@
+import { Search } from 'lucide-react'
 import { useState, type SubmitEvent } from 'react'
-import { useFeedCount } from '@/lib/feed-meta'
 
 interface HeaderProps {
   onSearch: (q: string) => void
@@ -7,7 +7,6 @@ interface HeaderProps {
 
 export function Header({ onSearch }: Readonly<HeaderProps>) {
   const [value, setValue] = useState('')
-  const count = useFeedCount()
 
   function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -15,18 +14,23 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
   }
 
   return (
-    <header className="sticky top-3 z-30 mx-auto max-w-6xl rounded-2xl border border-border bg-card/85 shadow-lg shadow-foreground/10 backdrop-blur-xl">
-      <div className="flex items-center gap-3 px-4 py-3 sm:px-5">
+    <header>
+      <p className="bg-foreground px-4 py-1.5 text-center text-xs text-primary-foreground sm:px-8">
+        <span className="hidden sm:inline">รวบรวมข่าวจากเว็บไซต์หน่วยงานรัฐ · </span>
+        ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐ
+      </p>
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8 sm:py-4">
         <a href="/" className="mr-auto flex items-center gap-3">
-          <img src="/logo.png" alt="สาระรัฐ" className="size-10 rounded-xl" />
+          <img src="/logo.png" alt="" className="size-11" />
           <span className="leading-tight">
-            <strong className="block font-display text-[15px] text-foreground">สาระรัฐ</strong>
-            <span className="text-[11px] text-muted-foreground">ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
+            <strong className="block font-display text-xl font-bold text-foreground">สาระรัฐ</strong>
+            <span className="text-xs text-muted-foreground">ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
           </span>
         </a>
         <form
+          role="search"
           onSubmit={submit}
-          className="hidden items-center rounded-lg border border-border bg-card px-3 sm:flex"
+          className="flex w-full items-center border-2 border-foreground bg-card sm:w-72"
         >
           <label htmlFor="site-search" className="sr-only">
             ค้นหาข่าว
@@ -37,31 +41,17 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="ค้นหาข่าวหรือหน่วยงาน"
-            className="h-9 w-44 bg-transparent px-2 text-sm text-foreground outline-none placeholder:text-muted-foreground md:w-60"
+            className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
+          <button
+            type="submit"
+            aria-label="ค้นหา"
+            className="grid size-10 place-items-center bg-foreground text-primary-foreground"
+          >
+            <Search aria-hidden="true" className="size-4" />
+          </button>
         </form>
-        {count != null && (
-          <span className="rounded-lg bg-accent px-3 py-2 font-mono text-[10px] text-foreground">
-            แสดง {count} ข่าว
-          </span>
-        )}
       </div>
-      <form
-        onSubmit={submit}
-        className="flex border-t border-border px-4 py-2 sm:hidden"
-      >
-        <label htmlFor="site-search-m" className="sr-only">
-          ค้นหาข่าว
-        </label>
-        <input
-          id="site-search-m"
-          type="search"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="ค้นหาข่าวหรือหน่วยงาน"
-          className="h-8 min-w-0 flex-1 bg-transparent px-2 text-sm text-foreground outline-none"
-        />
-      </form>
     </header>
   )
 }
