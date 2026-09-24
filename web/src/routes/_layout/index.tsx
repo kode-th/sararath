@@ -1,6 +1,6 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { ArrowDown } from 'lucide-react'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { queryOptions, useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query'
+import { ArrowDown, RotateCw } from 'lucide-react'
+import { Link, createFileRoute, useRouter, type ErrorComponentProps } from '@tanstack/react-router'
 import { Suspense, useEffect, useState } from 'react'
 import { AgencyTabs } from '@/components/news/agency-tabs'
 import { LeadStory } from '@/components/news/lead-story'
@@ -26,6 +26,7 @@ export const Route = createFileRoute('/_layout/')({
     cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
   }),
   component: Newsroom,
+  errorComponent: FeedError,
 })
 
 const feedQuery = (search: FeedSearch) =>
@@ -49,6 +50,34 @@ const sourcesQuery = queryOptions({
   queryFn: fetchSources,
   staleTime: 300_000,
 })
+
+// The free API host sleeps when idle, so a failed first load is common.
+function FeedError({ reset }: ErrorComponentProps) {
+  const router = useRouter()
+  const queryReset = useQueryErrorResetBoundary()
+
+  useEffect(() => {
+    queryReset.reset()
+  }, [queryReset])
+
+  return (
+    <main className="mx-auto max-w-6xl px-4 py-16 sm:px-8">
+      <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
+      <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
+        เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงาน ซึ่งใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
+      </p>
+      <Button
+        onClick={() => {
+          reset()
+          void router.invalidate()
+        }}
+        className="mt-6"
+      >
+        <RotateCw aria-hidden="true" className="size-4" /> ลองใหม่
+      </Button>
+    </main>
+  )
+}
 
 function Newsroom() {
   return (

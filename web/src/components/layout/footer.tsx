@@ -6,7 +6,7 @@ export function Footer() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-2">
           <img src="/logo.png" alt="" className="size-7" />
-          <p>
+          <p className="leading-6">
             <span className="font-semibold text-foreground">สาระรัฐ</span> · ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ
             <span className="block">
               ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐใด ข่าวทุกชิ้นลิงก์กลับไปยังต้นฉบับ
