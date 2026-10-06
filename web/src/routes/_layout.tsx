@@ -11,7 +11,7 @@ function Layout() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen">
+    <>
       <Header
         onSearch={(q) =>
           navigate({
@@ -26,9 +26,7 @@ function Layout() {
         }
       />
       <Outlet />
-      <div className="container max-w-6xl">
-        <Footer />
-      </div>
-    </div>
+      <Footer />
+    </>
   );
 }

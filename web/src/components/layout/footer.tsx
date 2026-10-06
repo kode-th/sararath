@@ -2,8 +2,8 @@ import { ArrowUpRight } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t-2 border-foreground py-6 text-xs text-muted-foreground">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <footer className="container mt-16 max-w-6xl text-xs text-muted-foreground">
+      <div className="flex flex-col gap-3 border-t-2 border-foreground py-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-2">
           <img src="/logo.png" alt="" className="size-7" />
           <p className="leading-6">
