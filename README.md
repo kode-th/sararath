@@ -32,19 +32,20 @@ docker compose -f compose.yaml -f compose.dev.yaml exec api \
   uv run --no-sync python -m thai_gov_news crawl --source rd
 ```
 
-Open <http://localhost:3000>. Edits to `src/` reload the API; edits to `web/`
+Open <http://localhost:3000>. Edits to `api/src/` reload the API; edits to `web/`
 hot-reload the browser.
 
-| Command                                           | Purpose                               |
-| ------------------------------------------------- | ------------------------------------- |
-| `mise run dev`                                    | start stack (foreground)              |
-| `mise run dev:down`                               | stop stack                            |
-| `mise run dev:logs`                               | tail all logs                         |
-| `mise run migrate`                                | apply migrations in the api container |
-| `mise run lint` / `format` / `typecheck` / `test` | repo gates                            |
+| Command                                                 | Purpose                               |
+| ------------------------------------------------------- | ------------------------------------- |
+| `mise run dev`                                          | start stack (foreground)              |
+| `mise run dev:down`                                     | stop stack                            |
+| `mise run dev:logs`                                     | tail all logs                         |
+| `mise run migrate`                                      | apply migrations in the api container |
+| `mise run lint` / `format:check` / `typecheck` / `test` | repo gates                            |
 
 Notes:
 
+- Repo layout: `api/` (Python, uv) and `web/` (TypeScript, bun); root holds compose, CI, hooks.
 - Ports: db `5432`, api `8001` (host 8000 is often taken), web `3000`.
 - `web` runs with `network_mode: host` so SSR and the browser both reach
   `http://localhost:8001`. `@cloudflare/vite-plugin` needs Node, so the web
@@ -55,6 +56,7 @@ Notes:
 ## CLI
 
 ```bash
+cd api
 uv run python -m thai_gov_news crawl --source prd   # one source
 uv run python -m thai_gov_news crawl-due            # all due (respects intervals)
 uv run python -m thai_gov_news crawl-due --source rd --source prd
@@ -65,6 +67,6 @@ uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
 ## Deploy notes
 
 - `DATABASE_URL` must use the `postgresql+psycopg://` scheme. App uses the pooled host; alembic works on either.
-- GitHub secret `DATABASE_URL` feeds the hourly workflow (`.github/workflows/crawl.yml`).
-- Render blueprint sets `CORS_ORIGINS=*` (read-only GET API).
+- GitHub secret `DATABASE_URL` feeds the hourly workflow (`.github/workflows/crawl.yml`), which runs inside `api/`.
+- Render blueprint (`rootDir: api`) sets `CORS_ORIGINS=*` (read-only GET API) and builds from the frozen lock.
 - Full stack also runs on one host: `docker compose up -d` (db + api on :8001 + hourly scheduler).

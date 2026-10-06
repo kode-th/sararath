@@ -14,9 +14,11 @@ jobs:
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version-file: .python-version
+          python-version-file: api/.python-version
       - run: uv sync --no-dev
+        working-directory: api
       - run: uv run python -m thai_gov_news crawl-due --source moac --source rd --source prd
+        working-directory: api
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 # thaigov excluded: its API 403s datacenter IPs (bot protection).

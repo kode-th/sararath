@@ -4,7 +4,7 @@ pre-commit:
     lint:
       run: mise run lint
     format-check:
-      run: uv run ruff format --check .
+      run: mise run "format:check"
     typecheck:
       run: mise run typecheck
 
@@ -16,4 +16,4 @@ pre-push:
 commit-msg:
   commands:
     convention:
-      run: uv run python scripts/check-commit-msg.py {1}
+      run: python3 scripts/check-commit-msg.py {1}

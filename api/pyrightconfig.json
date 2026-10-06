@@ -1,9 +1,5 @@
 {
-  "include": [
-    "src",
-    "tests",
-    "scripts"
-  ],
+  "include": ["src", "tests", "../scripts"],
   "venvPath": ".",
   "venv": ".venv",
   "stubPath": "typings",

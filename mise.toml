@@ -11,6 +11,7 @@ depends = ["lint:py", "web:lint"]
 
 [tasks."lint:py"]
 description = "Run ruff check"
+dir = "api"
 run = "uv run ruff check ."
 
 [tasks."web:lint"]
@@ -27,9 +28,19 @@ run = "bun run lint:fix"
 description = "Format Python and web"
 depends = ["format:py", "web:format"]
 
+[tasks."format:check"]
+description = "Check formatting (Python and web)"
+depends = ["format:py:check", "web:format:check"]
+
 [tasks."format:py"]
 description = "Run ruff format"
+dir = "api"
 run = "uv run ruff format ."
+
+[tasks."format:py:check"]
+description = "Check Python formatting"
+dir = "api"
+run = "uv run ruff format --check ."
 
 [tasks."web:format"]
 description = "Run oxfmt"
@@ -47,6 +58,7 @@ depends = ["typecheck:py", "web:typecheck"]
 
 [tasks."typecheck:py"]
 description = "Run pyright"
+dir = "api"
 run = "pyright"
 
 [tasks."web:typecheck"]
@@ -61,6 +73,7 @@ run = "bun run build"
 
 [tasks.test]
 description = "Run pytest"
+dir = "api"
 run = "uv run python -m pytest"
 
 [tasks.dev]

@@ -19,7 +19,7 @@ services:
 
   api:
     build:
-      context: .
+      context: ./api
       target: dev
     command:
       - uv
@@ -38,10 +38,10 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-govnews}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-govnews}
       CORS_ORIGINS: "*"
     volumes:
-      - ./src:/app/src
-      - ./migrations:/app/migrations
-      - ./alembic.ini:/app/alembic.ini
-      - ./sources:/app/sources
+      - ./api/src:/app/src
+      - ./api/migrations:/app/migrations
+      - ./api/alembic.ini:/app/alembic.ini
+      - ./api/sources:/app/sources
     ports:
       - "8001:8000"
     depends_on:
@@ -50,9 +50,9 @@ services:
     develop:
       watch:
         - action: rebuild
-          path: ./pyproject.toml
+          path: ./api/pyproject.toml
         - action: rebuild
-          path: ./uv.lock
+          path: ./api/uv.lock
 
   web:
     build:
