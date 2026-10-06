@@ -1,6 +1,8 @@
 import { Search } from 'lucide-react';
 import { useState, type SubmitEvent } from 'react';
 
+import { Button } from '@/components/ui/button';
+
 interface HeaderProps {
   onSearch: (q: string) => void;
 }
@@ -43,13 +45,9 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
             placeholder="ค้นหาข่าวหรือหน่วยงาน"
             className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
-          <button
-            type="submit"
-            aria-label="ค้นหา"
-            className="grid size-10 place-items-center bg-foreground text-primary-foreground"
-          >
+          <Button type="submit" aria-label="ค้นหา" variant="solid" size="icon">
             <Search aria-hidden="true" className="size-4" />
-          </button>
+          </Button>
         </form>
       </div>
     </header>
