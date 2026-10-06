@@ -71,6 +71,16 @@ description = "Build the web app"
 dir = "web"
 run = "bun run build"
 
+[tasks."api:openapi"]
+description = "Dump the read API OpenAPI schema to api/openapi.json"
+dir = "api"
+run = "uv run python -m thai_gov_news openapi > openapi.json"
+
+[tasks."web:api-schema"]
+description = "Generate web API client types from api/openapi.json"
+dir = "web"
+run = "bun run generate:api"
+
 [tasks.test]
 description = "Run pytest"
 dir = "api"

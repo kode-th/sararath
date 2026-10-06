@@ -13,6 +13,13 @@ from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from thai_gov_news.api.schemas import (
+    ArticleOut,
+    ArticlesPage,
+    HealthOut,
+    RunsPage,
+    SourcesPage,
+)
 from thai_gov_news.database import get_session
 from thai_gov_news.models import Article, Attachment, CollectorRun, Source
 
@@ -98,6 +105,7 @@ def _cursor_row(session: Session, cursor: str | None) -> Article | None:
 
 @app.get(
     "/v1/articles",
+    response_model=ArticlesPage,
     responses={
         422: {"description": "Bad limit, date, or cursor"},
         404: {"description": "Cursor not found"},
@@ -169,6 +177,7 @@ def list_articles(
 
 @app.get(
     "/v1/articles/{article_id}",
+    response_model=ArticleOut,
     responses={
         422: {"description": "Bad article id"},
         404: {"description": "Article not found"},
@@ -191,7 +200,9 @@ def get_article(article_id: str, session: Session = Depends(get_db)) -> dict:
     return article_out(article, slug, name_th, attached.get(str(article.id)))
 
 
-@app.get("/v1/runs", responses={422: {"description": "Bad limit"}})
+@app.get(
+    "/v1/runs", response_model=RunsPage, responses={422: {"description": "Bad limit"}}
+)
 def list_runs(
     source: str | None = None,
     limit: int = 20,
@@ -225,7 +236,7 @@ def list_runs(
     }
 
 
-@app.get("/v1/sources")
+@app.get("/v1/sources", response_model=SourcesPage)
 def list_sources(session: Session = Depends(get_db)) -> dict:
     rows = session.scalars(select(Source).order_by(Source.slug)).all()
     return {
@@ -244,7 +255,11 @@ def list_sources(session: Session = Depends(get_db)) -> dict:
     }
 
 
-@app.get("/v1/health", responses={503: {"description": "Database unreachable"}})
+@app.get(
+    "/v1/health",
+    response_model=HealthOut,
+    responses={503: {"description": "Database unreachable"}},
+)
 def health(session: Session = Depends(get_db)) -> dict:
     try:
         session.execute(select(1)).scalar()

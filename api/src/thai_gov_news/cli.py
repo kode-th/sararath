@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from thai_gov_news.database import get_session
@@ -40,6 +41,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     check = sub.add_parser("check", help="Exit 1 when a source is stale")
     check.add_argument("--max-age-hours", type=int, default=26)
+
+    sub.add_parser("openapi", help="Print the read API OpenAPI schema")
 
     return parser
 
@@ -117,6 +120,13 @@ def _cmd_check(args: argparse.Namespace) -> int:
     return 1 if stale else 0
 
 
+def _cmd_openapi(_args: argparse.Namespace) -> int:
+    from thai_gov_news.api.app import app
+
+    print(json.dumps(app.openapi(), indent=2, sort_keys=True))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -131,4 +141,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_crawl_due(args)
     if args.command == "check":
         return _cmd_check(args)
+    if args.command == "openapi":
+        return _cmd_openapi(args)
     return 2
