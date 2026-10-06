@@ -8,6 +8,13 @@ from urllib.parse import urlsplit
 
 import httpx
 
+_RETRIE: tuple[type[BaseException], ...] = (
+    TimeoutError,
+    httpx.TimeoutException,
+    httpx.NetworkError,
+    httpx.ProtocolError,
+)
+
 MIN_INTERVAL = 2.0
 TIMEOUT = 15.0
 RETRIES = 3
@@ -70,7 +77,7 @@ async def _fetch_with_retry(
         try:
             async with asyncio.timeout(TIMEOUT):
                 response = await client.get(url, headers=headers)
-        except (TimeoutError, httpx.NetworkError):
+        except _RETRIE:
             if attempt >= retries:
                 raise
         else:

@@ -68,6 +68,24 @@ def test_raises_after_retries(monkeypatch):
         asyncio.run(main())
 
 
+def test_retries_protocol_error(monkeypatch):
+    """Server dropping the connection (RemoteProtocolError) must retry."""
+    monkeypatch.setattr(asyncio, "sleep", lambda *args: _real_sleep(0))
+    calls: list = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        if len(calls) < 2:
+            raise httpx.RemoteProtocolError(
+                "Server disconnected without sending a response."
+            )
+        return httpx.Response(200)
+
+    response = asyncio.run(_run(calls, handler))
+    assert response.status_code == 200
+    assert len(calls) == 2
+
+
 def test_rate_limiter_spacing():
     async def main() -> float:
         limiter = RateLimiter(min_interval=0.05)

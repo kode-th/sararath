@@ -180,18 +180,19 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
     except SystemExit:
         raise
     except Exception as exc:
-        source.last_error = str(exc)[:1000]
+        detail = f"{type(exc).__name__}: {exc}"
+        source.last_error = detail[:1000]
         session.add(
             CollectorRun(
                 source_id=source.id,
                 started_at=started,
                 finished_at=_utcnow(),
                 status="error",
-                error=str(exc)[:1000],
+                error=detail[:1000],
             )
         )
         session.commit()
-        raise SystemExit(f"error: crawl {slug} failed: {exc}") from exc
+        raise SystemExit(f"error: crawl {slug} failed: {detail}") from exc
 
     day = started.date().isoformat()
     raws = {normalize_url(p.canonical_url): (raw, ext) for p, raw, ext in collected}
