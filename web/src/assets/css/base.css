@@ -1,7 +1,9 @@
 @layer base {
   body {
     margin: 0;
+    display: flex;
     min-height: 100vh;
+    flex-direction: column;
     font-family: var(--font-sans);
     background: var(--color-background);
     color: var(--color-foreground);

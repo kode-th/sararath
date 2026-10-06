@@ -1,14 +1,12 @@
 import { preloads } from '@pyyupsk/fonts/meta';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
-import {
-  HeadContent,
-  Link,
-  Outlet,
-  Scripts,
-  createRootRouteWithContext,
-} from '@tanstack/react-router';
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 import type { PropsWithChildren } from 'react';
+
+import { Footer } from '@/components/layout/footer';
+import { Header } from '@/components/layout/header';
+import { NotFound } from '@/components/layout/not-found';
 
 import appCss from '@/assets/css/styles.css?url';
 
@@ -56,25 +54,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <Header />
       <Outlet />
+      <Footer />
     </QueryClientProvider>
-  );
-}
-
-function NotFound() {
-  return (
-    <main className="container py-16 text-center">
-      <p className="text-sm text-muted-foreground">ไม่พบหน้าที่คุณต้องการ (404)</p>
-      <p className="mt-4">
-        <Link
-          to="/"
-          search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
-          className="underline"
-        >
-          กลับหน้าแรก
-        </Link>
-      </p>
-    </main>
   );
 }
 
