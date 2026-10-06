@@ -26,6 +26,20 @@ def normalize_whitespace(text: str) -> str:
     return " ".join((text or "").split())
 
 
+def normalize_body(text: str) -> str:
+    """Collapse per-line whitespace but keep paragraph and line breaks."""
+    lines = [" ".join(line.split()) for line in (text or "").splitlines()]
+    out: list[str] = []
+    for line in lines:
+        if line:
+            out.append(line)
+        elif out and out[-1] != "":
+            out.append("")
+    while out and out[-1] == "":
+        out.pop()
+    return "\n".join(out)
+
+
 def normalize_url(url: str) -> str:
     parsed = urlparse((url or "").strip())
     scheme = parsed.scheme.lower()
@@ -57,11 +71,12 @@ def normalize_record(raw: Mapping[str, Any]) -> NormalizedRecord:
     published_at = raw.get("published_at")
     if not isinstance(published_at, datetime):
         published_at = parse_thai_date(published_raw)
+    body = raw.get("body_text") or raw.get("content") or ""
     return {
         "external_id": _field(raw, "external_id", "id"),
         "canonical_url": normalize_url(_field(raw, "canonical_url", "source_url")),
         "title": _field(raw, "title"),
-        "body_text": _field(raw, "body_text", "content"),
+        "body_text": normalize_body(str(body)),
         "language": _field(raw, "language", default="th"),
         "category": _field(raw, "category", "topic"),
         "agency_name": _field(raw, "agency_name", "agency"),

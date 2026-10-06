@@ -50,3 +50,15 @@ def test_record_keeps_parsed_datetime():
         }
     )
     assert record["published_at"] == when
+
+
+def test_record_body_keeps_paragraph_breaks():
+    record = normalize_record(
+        {"title": "t", "body_text": "first   para\n\n\nsecond  para\n\n"}
+    )
+    assert record["body_text"] == "first para\n\nsecond para"
+
+
+def test_record_body_uses_content_fallback():
+    record = normalize_record({"title": "t", "content": "a\n\nb"})
+    assert record["body_text"] == "a\n\nb"
