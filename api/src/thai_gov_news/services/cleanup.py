@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 
 from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session
 
+from thai_gov_news.collectors.html import strip_trailing_attribution
 from thai_gov_news.models import Article, Attachment, Source
 from thai_gov_news.services.dedupe import content_hash
 
@@ -91,6 +93,22 @@ def _script_index(text: str) -> int:
     return index
 
 
+_LEADING_DATE = re.compile(r"^\s*\d{1,2}/\d{1,2}/\d{4}[\s|\d]*")
+
+
+def _clean_body(title: str, text: str) -> str:
+    body = text.strip()
+    heading = " ".join((title or "").split())
+    if heading and body.startswith(heading):
+        body = body[len(heading) :].lstrip()
+    body = _LEADING_DATE.sub("", body)
+    body = strip_trailing_attribution(body)
+    index = _script_index(body)
+    if index > 0:
+        body = body[:index].rstrip()
+    return body.strip()
+
+
 def strip_script_text(
     session: Session, source: str | None = None, dry_run: bool = False
 ) -> StripResult:
@@ -102,16 +120,19 @@ def strip_script_text(
     scanned = cleaned = 0
     for article_id, title, body in session.execute(stmt):
         scanned += 1
-        index = _script_index(body or "")
-        if index <= 0:
+        text = body or ""
+        cleaned_body = _clean_body(title or "", text)
+        if not cleaned_body or cleaned_body == text.strip():
             continue
         cleaned += 1
         if not dry_run:
-            stripped = (body or "")[:index].rstrip()
             session.execute(
                 update(Article)
                 .where(Article.id == article_id)
-                .values(body_text=stripped, content_hash=content_hash(title, stripped))
+                .values(
+                    body_text=cleaned_body,
+                    content_hash=content_hash(title, cleaned_body),
+                )
             )
     if not dry_run and cleaned:
         session.commit()

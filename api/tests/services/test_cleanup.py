@@ -94,4 +94,4 @@ def test_strip_script_text():
     assert (result.scanned, result.cleaned) == (1, 1)
     fixed = session.scalar(select(Article))
     assert fixed is not None
-    assert fixed.body_text == "เนื้อหา\n\nข้อมูลจาก https://x รูปภาพ"
+    assert fixed.body_text == "เนื้อหา"
