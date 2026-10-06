@@ -1,7 +1,11 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
-  "jsPlugins": ["@shadcn/lint", "./tools/oxlint/jsx-child-element-spacing.js"],
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react", "jsx-a11y"],
+  "jsPlugins": [
+    "@shadcn/lint",
+    "./tools/oxlint/jsx-child-element-spacing.js",
+    "./tools/oxlint/no-super-linear-backtracking.js"
+  ],
   "settings": {
     "shadcn": {
       "ui": "@/components"
@@ -51,6 +55,9 @@
     "promise/prefer-await-to-then": "error",
     "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
     "shadcn/no-unknown-classes": "error",
-    "jsx/child-element-spacing": "error"
+    "jsx/child-element-spacing": "error",
+    "regex-safety/no-super-linear-backtracking": "error",
+    "typescript/prefer-optional-chain": "error",
+    "react/react-in-jsx-scope": "off"
   }
 }

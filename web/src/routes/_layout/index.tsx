@@ -24,6 +24,17 @@ export type NewsSourceItem = { slug: string; name_th: string };
 interface FeedLoaderData {
   page: ArticlesPage | undefined;
   sources: NewsSourceItem[] | undefined;
+  today: string;
+}
+
+function bangkokToday() {
+  return new Intl.DateTimeFormat('th-TH', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok',
+  }).format(new Date());
 }
 
 const feedQuery = (search: FeedSearch) =>
@@ -69,7 +80,7 @@ export const Route = createFileRoute('/_layout/')({
       quietFetch(() => context.queryClient.query(feedQuery(deps))),
       quietFetch(() => context.queryClient.query(sourcesQuery)),
     ]);
-    return { page, sources };
+    return { page, sources, today: bangkokToday() };
   },
   staleTime: 30_000,
   component: Newsroom,
@@ -105,6 +116,9 @@ function FeedError({ reset }: Readonly<ErrorComponentProps>) {
 }
 
 function Newsroom() {
+  const search = Route.useSearch();
+  const feedKey = `${search.q ?? ''}|${search.category ?? ''}|${search.source ?? ''}`;
+
   return (
     <Suspense
       fallback={
@@ -113,7 +127,7 @@ function Newsroom() {
         </main>
       }
     >
-      <Feed />
+      <Feed key={feedKey} />
     </Suspense>
   );
 }
@@ -133,11 +147,6 @@ function Feed() {
   const [cursor, setCursor] = useState(page.next_cursor);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    setExtra([]);
-    setCursor(page.next_cursor);
-  }, [page]);
 
   async function loadMore() {
     if (!cursor || loadingMore) return;
@@ -166,13 +175,7 @@ function Feed() {
 
   const latest = rest.slice(0, ASIDE_COUNT);
   const more = rest.slice(ASIDE_COUNT);
-  const today = new Intl.DateTimeFormat('th-TH', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date());
+  const today = loader.today;
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-8">
