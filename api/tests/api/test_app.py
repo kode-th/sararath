@@ -9,7 +9,7 @@ from thai_gov_news.api.app import app, get_db
 from thai_gov_news.models import Article, Base, Source
 
 
-def client() -> TestClient:
+def client(duplicate_titles: int = 0) -> TestClient:
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
@@ -60,6 +60,21 @@ def client() -> TestClient:
             ),
         ]
     )
+    for index in range(duplicate_titles):
+        session.add(
+            Article(
+                source_id=source.id,
+                external_id=f"thaigov-dup-{index}",
+                canonical_url=f"https://www.thaigov.go.th/th/news/dup-{index}",
+                title="ข่าวใหม่",
+                body_text="เนื้อหาซ้ำ",
+                category="ทั่วไป",
+                agency_name="รัฐบาลไทย",
+                published_at=datetime(2026, 9, 18, 11, 0, tzinfo=timezone.utc),
+                published_raw="2026-09-18T18:00:00+07:00",
+                content_hash=f"dup{index}",
+            )
+        )
     session.commit()
     app.dependency_overrides[get_db] = lambda: factory()
     return TestClient(app)
@@ -111,6 +126,26 @@ def test_detail_and_errors():
         api.get("/v1/articles/00000000-0000-0000-0000-000000000000").status_code == 404
     )
     assert api.get("/v1/articles/nope").status_code == 422
+
+
+def test_suggest():
+    api = client()
+    body = api.get("/v1/suggest", params={"q": "รัฐบาล"}).json()
+    assert [s["slug"] for s in body["sources"]] == ["thaigov"]
+    assert body["articles"] == []
+    body = api.get("/v1/suggest", params={"q": "ข่าว"}).json()
+    assert body["sources"] == []
+    assert [a["title"] for a in body["articles"]] == ["ข่าวใหม่", "ข่าวเก่า"]
+    assert api.get("/v1/suggest", params={"q": " "}).json() == {
+        "sources": [],
+        "articles": [],
+    }
+    assert api.get("/v1/suggest", params={"limit": "0"}).status_code == 422
+
+
+def test_suggest_dedupes_titles():
+    body = client(duplicate_titles=1).get("/v1/suggest", params={"q": "ข่าว"}).json()
+    assert [a["title"] for a in body["articles"]] == ["ข่าวใหม่", "ข่าวเก่า"]
 
 
 def test_sources_and_health():

@@ -382,6 +382,48 @@
         ],
         "title": "SourcesPage",
         "type": "object"
+      },
+      "SuggestArticleOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "SuggestArticleOut",
+        "type": "object"
+      },
+      "SuggestOut": {
+        "properties": {
+          "articles": {
+            "items": {
+              "$ref": "#/components/schemas/SuggestArticleOut"
+            },
+            "title": "Articles",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sources",
+          "articles"
+        ],
+        "title": "SuggestOut",
+        "type": "object"
       }
     }
   },
@@ -660,6 +702,49 @@
           }
         },
         "summary": "List Sources"
+      }
+    },
+    "/v1/suggest": {
+      "get": {
+        "operationId": "suggest_v1_suggest_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 6,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuggestOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Bad limit"
+          }
+        },
+        "summary": "Suggest"
       }
     }
   }

@@ -34,6 +34,16 @@ class ArticlesPage(BaseModel):
     next_cursor: str | None
 
 
+class SuggestArticleOut(BaseModel):
+    id: str
+    title: str
+
+
+class SuggestOut(BaseModel):
+    sources: list[SourceRef]
+    articles: list[SuggestArticleOut]
+
+
 class RunOut(BaseModel):
     source: str
     started_at: datetime

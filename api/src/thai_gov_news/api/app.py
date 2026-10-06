@@ -19,6 +19,7 @@ from thai_gov_news.api.schemas import (
     HealthOut,
     RunsPage,
     SourcesPage,
+    SuggestOut,
 )
 from thai_gov_news.database import get_session
 from thai_gov_news.models import Article, Attachment, CollectorRun, Source
@@ -198,6 +199,47 @@ def get_article(article_id: str, session: Session = Depends(get_db)) -> dict:
     article, slug, name_th = row
     attached = attachment_map(session, [article.id])
     return article_out(article, slug, name_th, attached.get(str(article.id)))
+
+
+@app.get(
+    "/v1/suggest",
+    response_model=SuggestOut,
+    responses={422: {"description": "Bad limit"}},
+)
+def suggest(
+    q: str = "",
+    limit: int = 6,
+    session: Session = Depends(get_db),
+) -> dict:
+    if not 1 <= limit <= 20:
+        raise HTTPException(422, "limit must be 1..20")
+    term = q.strip()
+    if not term:
+        return {"sources": [], "articles": []}
+    like = f"%{term}%"
+    sources = session.scalars(
+        select(Source).where(Source.name_th.like(like)).order_by(Source.slug).limit(4)
+    ).all()
+    rows = session.execute(
+        select(Article.id, Article.title)
+        .where(Article.title.like(like))
+        .order_by(Article.published_at.desc().nulls_last(), Article.id.desc())
+        .limit(limit * 4)
+    ).all()
+    seen: set[str] = set()
+    articles: list[dict] = []
+    for article_id, title in rows:
+        key = " ".join(title.split()).casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        articles.append({"id": str(article_id), "title": title})
+        if len(articles) >= limit:
+            break
+    return {
+        "sources": [{"slug": s.slug, "name_th": s.name_th} for s in sources],
+        "articles": articles,
+    }
 
 
 @app.get(
