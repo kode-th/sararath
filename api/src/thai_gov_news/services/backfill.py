@@ -14,6 +14,7 @@ from thai_gov_news.collectors.http import USER_AGENT
 from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.collectors.moac import parse_article as parse_moac_article
 from thai_gov_news.collectors.prd import PrdCollector
+from thai_gov_news.collectors.thaigov import ThaigovCollector
 from thai_gov_news.models import Article, Attachment, Source
 from thai_gov_news.services.dedupe import content_hash
 
@@ -24,7 +25,7 @@ DIRTY_MARKERS = ("%function(%", "%jQuery(%", "%$(")
 # description only has the small thumbnail, so this marks them as done.
 MOAC_ENRICHED = "%/data/news/l/%"
 
-SUPPORTED = {"prd", "moac"}
+SUPPORTED = {"prd", "moac", "thaigov"}
 
 
 @dataclass
@@ -32,6 +33,15 @@ class BackfillResult:
     candidates: int
     updated: int
     failed: int
+
+
+def _replace_attachments(
+    session: Session, article: Article, urls: tuple[str, ...]
+) -> None:
+    for attachment in article.attachments:
+        session.delete(attachment)
+    for url in urls:
+        session.add(Attachment(article_id=article.id, url=url))
 
 
 async def _refresh_prd(articles: list[Article]) -> tuple[int, int]:
@@ -76,14 +86,50 @@ async def _refresh_moac(session: Session, articles: list[Article]) -> tuple[int,
             if not body:
                 failed += 1
                 continue
-            for attachment in article.attachments:
-                session.delete(attachment)
-            for image in images:
-                session.add(Attachment(article_id=article.id, url=image))
+            _replace_attachments(session, article, images)
             article.body_text = body
             article.content_hash = content_hash(article.title, body)
             updated += 1
     return updated, failed
+
+
+async def _refresh_thaigov(
+    session: Session, articles: list[Article]
+) -> tuple[int, int]:
+    updated = failed = 0
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        collector = ThaigovCollector(client)
+        for article in articles:
+            try:
+                raw = await collector.fetch(
+                    DiscoveredItem(
+                        external_id=article.external_id,
+                        url=article.canonical_url,
+                        published_raw=article.published_raw,
+                    )
+                )
+                parsed = collector.parse(raw)
+            except Exception:
+                failed += 1
+                continue
+            if not parsed.body_text:
+                failed += 1
+                continue
+            _replace_attachments(session, article, parsed.attachments)
+            article.body_text = parsed.body_text
+            article.content_hash = content_hash(article.title, parsed.body_text)
+            updated += 1
+    return updated, failed
+
+
+def _candidate_query(slug: str, reprocess: bool):
+    if reprocess:
+        return None
+    if slug == "prd":
+        return or_(*[Article.body_text.like(m) for m in DIRTY_MARKERS])
+    if slug == "moac":
+        return ~Article.attachments.any(Attachment.url.like(MOAC_ENRICHED))
+    return None
 
 
 def backfill_bodies(
@@ -100,23 +146,24 @@ def backfill_bodies(
     source = session.scalar(select(Source).where(Source.slug == slug))
     if source is None:
         raise SystemExit(f"error: unknown source {slug!r}")
-    base = (
+    stmt = (
         select(Article)
         .where(Article.source_id == source.id)
         .order_by(Article.published_at.desc().nulls_last(), Article.id.desc())
         .offset(offset)
         .limit(limit)
     )
-    if not reprocess and slug == "prd":
-        base = base.where(or_(*[Article.body_text.like(m) for m in DIRTY_MARKERS]))
-    if not reprocess and slug != "prd":
-        base = base.where(~Article.attachments.any(Attachment.url.like(MOAC_ENRICHED)))
-    articles = list(session.scalars(base).all())
+    condition = _candidate_query(slug, reprocess)
+    if condition is not None:
+        stmt = stmt.where(condition)
+    articles = list(session.scalars(stmt).all())
     if dry_run:
         return BackfillResult(candidates=len(articles), updated=0, failed=0)
     if slug == "prd":
         updated, failed = asyncio.run(_refresh_prd(articles))
-    else:
+    elif slug == "moac":
         updated, failed = asyncio.run(_refresh_moac(session, articles))
+    else:
+        updated, failed = asyncio.run(_refresh_thaigov(session, articles))
     session.commit()
     return BackfillResult(candidates=len(articles), updated=updated, failed=failed)

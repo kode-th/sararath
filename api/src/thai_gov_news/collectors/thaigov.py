@@ -11,6 +11,7 @@ import httpx
 from selectolax.lexbor import LexborHTMLParser
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from thai_gov_news.collectors.html import html_to_text
 from thai_gov_news.collectors.http import USER_AGENT
 from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.services.normalize import normalize_whitespace
@@ -69,12 +70,22 @@ def discover_from_payload(
 
 
 def _body_text(description_html: str) -> str:
-    tree = LexborHTMLParser(description_html or "")
-    paras = [normalize_whitespace(p.text()) for p in tree.css("p")]
-    paras = [p for p in paras if p]
-    if paras:
-        return "\n\n".join(paras)
-    return normalize_whitespace(tree.text())
+    return html_to_text(description_html)
+
+
+def _images(description_html: str, thumbnail: str) -> tuple[str, ...]:
+    urls = [thumbnail] if thumbnail.startswith("http") else []
+    for img in LexborHTMLParser(description_html or "").css("img[src]"):
+        src = str(img.attributes.get("src") or "")
+        if src.startswith("http"):
+            urls.append(src)
+    seen: set[str] = set()
+    out: list[str] = []
+    for url in urls:
+        if url not in seen:
+            seen.add(url)
+            out.append(url)
+    return tuple(out)
 
 
 def parse_detail(payload: dict[str, Any], url: str) -> ParsedArticle:
@@ -93,7 +104,7 @@ def parse_detail(payload: dict[str, Any], url: str) -> ParsedArticle:
         agency_name=AGENCY,
         published_at=parse_thai_date(published_raw),
         published_raw=published_raw,
-        attachments=(thumbnail,) if thumbnail.startswith("http") else (),
+        attachments=_images(str(payload.get("description", "")), thumbnail),
     )
 
 

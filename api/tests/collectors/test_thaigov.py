@@ -54,3 +54,20 @@ def test_parse_detail():
     assert article.language == "th"
     assert article.attachments
     assert article.attachments[0].startswith("http")
+
+
+def test_parse_detail_collects_description_images():
+    payload = {
+        "id": 169217,
+        "title": "t",
+        "short_description": "",
+        "description": '<div>x</div><img src="https://a/1.jpg"><img src="https://a/2.jpg">',
+        "published_at": "2026-09-24T15:44:00+07:00",
+        "thumbnail": "https://a/main.jpg",
+    }
+    article = parse_detail(payload, "https://www.thaigov.go.th/th/news/169217")
+    assert article.attachments == (
+        "https://a/main.jpg",
+        "https://a/1.jpg",
+        "https://a/2.jpg",
+    )
