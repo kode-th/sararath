@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 
-import type { FeedItem } from '@/lib/format';
-import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format';
+import type { FeedItem } from '@/utils/format';
+import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
 
 export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
   const image = leadImage(article);

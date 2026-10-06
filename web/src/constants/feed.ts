@@ -1,0 +1,2 @@
+export const ASIDE_COUNT = 4;
+export const FEED_LIMIT = 12;

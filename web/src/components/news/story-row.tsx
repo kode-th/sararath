@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
 
 import { cn } from '@/lib/cn';
-import type { FeedItem } from '@/lib/format';
-import { formatShortDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format';
+import type { FeedItem } from '@/utils/format';
+import { formatShortDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
 
 interface StoryRowProps {
   article: FeedItem;

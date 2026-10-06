@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import { fetchArticle, isMissingArticle } from '@/lib/api';
-import { formatDate, formatTime, hideBrokenImage, plainText } from '@/lib/format';
+import { formatDate, formatTime, hideBrokenImage, plainText } from '@/utils/format';
 
 const articleQuery = (id: string) =>
   queryOptions({

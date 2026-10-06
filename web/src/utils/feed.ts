@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 
+import { FEED_LIMIT } from '@/constants/feed';
 import { fetchArticles, fetchSources, type ArticlesPage } from '@/lib/api';
 
 export interface FeedSearch {
@@ -16,9 +17,6 @@ export interface FeedLoaderData {
   sources: NewsSourceItem[] | undefined;
   today: string;
 }
-
-export const ASIDE_COUNT = 4;
-export const FEED_LIMIT = 12;
 
 export const feedQuery = (search: FeedSearch) =>
   queryOptions({

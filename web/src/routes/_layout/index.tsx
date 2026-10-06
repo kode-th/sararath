@@ -9,18 +9,17 @@ import { StoryRow } from '@/components/news/story-row';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SectionTab } from '@/components/ui/section-tab';
+import { ASIDE_COUNT, FEED_LIMIT } from '@/constants/feed';
 import { fetchArticles, type ArticleItem } from '@/lib/api';
 import {
-  ASIDE_COUNT,
-  FEED_LIMIT,
   bangkokToday,
   feedQuery,
   quietFetch,
   sourcesQuery,
   type FeedLoaderData,
   type FeedSearch,
-} from '@/lib/feed';
-import { formatTime, mergeDuplicates } from '@/lib/format';
+} from '@/utils/feed';
+import { formatTime, mergeDuplicates } from '@/utils/format';
 
 export const Route = createFileRoute('/_layout/')({
   validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
