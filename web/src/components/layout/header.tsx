@@ -1,18 +1,24 @@
+import { useNavigate } from '@tanstack/react-router';
 import { Search } from 'lucide-react';
 import { useState, type SubmitEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-interface HeaderProps {
-  onSearch: (q: string) => void;
-}
-
-export function Header({ onSearch }: Readonly<HeaderProps>) {
+export function Header() {
+  const navigate = useNavigate();
   const [value, setValue] = useState('');
 
   function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    onSearch(value.trim());
+    void navigate({
+      to: '/',
+      search: {
+        q: value.trim() || undefined,
+        category: undefined,
+        source: undefined,
+        cursor: undefined,
+      },
+    });
   }
 
   return (
