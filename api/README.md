@@ -47,6 +47,7 @@ uv run python -m thai_gov_news check --max-age-hours 26    # exit 1 when stale
 uv run python -m thai_gov_news serve --host 0.0.0.0 --port 8000
 uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
 uv run python -m thai_gov_news openapi > openapi.json      # dump the OpenAPI schema
+uv run python -m thai_gov_news backfill-body --source prd  # re-fetch bodies after a parser fix
 ```
 
 Also installed as the console script `thai-gov-news`.

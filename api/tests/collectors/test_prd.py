@@ -30,6 +30,11 @@ def test_parse_article():
     assert article.title.startswith("รัฐบาลย้ำค่าป่วยการ อสม.")
     assert "ค่าป่วยการ" in article.body_text
     assert article.published_raw == "20/09/2569"
+    # Inline script/style text must not leak into the body.
+    for junk in ("function(", "jQuery(", "$("):
+        assert junk not in article.body_text
+    # Body is paragraphs, not one flattened line.
+    assert "\n\n" in article.body_text
     assert article.published_at == datetime(2026, 9, 19, 17, 0, tzinfo=timezone.utc)
     assert article.language == "th"
     assert article.agency_name == "กรมประชาสัมพันธ์"

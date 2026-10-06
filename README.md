@@ -65,6 +65,7 @@ uv run python -m thai_gov_news crawl-due --source rd   # restrict to sources
 uv run python -m thai_gov_news check                   # exit 1 when a source is stale
 uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
 uv run python -m thai_gov_news openapi                 # print the OpenAPI schema
+uv run python -m thai_gov_news backfill-body --source prd   # refresh bodies after a parser fix
 ```
 
 ## Sources and cadence

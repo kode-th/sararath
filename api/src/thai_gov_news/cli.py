@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from thai_gov_news.database import get_session
+from thai_gov_news.services.backfill import backfill_bodies
 from thai_gov_news.services.export_legacy import (
     export_date,
     update_manifest,
@@ -43,6 +44,13 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--max-age-hours", type=int, default=26)
 
     sub.add_parser("openapi", help="Print the read API OpenAPI schema")
+
+    backfill = sub.add_parser(
+        "backfill-body", help="Re-fetch article bodies for a source"
+    )
+    backfill.add_argument("--source", required=True)
+    backfill.add_argument("--limit", type=int, default=200)
+    backfill.add_argument("--dry-run", action="store_true")
 
     return parser
 
@@ -127,6 +135,18 @@ def _cmd_openapi(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_backfill_body(args: argparse.Namespace) -> int:
+    with get_session() as session:
+        result = backfill_bodies(
+            session, args.source, limit=args.limit, dry_run=args.dry_run
+        )
+    print(
+        f"backfill {args.source}: candidates={result.candidates} "
+        f"updated={result.updated} failed={result.failed}"
+    )
+    return 1 if result.failed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -143,4 +163,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_check(args)
     if args.command == "openapi":
         return _cmd_openapi(args)
+    if args.command == "backfill-body":
+        return _cmd_backfill_body(args)
     return 2

@@ -29,6 +29,20 @@ def _text(node: LexborHTMLParser | LexborNode, selector: str) -> str:
     return normalize_whitespace(found.text() if found else "")
 
 
+def _body_text(tree: LexborHTMLParser) -> str:
+    """Article body as paragraphs, without inline script/style text."""
+    node = tree.css_first(".article-detail")
+    if node is None:
+        return ""
+    for unwanted in node.css("script, style, noscript"):
+        unwanted.decompose()
+    paragraphs = [normalize_whitespace(p.text()) for p in node.css("p")]
+    paragraphs = [p for p in paragraphs if p]
+    if paragraphs:
+        return "\n\n".join(paragraphs)
+    return normalize_whitespace(node.text())
+
+
 def discover_from_html(html: str, base: str = BASE) -> list[DiscoveredItem]:
     items: list[DiscoveredItem] = []
     seen: set[str] = set()
@@ -59,7 +73,7 @@ def parse_article(html: str, url: str) -> ParsedArticle:
     tree = LexborHTMLParser(html)
     title = _text(tree, ".article-title .title") or _text(tree, "title")
     date = _text(tree, ".article-date-date").split("|")[0].strip()
-    body = _text(tree, ".article-detail")
+    body = _body_text(tree)
     image = tree.css_first('meta[property="og:image"]')
     image_url = str(image.attributes.get("content") or "") if image else ""
     match = _DETAIL_RE.search(url)
