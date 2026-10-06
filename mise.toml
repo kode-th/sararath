@@ -1,20 +1,63 @@
 [tools]
+bun = "latest"
 lefthook = "latest"
 "npm:pyright" = "latest"
 python = "3.13.15"
 uv = "0.12.17"
 
 [tasks.lint]
+description = "Lint Python and web"
+depends = ["lint:py", "web:lint"]
+
+[tasks."lint:py"]
 description = "Run ruff check"
 run = "uv run ruff check ."
 
+[tasks."web:lint"]
+description = "Run oxlint"
+dir = "web"
+run = "bun run lint"
+
+[tasks."web:lint:fix"]
+description = "Run oxlint with fixes"
+dir = "web"
+run = "bun run lint:fix"
+
 [tasks.format]
+description = "Format Python and web"
+depends = ["format:py", "web:format"]
+
+[tasks."format:py"]
 description = "Run ruff format"
 run = "uv run ruff format ."
 
+[tasks."web:format"]
+description = "Run oxfmt"
+dir = "web"
+run = "bun run format"
+
+[tasks."web:format:check"]
+description = "Check web formatting"
+dir = "web"
+run = "bun run format:check"
+
 [tasks.typecheck]
+description = "Typecheck Python and web"
+depends = ["typecheck:py", "web:typecheck"]
+
+[tasks."typecheck:py"]
 description = "Run pyright"
 run = "pyright"
+
+[tasks."web:typecheck"]
+description = "Run tsc"
+dir = "web"
+run = "bun run typecheck"
+
+[tasks."web:build"]
+description = "Build the web app"
+dir = "web"
+run = "bun run build"
 
 [tasks.test]
 description = "Run pytest"
