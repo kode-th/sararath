@@ -39,7 +39,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           {excerpt(article.summary || article.body_text, 320)}
         </p>
         <p className="mt-auto flex items-center gap-1 pt-4 font-display text-sm font-semibold text-foreground">
-          อ่านรายละเอียด
+          <span>อ่านรายละเอียด</span>
           <ArrowRight
             aria-hidden="true"
             className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:transform-none"

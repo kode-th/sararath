@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
-  "jsPlugins": ["@shadcn/lint"],
+  "jsPlugins": ["@shadcn/lint", "./tools/oxlint/jsx-child-element-spacing.js"],
   "settings": {
     "shadcn": {
       "ui": "@/components"
@@ -50,6 +50,7 @@
     "promise/no-return-wrap": "error",
     "promise/prefer-await-to-then": "error",
     "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
-    "shadcn/no-unknown-classes": "error"
+    "shadcn/no-unknown-classes": "error",
+    "jsx/child-element-spacing": "error"
   }
 }

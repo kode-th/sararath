@@ -19,7 +19,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
     <header>
       <p className="bg-foreground px-4 py-1.5 text-center text-xs text-primary-foreground sm:px-8">
         <span className="hidden sm:inline">สาระรัฐเป็นแหล่งรวบรวมข่าวจากเว็บไซต์หน่วยงานรัฐ </span>
-        ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด
+        <span>ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด</span>
       </p>
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8 sm:py-4">
         <a href="/" className="mr-auto flex items-center gap-3">

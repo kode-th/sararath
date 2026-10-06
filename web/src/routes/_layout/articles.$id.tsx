@@ -155,7 +155,7 @@ function ArticleDetail() {
           rel="noreferrer"
           className={buttonVariants({ className: 'mt-8 w-full sm:w-auto' })}
         >
-          อ่านที่ต้นฉบับ
+          <span>อ่านที่ต้นฉบับ</span>
           <ArrowUpRight aria-hidden="true" className="size-4" />
         </a>
       </article>

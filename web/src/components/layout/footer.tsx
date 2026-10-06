@@ -7,7 +7,8 @@ export function Footer() {
         <div className="flex items-start gap-2">
           <img src="/logo.png" alt="" className="size-7" />
           <p className="leading-6">
-            <span className="font-semibold text-foreground">สาระรัฐ</span> · ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ
+            <span className="font-semibold text-foreground">สาระรัฐ </span>
+            <span>· ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
             <span className="block">
               ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐใด ข่าวทุกชิ้นลิงก์กลับไปยังต้นฉบับ
             </span>
