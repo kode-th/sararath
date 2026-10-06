@@ -36,8 +36,14 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
           <span className="line-clamp-2 font-display text-compact leading-6 font-semibold text-foreground group-hover:underline group-hover:decoration-accent">
             {article.title}
           </span>
-          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-            {article.agencies.join(' · ')}
+          <span className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+            {article.duplicate ? (
+              <span className="shrink-0 border border-foreground/25 px-1 font-semibold text-foreground">
+                {article.source.name_th}
+              </span>
+            ) : (
+              <span className="truncate">{article.agencies.join(' · ')}</span>
+            )}
           </span>
         </span>
         {image && (

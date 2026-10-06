@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { FEED_LIMIT } from '@/constants/feed';
+import { LOAD_MORE_LIMIT } from '@/constants/feed';
 import { fetchArticles, type ArticleItem, type ArticlesPage } from '@/lib/api';
 import type { FeedSearch } from '@/utils/feed';
-import { mergeDuplicates } from '@/utils/format';
+import { markDuplicates } from '@/utils/format';
 
 export function useFeedPagination(page: ArticlesPage, search: FeedSearch) {
   const [extra, setExtra] = useState<ArticleItem[]>([]);
@@ -16,7 +16,7 @@ export function useFeedPagination(page: ArticlesPage, search: FeedSearch) {
     setLoadingMore(true);
     setError('');
     try {
-      const next = await fetchArticles({ ...search, cursor, limit: FEED_LIMIT });
+      const next = await fetchArticles({ ...search, cursor, limit: LOAD_MORE_LIMIT });
       setExtra((prev) => [...prev, ...next.items]);
       setCursor(next.next_cursor);
     } catch {
@@ -27,7 +27,7 @@ export function useFeedPagination(page: ArticlesPage, search: FeedSearch) {
   }
 
   return {
-    items: mergeDuplicates([...page.items, ...extra]),
+    items: markDuplicates([...page.items, ...extra]),
     cursor,
     loadingMore,
     error,

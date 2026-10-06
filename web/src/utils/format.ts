@@ -60,18 +60,21 @@ export function formatShortDate(value: string | null) {
   }).format(new Date(value));
 }
 
-export type FeedItem = ArticleItem & { agencies: string[] };
+export type FeedItem = ArticleItem & { agencies: string[]; duplicate: boolean };
 
-// Agencies often publish the same story; keep one row and name every publisher.
-export function mergeDuplicates(items: ArticleItem[]): FeedItem[] {
-  const byTitle = new Map<string, FeedItem>();
+// Agencies republish the same story, so the same title can appear from more than
+// one source. Keep every row; flag repeats so each card can name its own source.
+export function markDuplicates(items: ArticleItem[]): FeedItem[] {
+  const counts = new Map<string, number>();
   for (const item of items) {
     const key = item.title.trim();
-    const seen = byTitle.get(key);
-    if (!seen) byTitle.set(key, { ...item, agencies: [item.agency_name] });
-    else if (!seen.agencies.includes(item.agency_name)) seen.agencies.push(item.agency_name);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
   }
-  return [...byTitle.values()];
+  return items.map((item) => ({
+    ...item,
+    agencies: [item.agency_name],
+    duplicate: (counts.get(item.title.trim()) ?? 0) > 1,
+  }));
 }
 
 export function hideBrokenImage(event: { currentTarget: HTMLImageElement }) {
