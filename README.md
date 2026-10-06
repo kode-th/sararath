@@ -68,6 +68,7 @@ uv run python -m thai_gov_news openapi                 # print the OpenAPI schem
 uv run python -m thai_gov_news backfill-body --source moac  # refresh bodies (prd, moac)
 uv run python -m thai_gov_news dedupe-articles --source moac --dry-run  # drop duplicate rows
 uv run python -m thai_gov_news repair-links --source moac --dry-run    # fix malformed source URLs
+uv run python -m thai_gov_news strip-script --source prd --dry-run     # drop leaked script text
 ```
 
 ## Sources and cadence

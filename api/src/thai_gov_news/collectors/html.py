@@ -15,7 +15,12 @@ _LINE_END = re.compile(r"</(?:div|li|tr|ul|ol)>", re.IGNORECASE)
 
 def html_to_text(html: str) -> str:
     """Extract text: `<br>`/block ends become line breaks, `</p>` a blank line."""
-    marked = _PARAGRAPH_END.sub("\n\n", _LINE_END.sub("\n", _BR.sub("\n", html or "")))
+    tree = LexborHTMLParser(html or "")
+    for node in tree.css("script, style, noscript"):
+        node.decompose()
+    marked = _PARAGRAPH_END.sub(
+        "\n\n", _LINE_END.sub("\n", _BR.sub("\n", tree.html or ""))
+    )
     lines = [
         " ".join(line.split()) for line in LexborHTMLParser(marked).text().split("\n")
     ]

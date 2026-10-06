@@ -40,6 +40,13 @@ def test_parser_repair_links():
     assert args.dry_run is False
 
 
+def test_parser_strip_script():
+    args = build_parser().parse_args(["strip-script", "--source", "prd", "--dry-run"])
+    assert args.command == "strip-script"
+    assert args.source == "prd"
+    assert args.dry_run is True
+
+
 def test_parser_requires_command():
     parser = build_parser()
     try:

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from thai_gov_news.database import get_session
 from thai_gov_news.services.backfill import backfill_bodies
-from thai_gov_news.services.cleanup import dedupe_articles
+from thai_gov_news.services.cleanup import dedupe_articles, strip_script_text
 from thai_gov_news.services.export_legacy import (
     export_date,
     update_manifest,
@@ -67,6 +67,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     repair.add_argument("--source", default=None)
     repair.add_argument("--dry-run", action="store_true")
+
+    strip = sub.add_parser(
+        "strip-script", help="Remove leaked script text from stored bodies"
+    )
+    strip.add_argument("--source", default=None)
+    strip.add_argument("--dry-run", action="store_true")
 
     return parser
 
@@ -188,6 +194,16 @@ def _cmd_repair_links(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_strip_script(args: argparse.Namespace) -> int:
+    with get_session() as session:
+        result = strip_script_text(session, source=args.source, dry_run=args.dry_run)
+    print(
+        f"strip-script: scanned={result.scanned} cleaned={result.cleaned} "
+        f"dry_run={args.dry_run}"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -210,4 +226,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_dedupe_articles(args)
     if args.command == "repair-links":
         return _cmd_repair_links(args)
+    if args.command == "strip-script":
+        return _cmd_strip_script(args)
     return 2

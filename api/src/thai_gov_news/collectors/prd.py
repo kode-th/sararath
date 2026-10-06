@@ -10,6 +10,7 @@ import httpx
 from selectolax.lexbor import LexborHTMLParser, LexborNode
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from thai_gov_news.collectors.html import html_to_text
 from thai_gov_news.collectors.http import USER_AGENT
 from thai_gov_news.collectors.http import fetch as http_fetch
 from thai_gov_news.services.normalize import normalize_whitespace
@@ -34,13 +35,7 @@ def _body_text(tree: LexborHTMLParser) -> str:
     node = tree.css_first(".article-detail")
     if node is None:
         return ""
-    for unwanted in node.css("script, style, noscript"):
-        unwanted.decompose()
-    paragraphs = [normalize_whitespace(p.text()) for p in node.css("p")]
-    paragraphs = [p for p in paragraphs if p]
-    if paragraphs:
-        return "\n\n".join(paragraphs)
-    return normalize_whitespace(node.text())
+    return html_to_text(node.html or "")
 
 
 def discover_from_html(html: str, base: str = BASE) -> list[DiscoveredItem]:

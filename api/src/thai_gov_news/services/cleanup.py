@@ -5,12 +5,30 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session
 
 from thai_gov_news.models import Article, Attachment, Source
+from thai_gov_news.services.dedupe import content_hash
 
 CHUNK = 500
+
+# Inline script text that leaked into stored bodies (e.g. prd). Everything from
+# the first marker on is page chrome, not article content.
+SCRIPT_MARKERS = (
+    "jQuery(",
+    "$(",
+    "addEventListener(",
+    "lightGallery(",
+    "function(data)",
+    "DialogWarning(",
+)
+
+
+@dataclass(frozen=True)
+class StripResult:
+    scanned: int
+    cleaned: int
 
 
 @dataclass(frozen=True)
@@ -62,3 +80,39 @@ def dedupe_articles(
         session.commit()
 
     return CleanupResult(groups=len(duplicates), removed=len(doomed))
+
+
+def _script_index(text: str) -> int:
+    index = -1
+    for marker in SCRIPT_MARKERS:
+        found = text.find(marker)
+        if found != -1 and (index == -1 or found < index):
+            index = found
+    return index
+
+
+def strip_script_text(
+    session: Session, source: str | None = None, dry_run: bool = False
+) -> StripResult:
+    stmt = select(Article.id, Article.title, Article.body_text).join(
+        Source, Article.source_id == Source.id
+    )
+    if source is not None:
+        stmt = stmt.where(Source.slug == source)
+    scanned = cleaned = 0
+    for article_id, title, body in session.execute(stmt):
+        scanned += 1
+        index = _script_index(body or "")
+        if index <= 0:
+            continue
+        cleaned += 1
+        if not dry_run:
+            stripped = (body or "")[:index].rstrip()
+            session.execute(
+                update(Article)
+                .where(Article.id == article_id)
+                .values(body_text=stripped, content_hash=content_hash(title, stripped))
+            )
+    if not dry_run and cleaned:
+        session.commit()
+    return StripResult(scanned=scanned, cleaned=cleaned)
