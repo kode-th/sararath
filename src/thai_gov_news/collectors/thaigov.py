@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import httpx
-from selectolax.parser import HTMLParser
+from selectolax.lexbor import LexborHTMLParser
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
 from thai_gov_news.collectors.http import USER_AGENT
@@ -69,7 +69,7 @@ def discover_from_payload(
 
 
 def _body_text(description_html: str) -> str:
-    tree = HTMLParser(description_html or "")
+    tree = LexborHTMLParser(description_html or "")
     paras = [normalize_whitespace(p.text()) for p in tree.css("p")]
     paras = [p for p in paras if p]
     if paras:

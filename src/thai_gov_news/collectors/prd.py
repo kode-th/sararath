@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from urllib.parse import urljoin
 
 import httpx
-from selectolax.parser import HTMLParser, Node
+from selectolax.lexbor import LexborHTMLParser, LexborNode
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
 from thai_gov_news.collectors.http import USER_AGENT
@@ -24,7 +24,7 @@ LANGUAGE = "th"
 _DETAIL_RE = re.compile(r"/th/content/category/detail/id/\d+/iid/(?P<iid>\d+)")
 
 
-def _text(node: HTMLParser | Node, selector: str) -> str:
+def _text(node: LexborHTMLParser | LexborNode, selector: str) -> str:
     found = node.css_first(selector)
     return normalize_whitespace(found.text() if found else "")
 
@@ -32,7 +32,7 @@ def _text(node: HTMLParser | Node, selector: str) -> str:
 def discover_from_html(html: str, base: str = BASE) -> list[DiscoveredItem]:
     items: list[DiscoveredItem] = []
     seen: set[str] = set()
-    for card in HTMLParser(html).css(".infocard"):
+    for card in LexborHTMLParser(html).css(".infocard"):
         link = card.css_first('a[title][href*="/iid/"]')
         if link is None:
             continue
@@ -56,7 +56,7 @@ def discover_from_html(html: str, base: str = BASE) -> list[DiscoveredItem]:
 
 
 def parse_article(html: str, url: str) -> ParsedArticle:
-    tree = HTMLParser(html)
+    tree = LexborHTMLParser(html)
     title = _text(tree, ".article-title .title") or _text(tree, "title")
     date = _text(tree, ".article-date-date").split("|")[0].strip()
     body = _text(tree, ".article-detail")

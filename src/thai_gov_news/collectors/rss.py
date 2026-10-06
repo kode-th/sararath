@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 
 import feedparser
 import httpx
-from selectolax.parser import HTMLParser
+from selectolax.lexbor import LexborHTMLParser
 
 from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
 from thai_gov_news.collectors.http import USER_AGENT
@@ -57,14 +57,14 @@ def _html_parts(entry: feedparser.FeedParserDict) -> list[str]:
 
 def _image(parts: list[str], base: str) -> str:
     for html in parts:
-        img = HTMLParser(html).css_first("img[src]")
+        img = LexborHTMLParser(html).css_first("img[src]")
         if img is not None:
             return urljoin(base, str(img.attributes.get("src") or ""))
     return ""
 
 
 def _body(parts: list[str]) -> str:
-    texts = [normalize_whitespace(HTMLParser(html).text()) for html in parts]
+    texts = [normalize_whitespace(LexborHTMLParser(html).text()) for html in parts]
     return max(texts, key=len, default="")
 
 
