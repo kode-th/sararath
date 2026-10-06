@@ -3,14 +3,20 @@ import { Image } from '@unpic/react';
 import { ArrowRight } from 'lucide-react';
 
 import { HighlightTitle } from '@/components/news/highlight-title';
+import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
 import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
 
 export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
   const image = leadImage(article);
   return (
-    <article className="group relative grid gap-x-6 gap-y-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-      <div className="md:col-start-2">
+    <article
+      className={cn(
+        'group relative grid gap-x-6 gap-y-4',
+        image && 'md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]',
+      )}
+    >
+      <div className={cn(image && 'md:col-start-2')}>
         <h2 className="text-title-sm font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-title-lg">
           <Link
             to="/articles/$id"
@@ -41,7 +47,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           className="aspect-2/1 w-full border border-foreground/15 object-cover md:col-start-1 md:row-span-2 md:row-start-1 md:aspect-auto md:h-full md:max-h-104"
         />
       )}
-      <div className="flex flex-col md:col-start-2">
+      <div className={cn('flex flex-col', image && 'md:col-start-2')}>
         <p className="line-clamp-4 hidden max-w-[62ch] text-base text-muted-foreground sm:block">
           {excerpt(article.summary || article.body_text, 320)}
         </p>
