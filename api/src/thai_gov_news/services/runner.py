@@ -221,6 +221,11 @@ def _touch_known(
     url = str(article["canonical_url"])
     if url != known.canonical_url:
         known.canonical_url = url
+    # Backfill a missing publish date (older rows stored before the feed had one).
+    published = article.get("published_at")
+    if known.published_at is None and isinstance(published, datetime):
+        known.published_at = published
+        known.published_raw = str(article.get("published_raw") or known.published_raw)
     body = str(article.get("body_text", ""))
     if len(body) > len(known.body_text or ""):
         known.body_text = body

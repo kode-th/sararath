@@ -38,3 +38,15 @@ def test_record_invalid_date():
     record = normalize_record({"title": "t", "published_raw": "nonsense"})
     assert record["published_at"] is None
     assert record["published_raw"] == "nonsense"
+
+
+def test_record_keeps_parsed_datetime():
+    when = datetime(2026, 9, 15, 3, 55, tzinfo=timezone.utc)
+    record = normalize_record(
+        {
+            "title": "ปชส. 22/2569",
+            "published_raw": "Tue, 15 Sep 2026 10:55:00 +0700",
+            "published_at": when,
+        }
+    )
+    assert record["published_at"] == when

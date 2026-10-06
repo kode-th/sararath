@@ -54,6 +54,9 @@ def _field(raw: Mapping[str, Any], *names: str, default: str = "") -> str:
 
 def normalize_record(raw: Mapping[str, Any]) -> NormalizedRecord:
     published_raw = _field(raw, "published_raw", "published_at")
+    published_at = raw.get("published_at")
+    if not isinstance(published_at, datetime):
+        published_at = parse_thai_date(published_raw)
     return {
         "external_id": _field(raw, "external_id", "id"),
         "canonical_url": normalize_url(_field(raw, "canonical_url", "source_url")),
@@ -63,5 +66,5 @@ def normalize_record(raw: Mapping[str, Any]) -> NormalizedRecord:
         "category": _field(raw, "category", "topic"),
         "agency_name": _field(raw, "agency_name", "agency"),
         "published_raw": published_raw,
-        "published_at": parse_thai_date(published_raw),
+        "published_at": published_at,
     }
