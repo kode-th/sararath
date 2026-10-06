@@ -1,15 +1,47 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
+  "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "python.terminal.useEnvFile": true,
-  "editor.formatOnSave": true,
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff"
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "oxc.enable": true,
+  "oxc.lint.run": "onSave",
+  "oxc.tsConfigPath": "web/tsconfig.json",
+  "oxc.path.oxlint": "web/node_modules/.bin/oxlint",
+  "oxc.path.oxfmt": "web/node_modules/.bin/oxfmt",
+  "editor.formatOnSave": true,
+  "js/ts.tsdk.path": "web/node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "tailwindCSS.classFunctions": ["cn", "clsx"],
+  "tailwindCSS.experimental.configFile": "web/src/styles.css",
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true
   },
