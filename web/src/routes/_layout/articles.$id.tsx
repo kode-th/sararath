@@ -9,9 +9,10 @@ import {
 import { ArrowLeft, ArrowUpRight, RotateCw } from 'lucide-react';
 import { useEffect } from 'react';
 
+import { ArticleGallery } from '@/components/news/article-gallery';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { fetchArticle, isMissingArticle } from '@/lib/api';
-import { formatDate, formatTime, hideBrokenImage, plainText } from '@/utils/format';
+import { formatDate, formatTime, plainText } from '@/utils/format';
 
 const articleQuery = (id: string) =>
   queryOptions({
@@ -93,7 +94,7 @@ function ArticleDetail() {
   const { data: article } = useSuspenseQuery(articleQuery(id));
   const body = plainText(article.body_text);
   const summary = article.summary ? plainText(article.summary) : '';
-  const image = (article.attachments ?? [])[0];
+  const images = article.attachments ?? [];
 
   return (
     <main className="container max-w-3xl pt-6 pb-4 sm:pt-10">
@@ -131,14 +132,7 @@ function ArticleDetail() {
           {article.last_seen_at && ` · อัปเดต ${formatTime(article.last_seen_at)} น.`}
         </p>
 
-        {image && (
-          <img
-            src={image}
-            alt=""
-            onError={hideBrokenImage}
-            className="mt-6 w-full border border-foreground/15 object-cover"
-          />
-        )}
+        {images.length > 0 && <ArticleGallery images={images} />}
 
         {(summary || body) && (
           <div className="mt-6 border-t-2 border-foreground pt-5">
