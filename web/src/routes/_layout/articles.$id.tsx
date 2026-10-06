@@ -91,6 +91,7 @@ function ArticleError({ reset }: Readonly<ErrorComponentProps>) {
 
 function ArticleDetail() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const { data: article } = useSuspenseQuery(articleQuery(id));
   const body = plainText(article.body_text);
   const summary = article.summary ? plainText(article.summary) : '';
@@ -108,6 +109,12 @@ function ArticleDetail() {
       <Link
         to="/"
         search={{ category: undefined, source: undefined, cursor: undefined }}
+        onClick={(event) => {
+          if (router.history.canGoBack()) {
+            event.preventDefault();
+            router.history.back();
+          }
+        }}
         className="inline-flex items-center gap-1.5 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
