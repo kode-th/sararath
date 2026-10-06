@@ -22,4 +22,4 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 # thaigov excluded: its API 403s datacenter IPs (bot protection).
-# Crawl thaigov from residential/TH networks (local compose scheduler covers it).
+# Crawl thaigov from residential/TH networks with `mise run scheduler:thaigov`.

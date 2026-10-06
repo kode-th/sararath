@@ -51,5 +51,19 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # thaigov's Cloudflare bot check 403s datacenter IPs, so GitHub Actions never
+  # crawls it. Run this on a residential/TH host; it writes to the DATABASE_URL
+  # from .env (Neon), not the local db.
+  scheduler-thaigov:
+    build: ./api
+    profiles: ["thaigov"]
+    command:
+      - sh
+      - -c
+      - while true; do uv run --no-sync python -m thai_gov_news crawl-due --source thaigov; sleep 3600; done
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
+    restart: unless-stopped
+
 volumes:
   pgdata:

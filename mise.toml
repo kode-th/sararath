@@ -98,6 +98,14 @@ run = "docker compose -f compose.yaml -f compose.dev.yaml down"
 description = "Tail dev stack logs"
 run = "docker compose -f compose.yaml -f compose.dev.yaml logs -f"
 
+[tasks."scheduler:thaigov"]
+description = "Start the hourly thaigov crawl (residential/TH egress; writes to .env DATABASE_URL)"
+run = "docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov"
+
+[tasks."scheduler:thaigov:stop"]
+description = "Stop the thaigov scheduler"
+run = "docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov stop scheduler-thaigov"
+
 [tasks.migrate]
 description = "Apply migrations to the dev database"
 run = "docker compose -f compose.yaml -f compose.dev.yaml exec api uv run --no-sync python -m alembic upgrade head"

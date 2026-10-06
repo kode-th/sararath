@@ -50,7 +50,7 @@ docker compose -f compose.yaml -f compose.dev.yaml exec api \
 
 Open <http://localhost:3000>. `api/src/` edits reload the API; `web/` edits hot-reload the browser. Notes:
 
-- The `scheduler` service is parked behind the `jobs` profile (`docker compose --profile jobs up`).
+- The `scheduler` service is parked behind the `jobs` profile (`docker compose --profile jobs up`); it crawls every due source into the local db. To keep production `thaigov` fresh, run `mise run scheduler:thaigov` on a residential/TH host (writes to the `.env` `DATABASE_URL`).
 - `web` runs with `network_mode: host` so SSR and the browser both reach `http://localhost:8001`; the container runs Vite on Node (bun is only used for installs).
 - Ports: db `5432`, api `8001`, web `3000`.
 
@@ -70,7 +70,7 @@ uv run python -m thai_gov_news backfill-body --source prd   # refresh bodies aft
 
 ## Sources and cadence
 
-`api/sources/sources.yaml` defines four sources and their `crawl_interval_minutes`: `prd` and `thaigov` 60, `moac` and `rd` 120. `crawl-due` crawls a source only when `now - last_success_at >= interval`, so with the hourly job sources refresh roughly every 1–2 hours. `thaigov` is excluded from the GitHub workflow (its API 403s datacenter IPs) and is only crawled from residential/TH networks via the local scheduler.
+`api/sources/sources.yaml` defines four sources and their `crawl_interval_minutes`: `prd` and `thaigov` 60, `moac` and `rd` 120. `crawl-due` crawls a source only when `now - last_success_at >= interval`, so with the hourly job sources refresh roughly every 1–2 hours. `thaigov` is excluded from the GitHub workflow (its API 403s datacenter IPs); crawl it from residential/TH networks with `mise run scheduler:thaigov`, which runs the hourly loop against the `.env` `DATABASE_URL`.
 
 ## Type-safe API client (OpenAPI)
 
@@ -103,3 +103,4 @@ mise run web:build       # vite build (SSR smoke)
 - Render builds from the frozen lock (`uv sync --frozen --no-dev`). The blueprint sets `rootDir: api`, `CORS_ORIGINS=*`, and a `buildFilter` so only `api/**` changes redeploy. Blueprint edits require Dashboard → Blueprint → Apply.
 - Frontend: `cd web && bun run deploy` (build + `wrangler deploy`); set `VITE_API_URL` for non-local APIs.
 - Full stack on one host: `docker compose up -d` (db + api on :8001 + hourly scheduler).
+- `thaigov` is not crawled by Actions; start `mise run scheduler:thaigov` on a residential/TH host to keep it fresh against the Neon `DATABASE_URL`.
