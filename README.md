@@ -15,14 +15,42 @@ Live API: `https://thai-gov-news-apis.onrender.com` (`/v1/articles`, `/v1/source
 
 ## Local dev
 
+Docker stack with hot reload (db + api + web), then seed some data:
+
 ```bash
-cp .env.example .env  # fill POSTGRES_PASSWORD (local docker) or DATABASE_URL (Neon)
-docker compose up -d db
-uv run python -m alembic upgrade head
-uv run python -m thai_gov_news seed
-uv run python -m thai_gov_news crawl --source rd
-uv run python -m thai_gov_news serve --port 8001
+cp .env.example .env                 # set POSTGRES_PASSWORD
+mise run dev                         # db:5432, api:8001, web:3000
 ```
+
+Then, in another terminal:
+
+```bash
+mise run migrate                     # alembic upgrade head
+docker compose -f compose.yaml -f compose.dev.yaml exec api \
+  uv run --no-sync python -m thai_gov_news seed
+docker compose -f compose.yaml -f compose.dev.yaml exec api \
+  uv run --no-sync python -m thai_gov_news crawl --source rd
+```
+
+Open <http://localhost:3000>. Edits to `src/` reload the API; edits to `web/`
+hot-reload the browser.
+
+| Command                                           | Purpose                               |
+| ------------------------------------------------- | ------------------------------------- |
+| `mise run dev`                                    | start stack (foreground)              |
+| `mise run dev:down`                               | stop stack                            |
+| `mise run dev:logs`                               | tail all logs                         |
+| `mise run migrate`                                | apply migrations in the api container |
+| `mise run lint` / `format` / `typecheck` / `test` | repo gates                            |
+
+Notes:
+
+- Ports: db `5432`, api `8001` (host 8000 is often taken), web `3000`.
+- `web` runs with `network_mode: host` so SSR and the browser both reach
+  `http://localhost:8001`. `@cloudflare/vite-plugin` needs Node, so the web
+  container runs Vite on Node with bun only for installs.
+- The `scheduler` service is parked behind the `jobs` profile: enable with
+  `--profile jobs`, or run jobs with `mise run dev` plus the CLI above.
 
 ## CLI
 

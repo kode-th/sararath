@@ -19,3 +19,19 @@ run = "pyright"
 [tasks.test]
 description = "Run pytest"
 run = "uv run python -m pytest"
+
+[tasks.dev]
+description = "Start dev stack (db + api + web) with hot reload and file watch"
+run = "docker compose -f compose.yaml -f compose.dev.yaml up --watch"
+
+[tasks."dev:down"]
+description = "Stop dev stack"
+run = "docker compose -f compose.yaml -f compose.dev.yaml down"
+
+[tasks."dev:logs"]
+description = "Tail dev stack logs"
+run = "docker compose -f compose.yaml -f compose.dev.yaml logs -f"
+
+[tasks.migrate]
+description = "Apply migrations to the dev database"
+run = "docker compose -f compose.yaml -f compose.dev.yaml exec api uv run --no-sync python -m alembic upgrade head"
