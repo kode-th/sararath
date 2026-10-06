@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -85,3 +87,45 @@ def test_crawl_backfills_missing_attachments(monkeypatch, tmp_path):
     runner.run_crawl(session, "prd")
     runner.run_crawl(session, "prd")
     assert session.scalars(select(Attachment.url)).all() == [image]
+
+
+def story(url: str, body: str) -> ParsedArticle:
+    return ParsedArticle(
+        external_id=url,
+        canonical_url=url,
+        title="น้ำท่วม",
+        summary="",
+        body_text=body,
+        language="th",
+        category="ข่าวภาครัฐ",
+        agency_name="กรมประชาสัมพันธ์",
+        published_at=datetime(2026, 9, 22, 10, 0, tzinfo=timezone.utc),
+        published_raw="",
+        attachments=(),
+    )
+
+
+def test_crawl_stores_one_row_per_story(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    session = memory_session()
+    seed(session)
+
+    async def variants() -> list[tuple[ParsedArticle, str | None, str]]:
+        return [
+            (story("https://x/1", "stub"), None, ".html"),
+            (story("https://x/2", "the full body text"), None, ".html"),
+        ]
+
+    monkeypatch.setattr(runner, "_collect_prd", variants)
+    first = runner.run_crawl(session, "prd")
+    assert (first.found, first.inserted) == (2, 1)
+    stored = session.scalars(select(Article)).all()
+    assert [a.body_text for a in stored] == ["the full body text"]
+
+    async def new_url() -> list[tuple[ParsedArticle, str | None, str]]:
+        return [(story("https://x/3", "the full body text"), None, ".html")]
+
+    monkeypatch.setattr(runner, "_collect_prd", new_url)
+    second = runner.run_crawl(session, "prd")
+    assert (second.found, second.inserted) == (1, 0)
+    assert len(session.scalars(select(Article)).all()) == 1

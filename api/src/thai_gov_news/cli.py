@@ -8,6 +8,7 @@ from pathlib import Path
 
 from thai_gov_news.database import get_session
 from thai_gov_news.services.backfill import backfill_bodies
+from thai_gov_news.services.cleanup import dedupe_articles
 from thai_gov_news.services.export_legacy import (
     export_date,
     update_manifest,
@@ -51,6 +52,12 @@ def build_parser() -> argparse.ArgumentParser:
     backfill.add_argument("--source", required=True)
     backfill.add_argument("--limit", type=int, default=200)
     backfill.add_argument("--dry-run", action="store_true")
+
+    dedupe = sub.add_parser(
+        "dedupe-articles", help="Drop duplicates sharing source, title, published_at"
+    )
+    dedupe.add_argument("--source", default=None)
+    dedupe.add_argument("--dry-run", action="store_true")
 
     return parser
 
@@ -147,6 +154,16 @@ def _cmd_backfill_body(args: argparse.Namespace) -> int:
     return 1 if result.failed else 0
 
 
+def _cmd_dedupe_articles(args: argparse.Namespace) -> int:
+    with get_session() as session:
+        result = dedupe_articles(session, source=args.source, dry_run=args.dry_run)
+    print(
+        f"dedupe-articles: groups={result.groups} removed={result.removed} "
+        f"dry_run={args.dry_run}"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -165,4 +182,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_openapi(args)
     if args.command == "backfill-body":
         return _cmd_backfill_body(args)
+    if args.command == "dedupe-articles":
+        return _cmd_dedupe_articles(args)
     return 2

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from thai_gov_news.collectors.base import ParsedArticle
 from thai_gov_news.collectors.prd import PrdCollector
@@ -133,6 +133,39 @@ def _build_article(
     )
 
 
+def _naive_utc(value: datetime | None) -> datetime | None:
+    if isinstance(value, datetime) and value.tzinfo is not None:
+        return value.astimezone(timezone.utc).replace(tzinfo=None)
+    return value
+
+
+def _story_key(
+    title: str, published_at: datetime | None
+) -> tuple[str, datetime | None]:
+    return (" ".join(title.split()).casefold(), _naive_utc(published_at))
+
+
+def _collapse_stories(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep one article per (title, published_at), preferring the richest body.
+
+    Feeds like moac list the same item under several URLs; the longer body is the
+    fuller copy, so drop the stubs before storing.
+    """
+    by_story: dict[tuple[str, datetime | None], dict[str, Any]] = {}
+    for article in articles:
+        published = article.get("published_at")
+        key = _story_key(
+            str(article.get("title", "")),
+            published if isinstance(published, datetime) else None,
+        )
+        current = by_story.get(key)
+        if current is None or len(str(article.get("body_text", ""))) > len(
+            str(current.get("body_text", ""))
+        ):
+            by_story[key] = article
+    return list(by_story.values())
+
+
 def _store_articles(
     session: Session,
     source: Source,
@@ -141,22 +174,34 @@ def _store_articles(
     raws: dict[str, tuple[str | None, str]],
     articles: list[dict[str, Any]],
 ) -> int:
-    urls = [str(a["canonical_url"]) for a in articles]
-    seen: dict[str, Article] = {}
-    if urls:
-        rows = session.scalars(
-            select(Article).where(Article.canonical_url.in_(urls))
-        ).all()
-        seen = {a.canonical_url: a for a in rows}
+    articles = _collapse_stories(articles)
+    rows = session.scalars(
+        select(Article)
+        .options(selectinload(Article.attachments))
+        .where(Article.source_id == source.id)
+    ).all()
+    by_url = {a.canonical_url: a for a in rows}
+    by_story = {_story_key(a.title, a.published_at): a for a in rows}
     now = _utcnow()
-    for known in seen.values():
-        known.last_seen_at = now
+    fresh: list[dict[str, Any]] = []
     for article in articles:
-        known = seen.get(str(article["canonical_url"]))
-        if known is not None and not known.attachments:
+        published = article.get("published_at")
+        key = _story_key(
+            str(article.get("title", "")),
+            published if isinstance(published, datetime) else None,
+        )
+        known = by_story.get(key) or by_url.get(str(article["canonical_url"]))
+        if known is None:
+            fresh.append(article)
+            continue
+        known.last_seen_at = now
+        body = str(article.get("body_text", ""))
+        if len(body) > len(known.body_text or ""):
+            known.body_text = body
+            known.content_hash = str(article.get("content_hash") or known.content_hash)
+        if not known.attachments:
             for attachment_url in article.get("attachments") or []:
                 session.add(Attachment(article_id=known.id, url=str(attachment_url)))
-    fresh = [a for a in articles if str(a["canonical_url"]) not in seen]
     built = [(_build_article(source.id, slug, day, raws, a), a) for a in fresh]
     for db_article, _ in built:
         session.add(db_article)

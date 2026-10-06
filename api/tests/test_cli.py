@@ -26,6 +26,13 @@ def test_parser_crawl_due_and_check():
     assert args.max_age_hours == 26
 
 
+def test_parser_dedupe_articles():
+    args = build_parser().parse_args(["dedupe-articles", "--dry-run"])
+    assert args.command == "dedupe-articles"
+    assert args.source is None
+    assert args.dry_run is True
+
+
 def test_parser_requires_command():
     parser = build_parser()
     try:
