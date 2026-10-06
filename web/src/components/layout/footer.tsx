@@ -15,7 +15,7 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐทุก 1–2 ชั่วโมง</span>
+          <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐประมาณทุก 1–2 ชั่วโมง</span>
           <a
             href="https://thai-gov-news-apis.onrender.com/reference"
             target="_blank"
