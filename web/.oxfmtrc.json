@@ -10,5 +10,11 @@
   "sortTailwindcss": {
     "stylesheet": "./src/assets/css/styles.css"
   },
-  "ignorePatterns": ["src/routeTree.gen.ts", "src/vite-env.d.ts", "bun.lock", "dist"]
+  "ignorePatterns": [
+    "src/routeTree.gen.ts",
+    "src/lib/api-schema.d.ts",
+    "src/vite-env.d.ts",
+    "bun.lock",
+    "dist"
+  ]
 }

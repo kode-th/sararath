@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
 import { FEED_LIMIT } from '@/constants/feed';
-import { fetchArticles, fetchSources, type ArticlesPage } from '@/lib/api';
+import { fetchArticles, fetchSources, type ArticlesPage, type NewsSourceItem } from '@/lib/api';
 
 export interface FeedSearch {
   q?: string;
@@ -9,8 +9,6 @@ export interface FeedSearch {
   source?: string;
   cursor?: string;
 }
-
-export type NewsSourceItem = { slug: string; name_th: string };
 
 export interface FeedLoaderData {
   page: ArticlesPage | undefined;

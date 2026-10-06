@@ -1,25 +1,14 @@
+import createClient from 'openapi-fetch';
+
+import type { components, paths } from '@/lib/api-schema';
+
+export type ArticleItem = components['schemas']['ArticleOut'];
+export type ArticlesPage = components['schemas']['ArticlesPage'];
+export type NewsSourceItem = components['schemas']['SourceOut'];
+
 export const API_URL = import.meta.env.VITE_API_URL ?? 'https://thai-gov-news-apis.onrender.com';
 
-export interface ArticleItem {
-  id: string;
-  source: { slug: string; name_th: string };
-  title: string;
-  summary: string | null;
-  body_text: string;
-  category: string;
-  agency_name: string;
-  canonical_url: string;
-  published_at: string | null;
-  published_raw: string;
-  retrieved_at: string | null;
-  last_seen_at: string | null;
-  attachments?: string[];
-}
-
-export interface ArticlesPage {
-  items: ArticleItem[];
-  next_cursor: string | null;
-}
+const client = createClient<paths>({ baseUrl: API_URL });
 
 export async function fetchArticles(params: {
   q?: string;
@@ -28,31 +17,26 @@ export async function fetchArticles(params: {
   limit?: number;
   cursor?: string;
 }): Promise<ArticlesPage> {
-  const query = new URLSearchParams();
-  if (params.q) query.set('q', params.q);
-  if (params.source) query.set('source', params.source);
-  if (params.category) query.set('category', params.category);
-  query.set('limit', String(params.limit ?? 20));
-  if (params.cursor) query.set('cursor', params.cursor);
-  const res = await fetch(`${API_URL}/v1/articles?${query}`);
-  if (!res.ok) throw new Error(`api ${res.status}`);
-  return res.json();
+  const { data, response } = await client.GET('/v1/articles', { params: { query: params } });
+  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  return data;
 }
 
 export async function fetchArticle(id: string): Promise<ArticleItem> {
-  const res = await fetch(`${API_URL}/v1/articles/${encodeURIComponent(id)}`);
-  if (!res.ok) throw new Error(`api ${res.status}`);
-  return res.json();
+  const { data, response } = await client.GET('/v1/articles/{article_id}', {
+    params: { path: { article_id: id } },
+  });
+  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  return data;
+}
+
+export async function fetchSources(): Promise<NewsSourceItem[]> {
+  const { data, response } = await client.GET('/v1/sources');
+  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  return data.items;
 }
 
 // The API answers 404 for a missing article and 422 for a malformed id.
 export function isMissingArticle(error: unknown) {
   return error instanceof Error && (error.message === 'api 404' || error.message === 'api 422');
-}
-
-export async function fetchSources(): Promise<{ slug: string; name_th: string }[]> {
-  const res = await fetch(`${API_URL}/v1/sources`);
-  if (!res.ok) throw new Error(`api ${res.status}`);
-  const body = await res.json();
-  return body.items;
 }
