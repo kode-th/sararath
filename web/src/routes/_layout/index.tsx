@@ -10,7 +10,7 @@ import { StoryRow } from '@/components/news/story-row';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SectionTab } from '@/components/ui/section-tab';
-import { ASIDE_COUNT } from '@/constants/feed';
+import { HOME_ASIDE_COUNT } from '@/constants/feed';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import {
   bangkokToday,
@@ -76,8 +76,8 @@ function Feed() {
   const [lead, ...rest] = items;
   const newest = items[0]?.last_seen_at ?? items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
 
-  const latest = rest.slice(0, ASIDE_COUNT);
-  const more = rest.slice(ASIDE_COUNT);
+  const latest = rest.slice(0, HOME_ASIDE_COUNT);
+  const more = rest.slice(HOME_ASIDE_COUNT);
   const today = loader.today;
 
   return (
