@@ -5,6 +5,13 @@ services:
     region: singapore
     plan: free
     rootDir: api
+    buildFilter:
+      paths:
+        - api/**
+      ignoredPaths:
+        - api/**/*.md
+        - api/tests/**
+        - api/typings/**
     buildCommand: uv sync --frozen --no-dev
     startCommand: uv run --no-sync python -m thai_gov_news serve --host 0.0.0.0 --port $PORT
     healthCheckPath: /v1/health
