@@ -45,6 +45,7 @@
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "tailwindCSS.classFunctions": ["cn", "clsx"],
   "tailwindCSS.experimental.configFile": "web/src/styles.css",
+  "css.customData": [".vscode/tailwind.css-data.json"],
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true
   },
