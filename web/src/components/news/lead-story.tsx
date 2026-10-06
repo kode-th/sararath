@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 
+import { HighlightTitle } from '@/components/news/highlight-title';
 import type { FeedItem } from '@/utils/format';
 import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
 
@@ -15,7 +16,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
             params={{ id: article.id }}
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
-            <span className="highlight motion-safe:animate-highlight-sweep">{article.title}</span>
+            <HighlightTitle text={article.title} />
           </Link>
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">

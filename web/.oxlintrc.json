@@ -2,6 +2,12 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react", "jsx-a11y"],
   "ignorePatterns": ["src/lib/api-schema.d.ts"],
+  "overrides": [
+    {
+      "files": ["src/hooks/**"],
+      "rules": { "unicorn/filename-case": ["error", { "case": "camelCase" }] }
+    }
+  ],
   "jsPlugins": [
     "@shadcn/lint",
     "./tools/oxlint/jsx-child-element-spacing.js",
