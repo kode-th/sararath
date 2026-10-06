@@ -44,7 +44,7 @@ function ArticleNotFound() {
       <p className="mt-3 text-pretty text-muted-foreground">ข่าวนี้อาจถูกลบหรือไม่มีอยู่ในระบบแล้ว</p>
       <Link
         to="/"
-        search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+        search={{ category: undefined, source: undefined, cursor: undefined }}
         className={buttonVariants({ className: 'mt-6' })}
       >
         <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
@@ -70,7 +70,7 @@ function ArticleError({ reset }: Readonly<ErrorComponentProps>) {
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
           to="/"
-          search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+          search={{ category: undefined, source: undefined, cursor: undefined }}
           className={buttonVariants()}
         >
           <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
@@ -99,7 +99,7 @@ function ArticleDetail() {
     <main className="container max-w-3xl pt-6 pb-4 sm:pt-10">
       <Link
         to="/"
-        search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+        search={{ category: undefined, source: undefined, cursor: undefined }}
         className="inline-flex items-center gap-1.5 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก

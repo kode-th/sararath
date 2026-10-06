@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as LayoutSearchRouteImport } from './routes/_layout/search'
 import { Route as LayoutArticlesIdRouteImport } from './routes/_layout/articles.$id'
 
 const LayoutRoute = LayoutRouteImport.update({
@@ -22,6 +23,11 @@ const LayoutIndexRoute = LayoutIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutSearchRoute = LayoutSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutArticlesIdRoute = LayoutArticlesIdRouteImport.update({
   id: '/articles/$id',
   path: '/articles/$id',
@@ -30,24 +36,32 @@ const LayoutArticlesIdRoute = LayoutArticlesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
+  '/search': typeof LayoutSearchRoute
   '/articles/$id': typeof LayoutArticlesIdRoute
 }
 export interface FileRoutesByTo {
+  '/search': typeof LayoutSearchRoute
   '/': typeof LayoutIndexRoute
   '/articles/$id': typeof LayoutArticlesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/search': typeof LayoutSearchRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/articles/$id': typeof LayoutArticlesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/articles/$id'
+  fullPaths: '/' | '/search' | '/articles/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/articles/$id'
-  id: '__root__' | '/_layout' | '/_layout/' | '/_layout/articles/$id'
+  to: '/search' | '/' | '/articles/$id'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/search'
+    | '/_layout/'
+    | '/_layout/articles/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -70,6 +84,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/search': {
+      id: '/_layout/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof LayoutSearchRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/articles/$id': {
       id: '/_layout/articles/$id'
       path: '/articles/$id'
@@ -81,11 +102,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface LayoutRouteChildren {
+  LayoutSearchRoute: typeof LayoutSearchRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutArticlesIdRoute: typeof LayoutArticlesIdRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutSearchRoute: LayoutSearchRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutArticlesIdRoute: LayoutArticlesIdRoute,
 }

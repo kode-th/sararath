@@ -1,16 +1,17 @@
-import { useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
-import { Link, createFileRoute, useRouter, type ErrorComponentProps } from '@tanstack/react-router';
-import { ArrowDown, RotateCw } from 'lucide-react';
-import { Suspense, useEffect, useState } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { ArrowDown } from 'lucide-react';
+import { Suspense } from 'react';
 
 import { AgencyTabs } from '@/components/news/agency-tabs';
+import { FeedError } from '@/components/news/feed-error';
 import { LeadStory } from '@/components/news/lead-story';
 import { StoryRow } from '@/components/news/story-row';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SectionTab } from '@/components/ui/section-tab';
-import { ASIDE_COUNT, FEED_LIMIT } from '@/constants/feed';
-import { fetchArticles, type ArticleItem } from '@/lib/api';
+import { ASIDE_COUNT } from '@/constants/feed';
+import { useFeedPagination } from '@/hooks/useFeedPagination';
 import {
   bangkokToday,
   feedQuery,
@@ -19,11 +20,12 @@ import {
   type FeedLoaderData,
   type FeedSearch,
 } from '@/utils/feed';
-import { formatTime, mergeDuplicates } from '@/utils/format';
+import { formatTime } from '@/utils/format';
+
+type HomeSearch = Omit<FeedSearch, 'q'>;
 
 export const Route = createFileRoute('/_layout/')({
-  validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
-    q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
+  validateSearch: (raw: Record<string, unknown>): HomeSearch => ({
     category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
     cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
@@ -41,37 +43,9 @@ export const Route = createFileRoute('/_layout/')({
   errorComponent: FeedError,
 });
 
-// The free API host sleeps when idle, so a failed first load is common.
-function FeedError({ reset }: Readonly<ErrorComponentProps>) {
-  const router = useRouter();
-  const queryReset = useQueryErrorResetBoundary();
-
-  useEffect(() => {
-    queryReset.reset();
-  }, [queryReset]);
-
-  return (
-    <main className="container max-w-6xl py-16">
-      <h1 className="text-title-md font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
-      <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
-        เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
-      </p>
-      <Button
-        onClick={() => {
-          reset();
-          void router.invalidate();
-        }}
-        className="mt-6"
-      >
-        <RotateCw aria-hidden="true" className="size-4" /> ลองใหม่
-      </Button>
-    </main>
-  );
-}
-
 function Newsroom() {
   const search = Route.useSearch();
-  const feedKey = `${search.q ?? ''}|${search.category ?? ''}|${search.source ?? ''}`;
+  const feedKey = `${search.category ?? ''}|${search.source ?? ''}`;
 
   return (
     <Suspense
@@ -97,33 +71,8 @@ function Feed() {
     ...sourcesQuery,
     initialData: loader.sources,
   });
-  const [extra, setExtra] = useState<ArticleItem[]>([]);
-  const [cursor, setCursor] = useState(page.next_cursor);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState('');
+  const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
-  async function loadMore() {
-    if (!cursor || loadingMore) return;
-    setLoadingMore(true);
-    setError('');
-    try {
-      const next = await fetchArticles({
-        q: search.q,
-        category: search.category,
-        source: search.source,
-        cursor,
-        limit: FEED_LIMIT,
-      });
-      setExtra((prev) => [...prev, ...next.items]);
-      setCursor(next.next_cursor);
-    } catch {
-      setError('โหลดข่าวเพิ่มไม่สำเร็จ ลองกดอีกครั้ง');
-    } finally {
-      setLoadingMore(false);
-    }
-  }
-
-  const items = mergeDuplicates([...page.items, ...extra]);
   const [lead, ...rest] = items;
   const newest = items[0]?.last_seen_at ?? items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
 
@@ -134,9 +83,7 @@ function Feed() {
   return (
     <main className="container max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
-        <h1 className="text-title-md font-bold text-foreground sm:text-5xl">
-          {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวหน่วยงานรัฐวันนี้'}
-        </h1>
+        <h1 className="text-title-md font-bold text-foreground sm:text-5xl">ข่าวหน่วยงานรัฐวันนี้</h1>
         <p className="text-sm text-muted-foreground">
           {today}
           {newest && ` · อัปเดต ${formatTime(newest)} น.`}
@@ -171,12 +118,10 @@ function Feed() {
         </div>
       ) : (
         <div className="py-16">
-          <h2 className="text-2xl font-bold text-foreground">
-            {search.q ? `ไม่พบข่าวที่ตรงกับ “${search.q}”` : 'ยังไม่มีข่าวจากหน่วยงานนี้'}
-          </h2>
+          <h2 className="text-2xl font-bold text-foreground">ยังไม่มีข่าวจากหน่วยงานนี้</h2>
           <Link
             to="/"
-            search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+            search={{ category: undefined, source: undefined, cursor: undefined }}
             className="mt-3 inline-block font-display font-semibold text-foreground underline decoration-accent"
           >
             ดูข่าวจากทุกหน่วยงาน

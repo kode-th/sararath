@@ -1,6 +1,10 @@
+import { useSearch } from '@tanstack/react-router';
+
 import { SearchBox } from '@/components/layout/search-box';
 
 export function Header() {
+  const search = useSearch({ strict: false });
+
   return (
     <>
       <p className="bg-foreground px-4 py-1.5 text-center text-xs text-primary-foreground sm:px-8">
@@ -22,7 +26,7 @@ export function Header() {
               <span className="text-xs text-muted-foreground">ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
             </span>
           </a>
-          <SearchBox />
+          <SearchBox key={search.q ?? ''} initialQuery={search.q} />
         </div>
       </header>
     </>

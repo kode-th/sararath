@@ -18,7 +18,7 @@ export function NotFound() {
         </p>
         <Link
           to="/"
-          search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}
+          search={{ category: undefined, source: undefined, cursor: undefined }}
           className={buttonVariants({ className: 'mt-8' })}
         >
           <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก

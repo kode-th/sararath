@@ -60,9 +60,13 @@ function groupSuggestions(data: SuggestResult | undefined): SuggestionGroup[] {
   return groups;
 }
 
-export function SearchBox() {
+interface SearchBoxProps {
+  initialQuery?: string;
+}
+
+export function SearchBox({ initialQuery }: Readonly<SearchBoxProps>) {
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [hasHighlight, setHasHighlight] = useState(false);
   const debounced = useDebouncedValue(query);
   const { data, isFetching } = useQuery(suggestQuery(debounced));
@@ -76,15 +80,7 @@ export function SearchBox() {
   const showPortal = groups.length > 0 || statusMessage !== null;
 
   function search() {
-    void navigate({
-      to: '/',
-      search: {
-        q: query.trim() || undefined,
-        category: undefined,
-        source: undefined,
-        cursor: undefined,
-      },
-    });
+    void navigate({ to: '/search', search: { q: query.trim() || undefined } });
   }
 
   function submit(event: SubmitEvent<HTMLFormElement>) {
@@ -96,7 +92,7 @@ export function SearchBox() {
     if (item.kind === 'source') {
       void navigate({
         to: '/',
-        search: { q: undefined, category: undefined, source: item.slug, cursor: undefined },
+        search: { category: undefined, source: item.slug, cursor: undefined },
       });
     } else {
       void navigate({ to: '/articles/$id', params: { id: item.id } });

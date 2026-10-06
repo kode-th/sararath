@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
@@ -10,7 +11,9 @@ interface StoryRowProps {
 }
 
 export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>) {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const image = thumbnail ? leadImage(article) : undefined;
+
   return (
     <li className="border-b border-foreground/15">
       <Link
@@ -42,8 +45,15 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
             src={image}
             alt=""
             loading="lazy"
+            ref={(node) => {
+              if (node?.complete && node.naturalWidth > 0) setImageLoaded(true);
+            }}
+            onLoad={() => setImageLoaded(true)}
             onError={hideBrokenImage}
-            className="aspect-square w-full border border-foreground/15 object-cover"
+            className={cn(
+              'aspect-square w-full border object-cover',
+              imageLoaded ? 'border-foreground/15' : 'border-transparent',
+            )}
           />
         )}
       </Link>
