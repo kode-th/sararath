@@ -23,8 +23,8 @@ export function AgencyTabs({ sources, active }: Readonly<AgencyTabsProps>) {
                 className={cn(
                   'block px-3 font-display text-sm font-semibold transition-colors duration-150',
                   current
-                    ? 'bg-highlight py-2 text-foreground'
-                    : 'bg-muted py-1.5 text-muted-foreground hover:bg-accent hover:text-foreground',
+                    ? 'bg-accent py-2 text-foreground'
+                    : 'bg-muted py-1.5 text-muted-foreground hover:bg-accent/40 hover:text-foreground',
                 )}
               >
                 {tab.name_th}

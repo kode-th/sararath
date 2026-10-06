@@ -20,7 +20,7 @@ export function Footer() {
             href="https://thai-gov-news-apis.onrender.com/reference"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-highlight"
+            className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"
           >
             API สำหรับนักพัฒนา <ArrowUpRight aria-hidden="true" className="size-3" />
           </a>

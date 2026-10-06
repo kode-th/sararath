@@ -17,7 +17,7 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
         to="/articles/$id"
         params={{ id: article.id }}
         className={cn(
-          'group grid gap-3 py-3 transition-colors duration-150 hover:bg-accent',
+          'group grid gap-3 py-3 transition-colors duration-150 hover:bg-accent/40',
           image ? 'grid-cols-[3.5rem_minmax(0,1fr)_4.5rem]' : 'grid-cols-[3.5rem_minmax(0,1fr)]',
         )}
       >
@@ -30,7 +30,7 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
           </span>
         </time>
         <span className="min-w-0">
-          <span className="line-clamp-2 font-display text-compact leading-6 font-semibold text-foreground group-hover:underline group-hover:decoration-highlight">
+          <span className="line-clamp-2 font-display text-compact leading-6 font-semibold text-foreground group-hover:underline group-hover:decoration-accent">
             {article.title}
           </span>
           <span className="mt-0.5 block truncate text-xs text-muted-foreground">
