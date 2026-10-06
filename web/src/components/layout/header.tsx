@@ -47,7 +47,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="ค้นหาข่าวหรือหน่วยงาน"
-                className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground"
               />
               <Button type="submit" aria-label="ค้นหา" variant="solid" size="icon">
                 <Search aria-hidden="true" className="size-4" />

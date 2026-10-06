@@ -42,7 +42,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           <span>อ่านรายละเอียด</span>
           <ArrowRight
             aria-hidden="true"
-            className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:transform-none"
+            className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:translate-none"
           />
           {article.retrieved_at && (
             <span className="ml-auto font-sans text-xs font-normal text-muted-foreground">
