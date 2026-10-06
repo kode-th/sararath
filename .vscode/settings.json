@@ -44,7 +44,7 @@
   "js/ts.tsdk.path": "web/node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "tailwindCSS.classFunctions": ["cn", "clsx"],
-  "tailwindCSS.experimental.configFile": "web/src/styles.css",
+  "tailwindCSS.experimental.configFile": "web/src/assets/css/styles.css",
   "css.customData": [".vscode/tailwind.css-data.json"],
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true

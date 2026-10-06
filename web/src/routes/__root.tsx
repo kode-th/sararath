@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-router';
 import type { PropsWithChildren } from 'react';
 
-import appCss from '@/styles.css?url';
+import appCss from '@/assets/css/styles.css?url';
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({

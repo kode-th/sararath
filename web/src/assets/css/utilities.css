@@ -1,0 +1,11 @@
+@utility container {
+  @apply mx-auto w-full px-4 sm:px-8;
+}
+
+@utility highlight {
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-size: 100% 0.5em;
+  background-position: 0 92%;
+  box-decoration-break: clone;
+}

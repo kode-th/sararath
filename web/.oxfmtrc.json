@@ -8,7 +8,7 @@
     "sortScripts": true
   },
   "sortTailwindcss": {
-    "stylesheet": "./src/styles.css"
+    "stylesheet": "./src/assets/css/styles.css"
   },
   "ignorePatterns": ["src/routeTree.gen.ts", "src/vite-env.d.ts", "bun.lock", "dist"]
 }
