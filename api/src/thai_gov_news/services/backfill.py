@@ -44,7 +44,7 @@ def _replace_attachments(
         session.add(Attachment(article_id=article.id, url=url))
 
 
-async def _refresh_prd(articles: list[Article]) -> tuple[int, int]:
+async def _refresh_prd(session: Session, articles: list[Article]) -> tuple[int, int]:
     updated = failed = 0
     async with httpx.AsyncClient(follow_redirects=True) as client:
         collector = PrdCollector(client)
@@ -64,6 +64,7 @@ async def _refresh_prd(articles: list[Article]) -> tuple[int, int]:
             if not parsed.body_text:
                 failed += 1
                 continue
+            _replace_attachments(session, article, parsed.attachments)
             article.body_text = parsed.body_text
             article.content_hash = content_hash(article.title, parsed.body_text)
             updated += 1
@@ -160,7 +161,7 @@ def backfill_bodies(
     if dry_run:
         return BackfillResult(candidates=len(articles), updated=0, failed=0)
     if slug == "prd":
-        updated, failed = asyncio.run(_refresh_prd(articles))
+        updated, failed = asyncio.run(_refresh_prd(session, articles))
     elif slug == "moac":
         updated, failed = asyncio.run(_refresh_moac(session, articles))
     else:

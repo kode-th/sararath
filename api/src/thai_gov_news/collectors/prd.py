@@ -64,13 +64,35 @@ def discover_from_html(html: str, base: str = BASE) -> list[DiscoveredItem]:
     return items
 
 
+def _images(tree: LexborHTMLParser, url: str) -> tuple[str, ...]:
+    urls: list[str] = []
+    og = tree.css_first('meta[property="og:image"]')
+    if og is not None and og.attributes.get("content"):
+        urls.append(str(og.attributes["content"]).strip())
+    gallery = tree.css_first(".article-gallery")
+    if gallery is not None:
+        for img in gallery.css("img[src]"):
+            src = str(img.attributes.get("src") or "")
+            if src and "/images/icons/" not in src:
+                urls.append(urljoin(url, src))
+    seen: set[str] = set()
+    out: list[str] = []
+    for image in urls:
+        if not image.startswith("http"):
+            continue
+        # Gallery links are thumbnails; the full-size file drops `type/thumbnail`.
+        full = image.replace("/type/thumbnail/", "/", 1)
+        if full not in seen:
+            seen.add(full)
+            out.append(full)
+    return tuple(out)
+
+
 def parse_article(html: str, url: str) -> ParsedArticle:
     tree = LexborHTMLParser(html)
     title = _text(tree, ".article-title .title") or _text(tree, "title")
     date = _text(tree, ".article-date-date").split("|")[0].strip()
     body = _body_text(tree)
-    image = tree.css_first('meta[property="og:image"]')
-    image_url = str(image.attributes.get("content") or "") if image else ""
     match = _DETAIL_RE.search(url)
     external_id = f"prd-{match.group('iid')}" if match else url
     return ParsedArticle(
@@ -84,7 +106,7 @@ def parse_article(html: str, url: str) -> ParsedArticle:
         agency_name=AGENCY,
         published_at=parse_thai_date(date),
         published_raw=date,
-        attachments=(image_url,) if image_url.startswith("http") else (),
+        attachments=_images(tree, url),
     )
 
 
