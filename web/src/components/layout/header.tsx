@@ -1,26 +1,6 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Search } from 'lucide-react';
-import { useState, type SubmitEvent } from 'react';
-
-import { Button } from '@/components/ui/button';
+import { SearchBox } from '@/components/layout/search-box';
 
 export function Header() {
-  const navigate = useNavigate();
-  const [value, setValue] = useState('');
-
-  function submit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    void navigate({
-      to: '/',
-      search: {
-        q: value.trim() || undefined,
-        category: undefined,
-        source: undefined,
-        cursor: undefined,
-      },
-    });
-  }
-
   return (
     <>
       <p className="bg-foreground px-4 py-1.5 text-center text-xs text-primary-foreground sm:px-8">
@@ -42,24 +22,7 @@ export function Header() {
               <span className="text-xs text-muted-foreground">ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
             </span>
           </a>
-          <search className="w-full border-2 border-foreground bg-card sm:w-72">
-            <form onSubmit={submit} className="flex items-center">
-              <label htmlFor="site-search" className="sr-only">
-                ค้นหาข่าว
-              </label>
-              <input
-                id="site-search"
-                type="search"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="ค้นหาข่าวหรือหน่วยงาน"
-                className="h-10 min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-hidden placeholder:text-muted-foreground"
-              />
-              <Button type="submit" aria-label="ค้นหา" variant="solid" size="icon">
-                <Search aria-hidden="true" className="size-4" />
-              </Button>
-            </form>
-          </search>
+          <SearchBox />
         </div>
       </header>
     </>

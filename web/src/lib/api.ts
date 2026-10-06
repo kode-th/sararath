@@ -5,6 +5,7 @@ import type { components, paths } from '@/lib/api-schema';
 export type ArticleItem = components['schemas']['ArticleOut'];
 export type ArticlesPage = components['schemas']['ArticlesPage'];
 export type NewsSourceItem = components['schemas']['SourceOut'];
+export type SuggestResult = components['schemas']['SuggestOut'];
 
 export const API_URL = import.meta.env.VITE_API_URL ?? 'https://thai-gov-news-apis.onrender.com';
 
@@ -25,6 +26,14 @@ export async function fetchArticles(params: {
 export async function fetchArticle(id: string): Promise<ArticleItem> {
   const { data, response } = await client.GET('/v1/articles/{article_id}', {
     params: { path: { article_id: id } },
+  });
+  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  return data;
+}
+
+export async function fetchSuggest(q: string, limit = 6): Promise<SuggestResult> {
+  const { data, response } = await client.GET('/v1/suggest', {
+    params: { query: { q, limit } },
   });
   if (!response.ok || !data) throw new Error(`api ${response.status}`);
   return data;

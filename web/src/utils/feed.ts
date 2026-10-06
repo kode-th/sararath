@@ -1,7 +1,13 @@
-import { queryOptions } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 
 import { FEED_LIMIT } from '@/constants/feed';
-import { fetchArticles, fetchSources, type ArticlesPage, type NewsSourceItem } from '@/lib/api';
+import {
+  fetchArticles,
+  fetchSources,
+  fetchSuggest,
+  type ArticlesPage,
+  type NewsSourceItem,
+} from '@/lib/api';
 
 export interface FeedSearch {
   q?: string;
@@ -35,6 +41,15 @@ export const sourcesQuery = queryOptions({
   queryFn: fetchSources,
   staleTime: 300_000,
 });
+
+export const suggestQuery = (q: string) =>
+  queryOptions({
+    queryKey: ['suggest', q],
+    queryFn: () => fetchSuggest(q),
+    enabled: q.length > 0,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
 
 export async function quietFetch<T>(run: () => Promise<T>): Promise<T | undefined> {
   try {
