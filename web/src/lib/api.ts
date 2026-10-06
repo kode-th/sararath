@@ -12,6 +12,7 @@ export interface ArticleItem {
   published_at: string | null;
   published_raw: string;
   retrieved_at: string | null;
+  last_seen_at: string | null;
   attachments?: string[];
 }
 

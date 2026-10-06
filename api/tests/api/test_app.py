@@ -104,6 +104,7 @@ def test_detail_and_errors():
     assert first["source"] == {"slug": "thaigov", "name_th": "รัฐบาลไทย"}
     assert first["canonical_url"].startswith("https://")
     assert first["retrieved_at"] is not None
+    assert first["last_seen_at"] is not None
     res = api.get(f"/v1/articles/{first['id']}")
     assert res.json()["title"] == "ข่าวใหม่"
     assert (

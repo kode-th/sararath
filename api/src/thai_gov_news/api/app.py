@@ -54,6 +54,7 @@ def article_out(
         "published_at": article.published_at,
         "published_raw": article.published_raw,
         "retrieved_at": article.first_seen_at,
+        "last_seen_at": article.last_seen_at,
         "attachments": attachments or [],
     }
 

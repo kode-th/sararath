@@ -162,7 +162,7 @@ function Feed() {
 
   const items = mergeDuplicates([...page.items, ...extra]);
   const [lead, ...rest] = items;
-  const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
+  const newest = items[0]?.last_seen_at ?? items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
 
   const latest = rest.slice(0, ASIDE_COUNT);
   const more = rest.slice(ASIDE_COUNT);
