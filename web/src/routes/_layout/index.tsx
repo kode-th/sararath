@@ -97,7 +97,7 @@ function FeedError({ reset }: Readonly<ErrorComponentProps>) {
   }, [queryReset]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-16 sm:px-8">
+    <main className="container max-w-6xl py-16">
       <h1 className="text-title-md font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
       <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
         เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
@@ -178,7 +178,7 @@ function Feed() {
   const today = loader.today;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 sm:px-8">
+    <main className="container max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
         <h1 className="text-title-md font-bold text-foreground sm:text-5xl">
           {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวหน่วยงานรัฐวันนี้'}

@@ -39,7 +39,7 @@ export const Route = createFileRoute('/_layout/articles/$id')({
 
 function ArticleNotFound() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 sm:px-8">
+    <main className="container max-w-3xl py-16">
       <h1 className="text-title-md font-bold text-foreground sm:text-4xl">ไม่พบข่าวนี้</h1>
       <p className="mt-3 text-pretty text-muted-foreground">ข่าวนี้อาจถูกลบหรือไม่มีอยู่ในระบบแล้ว</p>
       <Link
@@ -62,7 +62,7 @@ function ArticleError({ reset }: Readonly<ErrorComponentProps>) {
   }, [queryReset]);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 sm:px-8">
+    <main className="container max-w-3xl py-16">
       <h1 className="text-title-md font-bold text-foreground sm:text-4xl">โหลดข่าวไม่สำเร็จ</h1>
       <p className="mt-3 text-pretty text-muted-foreground">
         เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
@@ -96,7 +96,7 @@ function ArticleDetail() {
   const image = (article.attachments ?? [])[0];
 
   return (
-    <main className="mx-auto max-w-3xl px-4 pt-6 pb-4 sm:px-8 sm:pt-10">
+    <main className="container max-w-3xl pt-6 pb-4 sm:pt-10">
       <Link
         to="/"
         search={{ q: undefined, category: undefined, source: undefined, cursor: undefined }}

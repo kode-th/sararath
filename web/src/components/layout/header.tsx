@@ -22,7 +22,7 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
         <span>ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด</span>
       </p>
       <header className="sm:sticky sm:top-0 sm:z-10 sm:border-b sm:border-foreground/15 sm:bg-background">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8 sm:py-4">
+        <div className="container flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 py-3 sm:py-4">
           <a
             href="/"
             aria-label="สาระรัฐ ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว"

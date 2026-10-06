@@ -15,7 +15,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
             params={{ id: article.id }}
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
-            <span className="highlight-sweep highlight">{article.title}</span>
+            <span className="highlight motion-safe:animate-highlight-sweep">{article.title}</span>
           </Link>
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">

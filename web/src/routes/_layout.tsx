@@ -26,7 +26,7 @@ function Layout() {
         }
       />
       <Outlet />
-      <div className="mx-auto max-w-6xl px-4 sm:px-8">
+      <div className="container max-w-6xl">
         <Footer />
       </div>
     </div>

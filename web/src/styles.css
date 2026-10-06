@@ -3,6 +3,7 @@
 @theme {
   --font-sans: 'IBM Plex Sans Thai Looped', system-ui, sans-serif;
   --font-display: 'Anuphan', 'IBM Plex Sans Thai Looped', sans-serif;
+
   --color-background: oklch(0.985 0.004 251);
   --color-foreground: oklch(0.323 0.074 251);
   --color-card: oklch(0.985 0.004 251);
@@ -20,11 +21,25 @@
   --color-border: oklch(0.88 0.02 251);
   --color-input: oklch(0.88 0.02 251);
   --color-ring: oklch(0.323 0.074 251);
+
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   --text-title-sm: 1.75rem;
   --text-title-md: 2rem;
   --text-title-lg: 2.125rem;
   --text-compact: 15px;
+
+  --animate-highlight-sweep: highlight-sweep 900ms var(--ease-out-expo) 200ms both;
+
+  @keyframes highlight-sweep {
+    from {
+      background-size: 0% 0.5em;
+    }
+
+    to {
+      background-size: 100% 0.5em;
+    }
+  }
 }
 
 @layer base {
@@ -66,13 +81,13 @@
   }
 }
 
-@keyframes highlight-sweep {
-  from {
-    background-size: 0% 0.5em;
-  }
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
 
-  to {
-    background-size: 100% 0.5em;
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
   }
 }
 
@@ -82,10 +97,4 @@
   background-size: 100% 0.5em;
   background-position: 0 92%;
   box-decoration-break: clone;
-}
-
-@utility highlight-sweep {
-  @media (prefers-reduced-motion: no-preference) {
-    animation: highlight-sweep 900ms var(--ease-out-expo) 200ms both;
-  }
 }

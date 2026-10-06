@@ -63,7 +63,7 @@ function RootComponent() {
 
 function NotFound() {
   return (
-    <main className="px-4 py-16 text-center">
+    <main className="container py-16 text-center">
       <p className="text-sm text-muted-foreground">ไม่พบหน้าที่คุณต้องการ (404)</p>
       <p className="mt-4">
         <Link
