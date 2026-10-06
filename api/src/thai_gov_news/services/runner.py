@@ -5,15 +5,19 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import uuid
-from dataclasses import dataclass
-from datetime import datetime, timezone
+from dataclasses import dataclass, replace
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from thai_gov_news.collectors.base import ParsedArticle
+from thai_gov_news.collectors.http import USER_AGENT
+from thai_gov_news.collectors.http import fetch as http_fetch
+from thai_gov_news.collectors.moac import parse_article
 from thai_gov_news.collectors.prd import PrdCollector
 from thai_gov_news.collectors.rss import FeedConfig, RssCollector, parse_feed
 from thai_gov_news.collectors.thaigov import ThaigovCollector
@@ -38,6 +42,10 @@ def _utcnow() -> datetime:
 
 EXT_HTML = ".html"
 EXT_JSON = ".json"
+
+# Sources whose feed lacks the article body; fetch the page for recent items.
+RECENT_ENRICH = {"moac"}
+RECENT_WINDOW = timedelta(days=14)
 
 
 def raw_path_for(slug: str, url: str, day: str, ext: str) -> Path:
@@ -77,7 +85,32 @@ async def _collect_rss(source: Source) -> list[tuple[ParsedArticle, str | None, 
     )
     collector = RssCollector(config)
     raw = await collector.fetch_raw()
-    return [(a, None, EXT_HTML) for a in parse_feed(raw.html, config)]
+    articles = parse_feed(raw.html, config)
+    if source.slug in RECENT_ENRICH:
+        articles = await _enrich_recent(articles)
+    return [(a, None, EXT_HTML) for a in articles]
+
+
+async def _enrich_recent(articles: list[ParsedArticle]) -> list[ParsedArticle]:
+    """Fill in body + gallery for recently published feed items (new articles)."""
+    cutoff = _naive_utc(_utcnow() - RECENT_WINDOW)
+    enriched = list(articles)
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        for index, article in enumerate(articles):
+            published = _naive_utc(article.published_at)
+            if cutoff is None or published is None or published < cutoff:
+                continue
+            try:
+                response = await http_fetch(
+                    client, article.canonical_url, {"User-Agent": USER_AGENT}
+                )
+                response.raise_for_status()
+            except Exception:
+                continue
+            body, images = parse_article(response.text, str(response.url))
+            if body:
+                enriched[index] = replace(article, body_text=body, attachments=images)
+    return enriched
 
 
 async def _collect(source: Source) -> list[tuple[ParsedArticle, str | None, str]]:

@@ -10,14 +10,21 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from thai_gov_news.collectors.base import DiscoveredItem
+from thai_gov_news.collectors.http import USER_AGENT
+from thai_gov_news.collectors.http import fetch as http_fetch
+from thai_gov_news.collectors.moac import parse_article as parse_moac_article
 from thai_gov_news.collectors.prd import PrdCollector
-from thai_gov_news.models import Article, Source
+from thai_gov_news.models import Article, Attachment, Source
 from thai_gov_news.services.dedupe import content_hash
 
 # Markers left behind when inline script/style text leaked into body_text.
 DIRTY_MARKERS = ("%function(%", "%jQuery(%", "%$(")
 
-SUPPORTED = {"prd"}
+# Enriched moac articles carry a large (`/data/news/l/`) image; the RSS
+# description only has the small thumbnail, so this marks them as done.
+MOAC_ENRICHED = "%/data/news/l/%"
+
+SUPPORTED = {"prd", "moac"}
 
 
 @dataclass
@@ -53,6 +60,32 @@ async def _refresh_prd(articles: list[Article]) -> tuple[int, int]:
     return updated, failed
 
 
+async def _refresh_moac(session: Session, articles: list[Article]) -> tuple[int, int]:
+    updated = failed = 0
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        for article in articles:
+            try:
+                response = await http_fetch(
+                    client, article.canonical_url, {"User-Agent": USER_AGENT}
+                )
+                response.raise_for_status()
+            except Exception:
+                failed += 1
+                continue
+            body, images = parse_moac_article(response.text, str(response.url))
+            if not body:
+                failed += 1
+                continue
+            for attachment in article.attachments:
+                session.delete(attachment)
+            for image in images:
+                session.add(Attachment(article_id=article.id, url=image))
+            article.body_text = body
+            article.content_hash = content_hash(article.title, body)
+            updated += 1
+    return updated, failed
+
+
 def backfill_bodies(
     session: Session, slug: str, *, limit: int = 200, dry_run: bool = False
 ) -> BackfillResult:
@@ -61,16 +94,23 @@ def backfill_bodies(
     source = session.scalar(select(Source).where(Source.slug == slug))
     if source is None:
         raise SystemExit(f"error: unknown source {slug!r}")
-    stmt = (
+    base = (
         select(Article)
         .where(Article.source_id == source.id)
-        .where(or_(*[Article.body_text.like(marker) for marker in DIRTY_MARKERS]))
         .order_by(Article.published_at.desc().nulls_last(), Article.id.desc())
         .limit(limit)
     )
-    articles = list(session.scalars(stmt).all())
-    if dry_run:
-        return BackfillResult(candidates=len(articles), updated=0, failed=0)
-    updated, failed = asyncio.run(_refresh_prd(articles))
+    if slug == "prd":
+        stmt = base.where(or_(*[Article.body_text.like(m) for m in DIRTY_MARKERS]))
+        articles = list(session.scalars(stmt).all())
+        if dry_run:
+            return BackfillResult(candidates=len(articles), updated=0, failed=0)
+        updated, failed = asyncio.run(_refresh_prd(articles))
+    else:
+        stmt = base.where(~Article.attachments.any(Attachment.url.like(MOAC_ENRICHED)))
+        articles = list(session.scalars(stmt).all())
+        if dry_run:
+            return BackfillResult(candidates=len(articles), updated=0, failed=0)
+        updated, failed = asyncio.run(_refresh_moac(session, articles))
     session.commit()
     return BackfillResult(candidates=len(articles), updated=updated, failed=failed)
