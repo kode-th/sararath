@@ -1,25 +1,41 @@
 # thai-gov-news
 
-Independent index of Thai government news. Collectors → Postgres → FastAPI read API.
+Independent index of Thai government news. Collectors crawl agency sites into Postgres, a read API serves it, and a TanStack Start frontend renders it. The site is not affiliated with any government agency and links every item back to its source.
 
 ## Architecture
 
-| Part      | Provider           | Notes                                                                                            |
-| --------- | ------------------ | ------------------------------------------------------------------------------------------------ |
-| Postgres  | Neon free          | Pooled URL, `?sslmode=require`                                                                   |
-| Scheduler | GitHub Actions     | Hourly `crawl-due` (moac/rd/prd; thaigov 403s datacenter IPs, crawled from residential networks) |
-| API       | Render free        | Blueprint in `render.yaml`, keep-alive via cron-job.org every 10 min                             |
-| Frontend  | Cloudflare Workers | Separate app, CORS open for GET                                                                  |
+| Part       | Tech                        | Notes                                                                                             |
+| ---------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| Postgres   | Neon free                   | Pooled URL, `?sslmode=require`                                                                    |
+| Collectors | Python 3.13, uv             | `rss`, `prd`, `thaigov` collectors in `api/src/thai_gov_news/collectors/`                         |
+| Scheduler  | GitHub Actions              | Hourly `crawl-due` (`.github/workflows/crawl.yml`): moac/rd/prd only; thaigov 403s datacenter IPs |
+| API        | FastAPI, Render free        | Blueprint `render.yaml`, `rootDir: api`, keep-alive via cron-job.org every 10 min                 |
+| Frontend   | TanStack Start, Tailwind v4 | `web/`, SSR; deploy to Cloudflare Workers with `wrangler`                                         |
 
-Live API: `https://thai-gov-news-apis.onrender.com` (`/v1/articles`, `/v1/sources`, `/v1/health`, `/v1/runs`, `/reference`).
+Live API: `https://thai-gov-news-apis.onrender.com` — `/v1/articles`, `/v1/articles/{id}`, `/v1/sources`, `/v1/runs`, `/v1/health`, docs at `/reference` and `/openapi.json`.
+
+## Repository layout
+
+Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.toml`, `lefthook.yml`, `.github/workflows/`, `scripts/`.
+
+```txt
+api/    src/thai_gov_news/{collectors,services,api,models.py,cli.py}
+        migrations/ + alembic.ini, sources/sources.yaml, tests/, typings/, Dockerfile
+web/    src/routes/            __root.tsx, _layout.tsx, _layout/index.tsx, _layout/articles.$id.tsx
+        src/components/        layout/{header,footer,not-found}, news/*, ui/*
+        src/lib/               cn.ts, api.ts (typed client), api-schema.d.ts (generated)
+        src/utils/             format.ts, feed.ts
+        src/constants/         feed.ts
+        src/assets/css/        styles.css (entry) -> theme.css, base.css, utilities.css
+```
+
+`web/src/lib` is only for library shorthands (`cn`) and the API client; app helpers live in `utils/`, literals in `constants/`. `web/src/routeTree.gen.ts` and `web/src/lib/api-schema.d.ts` are generated.
 
 ## Local dev
 
-Docker stack with hot reload (db + api + web), then seed some data:
-
 ```bash
 cp .env.example .env                 # set POSTGRES_PASSWORD
-mise run dev                         # db:5432, api:8001, web:3000
+mise run dev                         # docker: db:5432, api:8001 (hot reload), web:3000
 ```
 
 Then, in another terminal:
@@ -32,41 +48,57 @@ docker compose -f compose.yaml -f compose.dev.yaml exec api \
   uv run --no-sync python -m thai_gov_news crawl --source rd
 ```
 
-Open <http://localhost:3000>. Edits to `api/src/` reload the API; edits to `web/`
-hot-reload the browser.
+Open <http://localhost:3000>. `api/src/` edits reload the API; `web/` edits hot-reload the browser. Notes:
 
-| Command                                                 | Purpose                               |
-| ------------------------------------------------------- | ------------------------------------- |
-| `mise run dev`                                          | start stack (foreground)              |
-| `mise run dev:down`                                     | stop stack                            |
-| `mise run dev:logs`                                     | tail all logs                         |
-| `mise run migrate`                                      | apply migrations in the api container |
-| `mise run lint` / `format:check` / `typecheck` / `test` | repo gates                            |
-
-Notes:
-
-- Repo layout: `api/` (Python, uv) and `web/` (TypeScript, bun); root holds compose, CI, hooks.
-- Ports: db `5432`, api `8001` (host 8000 is often taken), web `3000`.
-- `web` runs with `network_mode: host` so SSR and the browser both reach
-  `http://localhost:8001`. `@cloudflare/vite-plugin` needs Node, so the web
-  container runs Vite on Node with bun only for installs.
-- The `scheduler` service is parked behind the `jobs` profile: enable with
-  `--profile jobs`, or run jobs with `mise run dev` plus the CLI above.
+- The `scheduler` service is parked behind the `jobs` profile (`docker compose --profile jobs up`).
+- `web` runs with `network_mode: host` so SSR and the browser both reach `http://localhost:8001`; the container runs Vite on Node (bun is only used for installs).
+- Ports: db `5432`, api `8001`, web `3000`.
 
 ## CLI
 
+Run from `api/`, via `uv run python -m thai_gov_news <command>` (bare `uv run pytest`/`uv run alembic` can fail to spawn in this environment — always go through `python -m`).
+
 ```bash
-cd api
-uv run python -m thai_gov_news crawl --source prd   # one source
-uv run python -m thai_gov_news crawl-due            # all due (respects intervals)
-uv run python -m thai_gov_news crawl-due --source rd --source prd
-uv run python -m thai_gov_news check                # exit 1 when a source is stale
+uv run python -m thai_gov_news crawl --source prd      # one source
+uv run python -m thai_gov_news crawl-due               # all due (respects intervals)
+uv run python -m thai_gov_news crawl-due --source rd   # restrict to sources
+uv run python -m thai_gov_news check                   # exit 1 when a source is stale
 uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
+uv run python -m thai_gov_news openapi                 # print the OpenAPI schema
 ```
+
+## Sources and cadence
+
+`api/sources/sources.yaml` defines four sources and their `crawl_interval_minutes`: `prd` and `thaigov` 60, `moac` and `rd` 120. `crawl-due` crawls a source only when `now - last_success_at >= interval`, so with the hourly job sources refresh roughly every 1–2 hours. `thaigov` is excluded from the GitHub workflow (its API 403s datacenter IPs) and is only crawled from residential/TH networks via the local scheduler.
+
+## Type-safe API client (OpenAPI)
+
+Web types are generated from the API schema; nothing is mirrored by hand.
+
+1. API routes declare Pydantic response models (`api/src/thai_gov_news/api/schemas.py` + `response_model=`), so `/openapi.json` has real schemas.
+2. `mise run api:openapi` writes the committed `api/openapi.json`.
+3. `mise run web:api-schema` runs `openapi-typescript` to generate the committed `web/src/lib/api-schema.d.ts`.
+4. `web/src/lib/api.ts` wraps `openapi-fetch`; `ArticleItem`, `ArticlesPage`, `NewsSourceItem` are derived from the schema.
+
+After changing the API, rerun both tasks. The generated schema is excluded from oxfmt and oxlint (but committed).
+
+## Gates
+
+```bash
+mise run format          # ruff format + oxfmt
+mise run lint            # ruff check + oxlint --type-aware
+mise run typecheck       # pyright + tsc
+mise run test            # pytest (api)
+mise run web:build       # vite build (SSR smoke)
+```
+
+- `lefthook` runs format-check/lint/typecheck pre-commit, `pytest` pre-push, and a Conventional Commits check on the message.
+- Web lint is `oxlint --type-aware` (needs `oxlint-tsgolint`) and loads local JS plugins in `web/tools/oxlint/` (`jsx/child-element-spacing`, `regex-safety/no-super-linear-backtracking`).
 
 ## Deploy notes
 
-- `DATABASE_URL` must use the `postgresql+psycopg://` scheme. App uses the pooled host; alembic works on either.
-- GitHub secret `DATABASE_URL` feeds the hourly workflow (`.github/workflows/crawl.yml`), which runs inside `api/`.
-- Render blueprint (`rootDir: api`) sets `CORS_ORIGINS=*` (read-only GET API) and builds from the frozen lock.
-- Full stack also runs on one host: `docker compose up -d` (db + api on :8001 + hourly scheduler).
+- `DATABASE_URL` must use the `postgresql+psycopg://` scheme. The app uses the pooled host; alembic works on either.
+- GitHub secret `DATABASE_URL` feeds the hourly workflow, which runs inside `api/`.
+- Render builds from the frozen lock (`uv sync --frozen --no-dev`). The blueprint sets `rootDir: api`, `CORS_ORIGINS=*`, and a `buildFilter` so only `api/**` changes redeploy. Blueprint edits require Dashboard → Blueprint → Apply.
+- Frontend: `cd web && bun run deploy` (build + `wrangler deploy`); set `VITE_API_URL` for non-local APIs.
+- Full stack on one host: `docker compose up -d` (db + api on :8001 + hourly scheduler).
