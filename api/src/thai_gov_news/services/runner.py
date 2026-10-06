@@ -166,6 +166,50 @@ def _collapse_stories(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return list(by_story.values())
 
 
+def _article_key(article: dict[str, Any]) -> tuple[str, datetime | None]:
+    published = article.get("published_at")
+    return _story_key(
+        str(article.get("title", "")),
+        published if isinstance(published, datetime) else None,
+    )
+
+
+def _attachment_urls(article: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(str(url) for url in article.get("attachments") or ())
+
+
+def _touch_known(
+    session: Session, known: Article, article: dict[str, Any], now: datetime
+) -> None:
+    known.last_seen_at = now
+    body = str(article.get("body_text", ""))
+    if len(body) > len(known.body_text or ""):
+        known.body_text = body
+        known.content_hash = str(article.get("content_hash") or known.content_hash)
+    if known.attachments:
+        return
+    for url in _attachment_urls(article):
+        session.add(Attachment(article_id=known.id, url=url))
+
+
+def _insert_fresh(
+    session: Session,
+    source: Source,
+    slug: str,
+    day: str,
+    raws: dict[str, tuple[str | None, str]],
+    fresh: list[dict[str, Any]],
+) -> int:
+    built = [(_build_article(source.id, slug, day, raws, a), a) for a in fresh]
+    for db_article, _ in built:
+        session.add(db_article)
+    session.flush()
+    for db_article, article in built:
+        for url in _attachment_urls(article):
+            session.add(Attachment(article_id=db_article.id, url=url))
+    return len(built)
+
+
 def _store_articles(
     session: Session,
     source: Source,
@@ -185,31 +229,14 @@ def _store_articles(
     now = _utcnow()
     fresh: list[dict[str, Any]] = []
     for article in articles:
-        published = article.get("published_at")
-        key = _story_key(
-            str(article.get("title", "")),
-            published if isinstance(published, datetime) else None,
+        known = by_story.get(_article_key(article)) or by_url.get(
+            str(article["canonical_url"])
         )
-        known = by_story.get(key) or by_url.get(str(article["canonical_url"]))
         if known is None:
             fresh.append(article)
-            continue
-        known.last_seen_at = now
-        body = str(article.get("body_text", ""))
-        if len(body) > len(known.body_text or ""):
-            known.body_text = body
-            known.content_hash = str(article.get("content_hash") or known.content_hash)
-        if not known.attachments:
-            for attachment_url in article.get("attachments") or []:
-                session.add(Attachment(article_id=known.id, url=str(attachment_url)))
-    built = [(_build_article(source.id, slug, day, raws, a), a) for a in fresh]
-    for db_article, _ in built:
-        session.add(db_article)
-    session.flush()
-    for db_article, article in built:
-        for attachment_url in article.get("attachments") or []:
-            session.add(Attachment(article_id=db_article.id, url=str(attachment_url)))
-    return len(built)
+        else:
+            _touch_known(session, known, article, now)
+    return _insert_fresh(session, source, slug, day, raws, fresh)
 
 
 def run_crawl(session: Session, slug: str) -> CrawlResult:
