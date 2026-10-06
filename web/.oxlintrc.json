@@ -6,12 +6,30 @@
     {
       "files": ["src/hooks/**"],
       "rules": { "unicorn/filename-case": ["error", { "case": "camelCase" }] }
+    },
+    {
+      "files": ["src/components/ui/**"],
+      "rules": {
+        "design-system/no-member-expression": "off",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^\\.\\./",
+                "message": "Use @/ aliases. Only ./ relative imports are allowed."
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "jsPlugins": [
     "@shadcn/lint",
     "./tools/oxlint/jsx-child-element-spacing.js",
-    "./tools/oxlint/no-super-linear-backtracking.js"
+    "./tools/oxlint/no-super-linear-backtracking.js",
+    "./tools/oxlint/no-member-expression.js"
   ],
   "settings": {
     "shadcn": {
@@ -34,6 +52,10 @@
           {
             "regex": "^\\.\\./",
             "message": "Use @/ aliases. Only ./ relative imports are allowed."
+          },
+          {
+            "regex": "^@base-ui/react",
+            "message": "Base UI belongs in components/ui. Import the wrapped component from @/components/ui instead."
           }
         ]
       }
@@ -64,6 +86,7 @@
     "shadcn/no-unknown-classes": "error",
     "jsx/child-element-spacing": "error",
     "regex-safety/no-super-linear-backtracking": "error",
+    "design-system/no-member-expression": "error",
     "typescript/prefer-optional-chain": "error",
     "react/react-in-jsx-scope": "off"
   }

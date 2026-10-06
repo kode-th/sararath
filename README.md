@@ -94,7 +94,8 @@ mise run web:build       # vite build (SSR smoke)
 ```
 
 - `lefthook` runs format-check/lint/typecheck pre-commit, `pytest` pre-push, and a Conventional Commits check on the message.
-- Web lint is `oxlint --type-aware` (needs `oxlint-tsgolint`) and loads local JS plugins in `web/tools/oxlint/` (`jsx/child-element-spacing`, `regex-safety/no-super-linear-backtracking`).
+- Web lint is `oxlint --type-aware` (needs `oxlint-tsgolint`) and loads local JS plugins in `web/tools/oxlint/` (`jsx/child-element-spacing`, `regex-safety/no-super-linear-backtracking`, `design-system/no-member-expression`).
+- Design-system boundaries: `@base-ui/react` imports and JSX member expressions (`<Foo.Bar />`) are restricted to `web/src/components/ui/` (via `no-restricted-imports` and `design-system/no-member-expression`, both lifted by a `src/components/ui/**` override). Wrap primitives there as named, styled components and import those everywhere else.
 
 ## Deploy notes
 

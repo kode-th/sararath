@@ -1,9 +1,21 @@
-import { Autocomplete } from '@base-ui/react/autocomplete';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Search } from 'lucide-react';
 import { useMemo, useState, type SubmitEvent } from 'react';
 
+import {
+  AutocompleteCollection,
+  AutocompleteGroup,
+  AutocompleteGroupLabel,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+  AutocompletePopup,
+  AutocompletePortal,
+  AutocompletePositioner,
+  AutocompleteRoot,
+  AutocompleteStatus,
+} from '@/components/ui/autocomplete';
 import { Button } from '@/components/ui/button';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import type { SuggestResult } from '@/lib/api';
@@ -93,7 +105,7 @@ export function SearchBox() {
   }
 
   return (
-    <Autocomplete.Root
+    <AutocompleteRoot
       items={groups}
       value={query}
       onValueChange={(value, details) => {
@@ -108,7 +120,7 @@ export function SearchBox() {
           <label htmlFor="site-search" className="sr-only">
             ค้นหาข่าว
           </label>
-          <Autocomplete.Input
+          <AutocompleteInput
             id="site-search"
             type="search"
             autoComplete="off"
@@ -125,39 +137,34 @@ export function SearchBox() {
             <Search aria-hidden="true" className="size-4" />
           </Button>
         </form>
-        <Autocomplete.Portal hidden={!showPortal}>
-          <Autocomplete.Positioner sideOffset={4} className="z-50">
-            <Autocomplete.Popup className="w-(--anchor-width) border-2 border-foreground bg-card">
-              <Autocomplete.Status>
-                {statusMessage !== null && (
-                  <div className="px-3 py-2 text-sm text-muted-foreground">{statusMessage}</div>
-                )}
-              </Autocomplete.Status>
-              <Autocomplete.List className="max-h-80 overflow-y-auto py-1 data-empty:hidden">
+        <AutocompletePortal hidden={!showPortal}>
+          <AutocompletePositioner sideOffset={4}>
+            <AutocompletePopup>
+              <AutocompleteStatus>
+                {statusMessage !== null && <div className="px-3 py-2">{statusMessage}</div>}
+              </AutocompleteStatus>
+              <AutocompleteList>
                 {(group: SuggestionGroup) => (
-                  <Autocomplete.Group key={group.value} items={group.items}>
-                    <Autocomplete.GroupLabel className="block px-3 pt-2 pb-1 text-xs font-semibold text-muted-foreground select-none">
-                      {group.value}
-                    </Autocomplete.GroupLabel>
-                    <Autocomplete.Collection>
+                  <AutocompleteGroup key={group.value} items={group.items}>
+                    <AutocompleteGroupLabel>{group.value}</AutocompleteGroupLabel>
+                    <AutocompleteCollection>
                       {(item: Suggestion) => (
-                        <Autocomplete.Item
+                        <AutocompleteItem
                           key={suggestionKey(item)}
                           value={item}
                           onClick={() => select(item)}
-                          className="cursor-default px-3 py-2 text-sm text-foreground data-highlighted:bg-foreground data-highlighted:text-primary-foreground"
                         >
                           {item.label}
-                        </Autocomplete.Item>
+                        </AutocompleteItem>
                       )}
-                    </Autocomplete.Collection>
-                  </Autocomplete.Group>
+                    </AutocompleteCollection>
+                  </AutocompleteGroup>
                 )}
-              </Autocomplete.List>
-            </Autocomplete.Popup>
-          </Autocomplete.Positioner>
-        </Autocomplete.Portal>
+              </AutocompleteList>
+            </AutocompletePopup>
+          </AutocompletePositioner>
+        </AutocompletePortal>
       </search>
-    </Autocomplete.Root>
+    </AutocompleteRoot>
   );
 }
