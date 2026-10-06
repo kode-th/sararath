@@ -31,7 +31,7 @@ export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
     <div className="relative mt-6">
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth border border-foreground/15"
+        className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto scroll-smooth border border-foreground/15"
       >
         {images.map((src, position) => (
           <Image
