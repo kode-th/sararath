@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { Image } from '@unpic/react';
 import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
@@ -47,10 +48,15 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
           </span>
         </span>
         {image && (
-          <img
+          <Image
             src={image}
             alt=""
+            width={72}
+            height={72}
+            layout="fixed"
+            unstyled
             loading="lazy"
+            decoding="async"
             ref={(node) => {
               if (node?.complete && node.naturalWidth > 0) setImageLoaded(true);
             }}

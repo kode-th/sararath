@@ -1,3 +1,4 @@
+import { Image } from '@unpic/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -33,11 +34,16 @@ export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
         className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth border border-foreground/15"
       >
         {images.map((src, position) => (
-          <img
+          <Image
             key={src}
             src={src}
             alt=""
+            width={1200}
+            height={675}
+            layout="constrained"
+            unstyled
             loading={position === 0 ? 'eager' : 'lazy'}
+            decoding="async"
             onError={hideBrokenImage}
             className="aspect-video w-full shrink-0 snap-center object-cover"
           />
