@@ -128,4 +128,6 @@ def test_crawl_stores_one_row_per_story(monkeypatch, tmp_path):
     monkeypatch.setattr(runner, "_collect_prd", new_url)
     second = runner.run_crawl(session, "prd")
     assert (second.found, second.inserted) == (1, 0)
-    assert len(session.scalars(select(Article)).all()) == 1
+    stored = session.scalars(select(Article)).all()
+    assert len(stored) == 1
+    assert stored[0].canonical_url == "https://x/3"

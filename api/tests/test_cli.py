@@ -33,6 +33,13 @@ def test_parser_dedupe_articles():
     assert args.dry_run is True
 
 
+def test_parser_repair_links():
+    args = build_parser().parse_args(["repair-links", "--source", "moac"])
+    assert args.command == "repair-links"
+    assert args.source == "moac"
+    assert args.dry_run is False
+
+
 def test_parser_requires_command():
     parser = build_parser()
     try:

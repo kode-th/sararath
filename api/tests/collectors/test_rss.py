@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from thai_gov_news.collectors.rss import FeedConfig, parse_feed
+from thai_gov_news.services.links import moac_article_url
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "rss"
 
@@ -32,6 +33,25 @@ def test_feed_dates_parse():
     dated = [a for a in articles if a.published_at is not None]
     assert len(dated) > 100
     assert all(a.published_raw for a in dated)
+
+
+def test_link_normalizer_rewrites_chained_url():
+    payload = (
+        b'<rss version="2.0"><channel><item><title>t</title>'
+        b"<link>http://www.moac.go.th/jakarta-news-news_release-preview-1-preview-2</link>"
+        b"<pubDate>2026-10-06 15:44:29</pubDate></item></channel></rss>"
+    )
+    config = FeedConfig(
+        slug="moac",
+        feed_url="https://www.moac.go.th/all_rss/x.xml",
+        agency_name="ก",
+        category="ข่าว",
+        link_normalizer=moac_article_url,
+    )
+    articles = parse_feed(payload, config)
+    assert articles[0].canonical_url == (
+        "https://www.moac.go.th/news-news_release-preview-2"
+    )
 
 
 RD = FeedConfig(

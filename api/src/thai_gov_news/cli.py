@@ -14,6 +14,7 @@ from thai_gov_news.services.export_legacy import (
     update_manifest,
     write_export,
 )
+from thai_gov_news.services.links import repair_links
 from thai_gov_news.services.runner import run_crawl
 from thai_gov_news.services.scheduler import due_sources, stale_sources
 from thai_gov_news.services.seed import DEFAULT_PATH, seed_sources
@@ -58,6 +59,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     dedupe.add_argument("--source", default=None)
     dedupe.add_argument("--dry-run", action="store_true")
+
+    repair = sub.add_parser(
+        "repair-links", help="Rewrite malformed source URLs to the canonical form"
+    )
+    repair.add_argument("--source", default=None)
+    repair.add_argument("--dry-run", action="store_true")
 
     return parser
 
@@ -164,6 +171,16 @@ def _cmd_dedupe_articles(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_repair_links(args: argparse.Namespace) -> int:
+    with get_session() as session:
+        result = repair_links(session, source=args.source, dry_run=args.dry_run)
+    print(
+        f"repair-links: checked={result.checked} updated={result.updated} "
+        f"dry_run={args.dry_run}"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -184,4 +201,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_backfill_body(args)
     if args.command == "dedupe-articles":
         return _cmd_dedupe_articles(args)
+    if args.command == "repair-links":
+        return _cmd_repair_links(args)
     return 2

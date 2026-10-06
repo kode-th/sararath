@@ -49,6 +49,7 @@ uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
 uv run python -m thai_gov_news openapi > openapi.json      # dump the OpenAPI schema
 uv run python -m thai_gov_news backfill-body --source prd  # re-fetch bodies after a parser fix
 uv run python -m thai_gov_news dedupe-articles --source moac --dry-run  # drop duplicate rows
+uv run python -m thai_gov_news repair-links --source moac --dry-run    # fix malformed source URLs
 ```
 
 Also installed as the console script `thai-gov-news`.

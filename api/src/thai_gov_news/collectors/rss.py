@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import cast
 from urllib.parse import urljoin
+from collections.abc import Callable
 
 import feedparser
 import httpx
@@ -25,6 +26,7 @@ class FeedConfig:
     agency_name: str
     category: str
     language: str = "th"
+    link_normalizer: Callable[[str], str] | None = None
 
 
 def _entry_id(entry: feedparser.FeedParserDict, index: int, slug: str) -> str:
@@ -75,15 +77,18 @@ def parse_feed(payload: str | bytes, config: FeedConfig) -> list[ParsedArticle]:
         title = normalize_whitespace(str(entry.get("title", "")))
         if not title or not link:
             continue
+        url = urljoin(config.feed_url, link)
+        if config.link_normalizer is not None:
+            url = config.link_normalizer(url)
         parts = _html_parts(entry)
-        image = _image(parts, link)
+        image = _image(parts, url)
         raw_date = normalize_whitespace(
             str(entry.get("published", entry.get("updated", "")))
         )
         articles.append(
             ParsedArticle(
                 external_id=_entry_id(entry, index, config.slug),
-                canonical_url=urljoin(config.feed_url, link),
+                canonical_url=url,
                 title=title,
                 summary="",
                 body_text=_body(parts),

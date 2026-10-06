@@ -20,6 +20,7 @@ from thai_gov_news.collectors.thaigov import ThaigovCollector
 from thai_gov_news.models import Article, Attachment, CollectorRun, Source
 from thai_gov_news.services.dedupe import content_hash
 from thai_gov_news.services.ingest import ingest
+from thai_gov_news.services.links import normalizer_for
 from thai_gov_news.services.normalize import normalize_url
 
 
@@ -72,6 +73,7 @@ async def _collect_rss(source: Source) -> list[tuple[ParsedArticle, str | None, 
         feed_url=str(source.feed_url or ""),
         agency_name=source.name_th,
         category=source.category,
+        link_normalizer=normalizer_for(source.slug),
     )
     collector = RssCollector(config)
     raw = await collector.fetch_raw()
@@ -182,6 +184,10 @@ def _touch_known(
     session: Session, known: Article, article: dict[str, Any], now: datetime
 ) -> None:
     known.last_seen_at = now
+    # A corrected feed URL (e.g. moac's chained links) should replace the stored one.
+    url = str(article["canonical_url"])
+    if url != known.canonical_url:
+        known.canonical_url = url
     body = str(article.get("body_text", ""))
     if len(body) > len(known.body_text or ""):
         known.body_text = body
