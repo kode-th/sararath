@@ -15,12 +15,12 @@ def test_moac_article_url_collapses_chains():
         "preview-2-preview-482791791138"
     )
     assert moac_article_url(chained) == (
-        "https://www.moac.go.th/news-news_release-preview-482791791138"
+        "https://www.moac.go.th/news-preview-482791791138"
     )
 
 
 def test_moac_article_url_is_idempotent_and_leaves_others():
-    clean = "https://www.moac.go.th/news-news_release-preview-99"
+    clean = "https://www.moac.go.th/news-preview-99"
     assert moac_article_url(clean) == clean
     assert moac_article_url("https://www.youtube.com/watch?v=x") == (
         "https://www.youtube.com/watch?v=x"
@@ -66,4 +66,4 @@ def test_repair_links_rewrites_stored_urls():
     assert (result.checked, result.updated) == (1, 1)
     fixed = session.scalar(select(Article))
     assert fixed is not None
-    assert fixed.canonical_url == "https://www.moac.go.th/news-news_release-preview-22"
+    assert fixed.canonical_url == "https://www.moac.go.th/news-preview-22"

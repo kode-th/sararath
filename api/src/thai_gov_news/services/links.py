@@ -12,15 +12,15 @@ from sqlalchemy.orm import Session
 from thai_gov_news.models import Article, Source
 
 # moac's canonical article path; every feed id maps back to this shape.
-_MOAC_CLEAN = "https://www.moac.go.th/news-news_release-preview-{}"
+_MOAC_CLEAN = "https://www.moac.go.th/news-preview-{}"
 
 
 def moac_article_url(url: str) -> str:
     """Collapse moac's malformed feed links to the real article URL.
 
     moac sometimes emits chained links (`…-preview-<id>-preview-<id>…`, often
-    prefixed `jakarta-news`/`beijing-news`); those 403. The article is the last
-    `preview-<id>` under the news path.
+    prefixed `jakarta-news`/`beijing-news`); those 403 or render an empty shell.
+    The article is the last `preview-<id>` under the `news-preview-<id>` path.
     """
     if "moac.go.th" not in url or "preview-" not in url or "dwl-" in url:
         return url

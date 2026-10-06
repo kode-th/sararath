@@ -49,9 +49,7 @@ def test_link_normalizer_rewrites_chained_url():
         link_normalizer=moac_article_url,
     )
     articles = parse_feed(payload, config)
-    assert articles[0].canonical_url == (
-        "https://www.moac.go.th/news-news_release-preview-2"
-    )
+    assert articles[0].canonical_url == ("https://www.moac.go.th/news-preview-2")
 
 
 RD = FeedConfig(
