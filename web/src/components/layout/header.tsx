@@ -16,15 +16,15 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
   return (
     <header>
       <p className="bg-foreground px-4 py-1.5 text-center text-xs text-primary-foreground sm:px-8">
-        <span className="hidden sm:inline">รวบรวมข่าวจากเว็บไซต์หน่วยงานรัฐ · </span>
-        ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐ
+        <span className="hidden sm:inline">สาระรัฐเป็นแหล่งรวบรวมข่าวจากเว็บไซต์หน่วยงานรัฐ </span>
+        ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด
       </p>
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-8 sm:py-4">
         <a href="/" className="mr-auto flex items-center gap-3">
           <img src="/logo.png" alt="" className="size-11" />
           <span className="leading-tight">
             <strong className="block font-display text-xl font-bold text-foreground">สาระรัฐ</strong>
-            <span className="text-xs text-muted-foreground">ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
+            <span className="text-xs text-muted-foreground">ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
           </span>
         </a>
         <form

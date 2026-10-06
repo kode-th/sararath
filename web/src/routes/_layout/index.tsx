@@ -87,7 +87,7 @@ function FeedError({ reset }: ErrorComponentProps) {
     <main className="mx-auto max-w-6xl px-4 py-16 sm:px-8">
       <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
       <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
-        เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงาน ซึ่งใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
+        เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
       </p>
       <Button
         onClick={() => {
@@ -176,7 +176,7 @@ function Feed() {
     <main className="mx-auto max-w-6xl px-4 sm:px-8">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
         <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">
-          {search.q ? `ผลการค้นหา “${search.q}”` : 'สรุปข่าวรัฐวันนี้'}
+          {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวหน่วยงานรัฐวันนี้'}
         </h1>
         <p className="text-sm text-muted-foreground">
           {today}
