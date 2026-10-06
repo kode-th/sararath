@@ -77,7 +77,7 @@ export const Route = createFileRoute('/_layout/')({
 });
 
 // The free API host sleeps when idle, so a failed first load is common.
-function FeedError({ reset }: ErrorComponentProps) {
+function FeedError({ reset }: Readonly<ErrorComponentProps>) {
   const router = useRouter();
   const queryReset = useQueryErrorResetBoundary();
 
