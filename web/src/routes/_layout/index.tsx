@@ -8,7 +8,7 @@ import { StoryRow } from '@/components/news/story-row'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { SectionTab } from '@/components/ui/section-tab'
-import { fetchArticles, fetchSources, type ArticleItem } from '@/lib/api'
+import { fetchArticles, fetchSources, type ArticleItem, type ArticlesPage } from '@/lib/api'
 import { formatTime, mergeDuplicates } from '@/lib/format'
 
 interface FeedSearch {
@@ -18,6 +18,13 @@ interface FeedSearch {
   cursor?: string
 }
 
+export type NewsSourceItem = { slug: string; name_th: string }
+
+interface FeedLoaderData {
+  page: ArticlesPage | undefined
+  sources: NewsSourceItem[] | undefined
+}
+
 export const Route = createFileRoute('/_layout/')({
   validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
     q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
@@ -25,6 +32,22 @@ export const Route = createFileRoute('/_layout/')({
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
     cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
   }),
+  loaderDeps: ({ search }) => search,
+  loader: async ({ context, deps }): Promise<FeedLoaderData> => {
+    const quiet = async <T,>(run: () => Promise<T>): Promise<T | undefined> => {
+      try {
+        return await run()
+      } catch {
+        return undefined
+      }
+    }
+    const [page, sources] = await Promise.all([
+      quiet(() => context.queryClient.query(feedQuery(deps))),
+      quiet(() => context.queryClient.query(sourcesQuery)),
+    ])
+    return { page, sources }
+  },
+  staleTime: 30_000,
   component: Newsroom,
   errorComponent: FeedError,
 })
@@ -95,8 +118,15 @@ function Newsroom() {
 
 function Feed() {
   const search = Route.useSearch()
-  const { data: page } = useSuspenseQuery(feedQuery(search))
-  const { data: sources } = useSuspenseQuery(sourcesQuery)
+  const loader = Route.useLoaderData()
+  const { data: page } = useSuspenseQuery({
+    ...feedQuery(search),
+    initialData: loader.page,
+  })
+  const { data: sources } = useSuspenseQuery({
+    ...sourcesQuery,
+    initialData: loader.sources,
+  })
   const [extra, setExtra] = useState<ArticleItem[]>([])
   const [cursor, setCursor] = useState(page.next_cursor)
   const [loadingMore, setLoadingMore] = useState(false)
