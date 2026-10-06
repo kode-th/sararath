@@ -69,7 +69,7 @@ pyright
 uv run python -m pytest
 ```
 
-Or from the repo root: `mise run format`, `mise run lint`, `mise run typecheck`, `mise run test`. `pyrightconfig.json` also includes `../scripts`.
+Or from the repo root: `mise run format`, `mise run lint`, `mise run typecheck`, `mise run test`.
 
 ## OpenAPI
 

@@ -16,7 +16,7 @@ Live API: `https://thai-gov-news-apis.onrender.com` — `/v1/articles`, `/v1/art
 
 ## Repository layout
 
-Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.toml`, `lefthook.yml`, `.github/workflows/`, `scripts/`.
+Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.toml`, `lefthook.yml`, `commitlint.config.mjs`, `package.json`, `.github/workflows/`.
 
 ```txt
 api/    src/thai_gov_news/{collectors,services,api,models.py,cli.py}

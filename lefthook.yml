@@ -16,4 +16,4 @@ pre-push:
 commit-msg:
   commands:
     convention:
-      run: python3 scripts/check-commit-msg.py {1}
+      run: bunx commitlint --edit {1}
