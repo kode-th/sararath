@@ -52,6 +52,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     backfill.add_argument("--source", required=True)
     backfill.add_argument("--limit", type=int, default=200)
+    backfill.add_argument("--offset", type=int, default=0)
     backfill.add_argument("--dry-run", action="store_true")
     backfill.add_argument("--all", dest="all_items", action="store_true")
 
@@ -156,6 +157,7 @@ def _cmd_backfill_body(args: argparse.Namespace) -> int:
             session,
             args.source,
             limit=args.limit,
+            offset=args.offset,
             dry_run=args.dry_run,
             reprocess=args.all_items,
         )

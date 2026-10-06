@@ -91,6 +91,7 @@ def backfill_bodies(
     slug: str,
     *,
     limit: int = 200,
+    offset: int = 0,
     dry_run: bool = False,
     reprocess: bool = False,
 ) -> BackfillResult:
@@ -103,6 +104,7 @@ def backfill_bodies(
         select(Article)
         .where(Article.source_id == source.id)
         .order_by(Article.published_at.desc().nulls_last(), Article.id.desc())
+        .offset(offset)
         .limit(limit)
     )
     if not reprocess and slug == "prd":
