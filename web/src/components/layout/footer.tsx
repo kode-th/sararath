@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="container mt-16 max-w-6xl text-xs text-muted-foreground">
       <div className="flex flex-col gap-3 border-t-2 border-foreground py-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="" className="size-11" />
+          <img src="/logo.svg" alt="" className="size-11" />
           <p className="leading-6">
             <span className="font-semibold text-foreground">สาระรัฐ </span>
             <span>· ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
