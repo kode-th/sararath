@@ -1,5 +1,6 @@
-import type { ComponentProps } from 'react'
-import { cn } from '@/lib/cn'
+import type { ComponentProps } from 'react';
+
+import { cn } from '@/lib/cn';
 
 export function Button({ className, type = 'button', ...props }: ComponentProps<'button'>) {
   return (
@@ -11,5 +12,5 @@ export function Button({ className, type = 'button', ...props }: ComponentProps<
       )}
       {...props}
     />
-  )
+  );
 }

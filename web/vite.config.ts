@@ -1,11 +1,9 @@
-import { defineConfig } from 'vite'
-
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-
-import viteReact from '@vitejs/plugin-react'
-import { cloudflare } from '@cloudflare/vite-plugin'
-import tailwindcss from '@tailwindcss/vite'
-import { fonts } from '@pyyupsk/vite-fonts'
+import { cloudflare } from '@cloudflare/vite-plugin';
+import { fonts } from '@pyyupsk/vite-fonts';
+import tailwindcss from '@tailwindcss/vite';
+import { tanstackStart } from '@tanstack/react-start/plugin/vite';
+import viteReact from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
@@ -32,6 +30,6 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
-})
+});
 
-export default config
+export default config;

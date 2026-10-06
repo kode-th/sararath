@@ -1,26 +1,29 @@
-import { ArrowUpRight } from 'lucide-react'
-import type { FeedItem } from '@/lib/format'
-import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format'
+import { ArrowUpRight } from 'lucide-react';
+
+import type { FeedItem } from '@/lib/format';
+import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format';
 
 export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
-  const image = leadImage(article)
+  const image = leadImage(article);
   return (
     <article className="group relative grid gap-x-6 gap-y-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
       <div className="md:col-start-2">
-        <h2 className="text-[1.75rem] font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-[2.125rem]">
+        <h2 className="text-title-sm font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-title-lg">
           <a
             href={article.canonical_url}
             target="_blank"
             rel="noreferrer"
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
-            <span className="highlight highlight-sweep">{article.title}</span>
+            <span className="highlight-sweep highlight">{article.title}</span>
           </a>
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{article.agencies.join(' · ')}</span>
           {' · '}
-          <time dateTime={article.published_at ?? undefined}>{formatDate(article.published_at)}</time>
+          <time dateTime={article.published_at ?? undefined}>
+            {formatDate(article.published_at)}
+          </time>
         </p>
       </div>
       {image && (
@@ -37,7 +40,10 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
         </p>
         <p className="mt-auto flex items-center gap-1 pt-4 font-display text-sm font-semibold text-foreground">
           อ่านต่อที่ต้นฉบับ
-          <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none" />
+          <ArrowUpRight
+            aria-hidden="true"
+            className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+          />
           {article.retrieved_at && (
             <span className="ml-auto font-sans text-xs font-normal text-muted-foreground">
               ดึงข่าวเมื่อ {formatTime(article.retrieved_at)} น.
@@ -46,5 +52,5 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
         </p>
       </div>
     </article>
-  )
+  );
 }

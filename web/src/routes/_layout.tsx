@@ -1,13 +1,14 @@
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Footer } from '@/components/layout/footer'
-import { Header } from '@/components/layout/header'
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
+
+import { Footer } from '@/components/layout/footer';
+import { Header } from '@/components/layout/header';
 
 export const Route = createFileRoute('/_layout')({
   component: Layout,
-})
+});
 
 function Layout() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
@@ -15,7 +16,12 @@ function Layout() {
         onSearch={(q) =>
           navigate({
             to: '/',
-            search: { q: q || undefined, category: undefined, source: undefined, cursor: undefined },
+            search: {
+              q: q || undefined,
+              category: undefined,
+              source: undefined,
+              cursor: undefined,
+            },
           })
         }
       />
@@ -24,5 +30,5 @@ function Layout() {
         <Footer />
       </div>
     </div>
-  )
+  );
 }

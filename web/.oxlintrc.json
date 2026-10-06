@@ -1,0 +1,55 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
+  "jsPlugins": ["@shadcn/lint"],
+  "settings": {
+    "shadcn": {
+      "ui": "@/components"
+    }
+  },
+  "env": {
+    "es2024": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "regex": "^\\.\\./",
+            "message": "Use @/ aliases. Only ./ relative imports are allowed."
+          }
+        ]
+      }
+    ],
+    "import/first": "error",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    "typescript/consistent-type-imports": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "eqeqeq": "error",
+    "no-console": "error",
+    "no-param-reassign": "error",
+    "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "unicorn/prefer-string-slice": "error",
+    "unicorn/throw-new-error": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "error",
+    "promise/no-return-wrap": "error",
+    "promise/prefer-await-to-then": "error",
+    "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
+    "shadcn/no-unknown-classes": "error"
+  }
+}

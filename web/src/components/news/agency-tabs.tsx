@@ -1,18 +1,19 @@
-import { Link } from '@tanstack/react-router'
-import { cn } from '@/lib/cn'
+import { Link } from '@tanstack/react-router';
+
+import { cn } from '@/lib/cn';
 
 interface AgencyTabsProps {
-  sources: { slug: string; name_th: string }[]
-  active?: string
+  sources: { slug: string; name_th: string }[];
+  active?: string;
 }
 
 export function AgencyTabs({ sources, active }: Readonly<AgencyTabsProps>) {
-  const tabs = [{ slug: undefined, name_th: 'ทุกหน่วยงาน' }, ...sources]
+  const tabs = [{ slug: undefined, name_th: 'ทุกหน่วยงาน' }, ...sources];
   return (
     <nav aria-label="กรองตามหน่วยงาน" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
       <ul className="flex min-w-max items-end gap-1 border-b-2 border-foreground">
         {tabs.map((tab) => {
-          const current = tab.slug === active
+          const current = tab.slug === active;
           return (
             <li key={tab.slug ?? 'all'}>
               <Link
@@ -29,9 +30,9 @@ export function AgencyTabs({ sources, active }: Readonly<AgencyTabsProps>) {
                 {tab.name_th}
               </Link>
             </li>
-          )
+          );
         })}
       </ul>
     </nav>
-  )
+  );
 }

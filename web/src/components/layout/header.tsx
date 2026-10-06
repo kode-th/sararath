@@ -1,16 +1,16 @@
-import { Search } from 'lucide-react'
-import { useState, type SubmitEvent } from 'react'
+import { Search } from 'lucide-react';
+import { useState, type SubmitEvent } from 'react';
 
 interface HeaderProps {
-  onSearch: (q: string) => void
+  onSearch: (q: string) => void;
 }
 
 export function Header({ onSearch }: Readonly<HeaderProps>) {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState('');
 
   function submit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    onSearch(value.trim())
+    event.preventDefault();
+    onSearch(value.trim());
   }
 
   return (
@@ -53,5 +53,5 @@ export function Header({ onSearch }: Readonly<HeaderProps>) {
         </form>
       </div>
     </header>
-  )
+  );
 }

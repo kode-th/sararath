@@ -1,56 +1,30 @@
-import { queryOptions, useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query'
-import { ArrowDown, RotateCw } from 'lucide-react'
-import { Link, createFileRoute, useRouter, type ErrorComponentProps } from '@tanstack/react-router'
-import { Suspense, useEffect, useState } from 'react'
-import { AgencyTabs } from '@/components/news/agency-tabs'
-import { LeadStory } from '@/components/news/lead-story'
-import { StoryRow } from '@/components/news/story-row'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { SectionTab } from '@/components/ui/section-tab'
-import { fetchArticles, fetchSources, type ArticleItem, type ArticlesPage } from '@/lib/api'
-import { formatTime, mergeDuplicates } from '@/lib/format'
+import { queryOptions, useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
+import { Link, createFileRoute, useRouter, type ErrorComponentProps } from '@tanstack/react-router';
+import { ArrowDown, RotateCw } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+
+import { AgencyTabs } from '@/components/news/agency-tabs';
+import { LeadStory } from '@/components/news/lead-story';
+import { StoryRow } from '@/components/news/story-row';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { SectionTab } from '@/components/ui/section-tab';
+import { fetchArticles, fetchSources, type ArticleItem, type ArticlesPage } from '@/lib/api';
+import { formatTime, mergeDuplicates } from '@/lib/format';
 
 interface FeedSearch {
-  q?: string
-  category?: string
-  source?: string
-  cursor?: string
+  q?: string;
+  category?: string;
+  source?: string;
+  cursor?: string;
 }
 
-export type NewsSourceItem = { slug: string; name_th: string }
+export type NewsSourceItem = { slug: string; name_th: string };
 
 interface FeedLoaderData {
-  page: ArticlesPage | undefined
-  sources: NewsSourceItem[] | undefined
+  page: ArticlesPage | undefined;
+  sources: NewsSourceItem[] | undefined;
 }
-
-export const Route = createFileRoute('/_layout/')({
-  validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
-    q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
-    category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
-    source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
-    cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
-  }),
-  loaderDeps: ({ search }) => search,
-  loader: async ({ context, deps }): Promise<FeedLoaderData> => {
-    const quiet = async <T,>(run: () => Promise<T>): Promise<T | undefined> => {
-      try {
-        return await run()
-      } catch {
-        return undefined
-      }
-    }
-    const [page, sources] = await Promise.all([
-      quiet(() => context.queryClient.query(feedQuery(deps))),
-      quiet(() => context.queryClient.query(sourcesQuery)),
-    ])
-    return { page, sources }
-  },
-  staleTime: 30_000,
-  component: Newsroom,
-  errorComponent: FeedError,
-})
 
 const feedQuery = (search: FeedSearch) =>
   queryOptions({
@@ -64,42 +38,70 @@ const feedQuery = (search: FeedSearch) =>
         limit: 12,
       }),
     staleTime: 60_000,
-  })
+  });
 
-const ASIDE_COUNT = 4
+const ASIDE_COUNT = 4;
 
 const sourcesQuery = queryOptions({
   queryKey: ['news-sources'],
   queryFn: fetchSources,
   staleTime: 300_000,
-})
+});
+
+async function quietFetch<T>(run: () => Promise<T>): Promise<T | undefined> {
+  try {
+    return await run();
+  } catch {
+    return undefined;
+  }
+}
+
+export const Route = createFileRoute('/_layout/')({
+  validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
+    q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
+    category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
+    source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
+    cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
+  }),
+  loaderDeps: ({ search }) => search,
+  loader: async ({ context, deps }): Promise<FeedLoaderData> => {
+    const [page, sources] = await Promise.all([
+      quietFetch(() => context.queryClient.query(feedQuery(deps))),
+      quietFetch(() => context.queryClient.query(sourcesQuery)),
+    ]);
+    return { page, sources };
+  },
+  staleTime: 30_000,
+  component: Newsroom,
+  errorComponent: FeedError,
+});
 
 // The free API host sleeps when idle, so a failed first load is common.
 function FeedError({ reset }: ErrorComponentProps) {
-  const router = useRouter()
-  const queryReset = useQueryErrorResetBoundary()
+  const router = useRouter();
+  const queryReset = useQueryErrorResetBoundary();
 
   useEffect(() => {
-    queryReset.reset()
-  }, [queryReset])
+    queryReset.reset();
+  }, [queryReset]);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-16 sm:px-8">
-      <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
+      <h1 className="text-title-md font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
       <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
         เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
       </p>
       <Button
         onClick={() => {
-          reset()
-          void router.invalidate()
+          reset();
+          void router.invalidate();
         }}
         className="mt-6"
       >
         <RotateCw aria-hidden="true" className="size-4" /> ลองใหม่
       </Button>
     </main>
-  )
+  );
 }
 
 function Newsroom() {
@@ -113,34 +115,34 @@ function Newsroom() {
     >
       <Feed />
     </Suspense>
-  )
+  );
 }
 
 function Feed() {
-  const search = Route.useSearch()
-  const loader = Route.useLoaderData()
+  const search = Route.useSearch();
+  const loader = Route.useLoaderData();
   const { data: page } = useSuspenseQuery({
     ...feedQuery(search),
     initialData: loader.page,
-  })
+  });
   const { data: sources } = useSuspenseQuery({
     ...sourcesQuery,
     initialData: loader.sources,
-  })
-  const [extra, setExtra] = useState<ArticleItem[]>([])
-  const [cursor, setCursor] = useState(page.next_cursor)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [error, setError] = useState('')
+  });
+  const [extra, setExtra] = useState<ArticleItem[]>([]);
+  const [cursor, setCursor] = useState(page.next_cursor);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    setExtra([])
-    setCursor(page.next_cursor)
-  }, [page])
+    setExtra([]);
+    setCursor(page.next_cursor);
+  }, [page]);
 
   async function loadMore() {
-    if (!cursor || loadingMore) return
-    setLoadingMore(true)
-    setError('')
+    if (!cursor || loadingMore) return;
+    setLoadingMore(true);
+    setError('');
     try {
       const next = await fetchArticles({
         q: search.q,
@@ -148,34 +150,34 @@ function Feed() {
         source: search.source,
         cursor,
         limit: 12,
-      })
-      setExtra((prev) => [...prev, ...next.items])
-      setCursor(next.next_cursor)
+      });
+      setExtra((prev) => [...prev, ...next.items]);
+      setCursor(next.next_cursor);
     } catch {
-      setError('โหลดข่าวเพิ่มไม่สำเร็จ ลองกดอีกครั้ง')
+      setError('โหลดข่าวเพิ่มไม่สำเร็จ ลองกดอีกครั้ง');
     } finally {
-      setLoadingMore(false)
+      setLoadingMore(false);
     }
   }
 
-  const items = mergeDuplicates([...page.items, ...extra])
-  const [lead, ...rest] = items
-  const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null
+  const items = mergeDuplicates([...page.items, ...extra]);
+  const [lead, ...rest] = items;
+  const newest = items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
 
-  const latest = rest.slice(0, ASIDE_COUNT)
-  const more = rest.slice(ASIDE_COUNT)
+  const latest = rest.slice(0, ASIDE_COUNT);
+  const more = rest.slice(ASIDE_COUNT);
   const today = new Intl.DateTimeFormat('th-TH', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
     timeZone: 'Asia/Bangkok',
-  }).format(new Date())
+  }).format(new Date());
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-8">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
-        <h1 className="text-[2rem] font-bold text-foreground sm:text-5xl">
+        <h1 className="text-title-md font-bold text-foreground sm:text-5xl">
           {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวหน่วยงานรัฐวันนี้'}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -235,11 +237,17 @@ function Feed() {
           </ol>
           {cursor && (
             <Button onClick={loadMore} disabled={loadingMore} className="mt-6 w-full">
-              {loadingMore ? 'กำลังโหลด…' : (<>โหลดข่าวเพิ่ม <ArrowDown aria-hidden="true" className="size-4" /></>)}
+              {loadingMore ? (
+                'กำลังโหลด…'
+              ) : (
+                <>
+                  โหลดข่าวเพิ่ม <ArrowDown aria-hidden="true" className="size-4" />
+                </>
+              )}
             </Button>
           )}
         </section>
       )}
     </main>
-  )
+  );
 }

@@ -3,11 +3,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "generate-routes": "tsr generate",
     "build": "vite build",
+    "deploy": "bun run build && wrangler deploy",
+    "dev": "vite dev --port 3000",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "generate-routes": "tsr generate",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "preview": "vite preview",
-    "deploy": "bun run build && wrangler deploy"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.103.2",
@@ -22,12 +27,15 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.26.0",
     "@pyyupsk/vite-fonts": "^0.3.0",
+    "@shadcn/lint": "^0.2.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-cli": "^1.132.0",
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.2",
     "vite": "^8.0.0",
