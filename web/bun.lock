@@ -16,7 +16,7 @@
       },
       "devDependencies": {
         "@cloudflare/vite-plugin": "^1.26.0",
-        "@pyyupsk/vite-fonts": "^0.3.0",
+        "@pyyupsk/vite-fonts": "^0.4.0",
         "@shadcn/lint": "^0.2.0",
         "@tailwindcss/vite": "^4.3.3",
         "@tanstack/router-cli": "^1.132.0",
@@ -334,7 +334,7 @@
 
     "@poppinss/exception": ["@poppinss/exception@1.2.3", "", {}, "sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw=="],
 
-    "@pyyupsk/vite-fonts": ["@pyyupsk/vite-fonts@0.3.0", "", { "dependencies": { "citty": "^0.2.2", "consola": "^3.4.2", "fontkit": "^2.0.4" }, "peerDependencies": { "astro": ">=3.5.0", "typescript": "^5", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0" }, "optionalPeers": ["astro"], "bin": { "vite-fonts": "dist/cli/index.js" } }, "sha512-vPoRrt6WrbMAvN1YU+fxhaDA8A1IufUT1LixL+JtdnT73k2/pJ0pSjaNesfJk1C09y4UzAHy8hLOa9HCaH7lXg=="],
+    "@pyyupsk/vite-fonts": ["@pyyupsk/vite-fonts@0.4.0", "", { "dependencies": { "citty": "^0.2.2", "consola": "^3.4.2", "fontkit": "^2.0.4" }, "peerDependencies": { "astro": ">=3.5.0", "typescript": "^5", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0" }, "optionalPeers": ["astro"], "bin": { "vite-fonts": "dist/cli/index.js" } }, "sha512-REY1LKXce1Z14fO/6PAN1XGRtPMBaXvR9FCyFyEiKkuLsSe/i6qq9VwD7YtME0yrX98G3MVededHaDE8ODJmcg=="],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.9", "", { "os": "android", "cpu": "arm" }, "sha512-tNISae1QEf/vkb3xkRcjV5SEdzPE97We5IVaa2Z8jSszQPZ8U60B/YCYpw4QI7VidYsBtKavczXf+DyDs9WGxw=="],
 

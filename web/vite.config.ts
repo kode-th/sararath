@@ -14,16 +14,19 @@ const config = defineConfig({
       families: {
         display: {
           family: 'Anuphan',
-          weights: [500, 600, 700],
+          weights: [600, 700],
           subsets: ['thai', 'latin'],
           variable: '--font-display',
+          preload: [600, 700],
+          adjustFontFallback: true,
         },
         sans: {
           family: 'IBM Plex Sans Thai Looped',
           weights: [400, 500, 600],
           subsets: ['thai', 'latin'],
           variable: '--font-sans',
-          preload: true,
+          preload: [400, 600],
+          adjustFontFallback: true,
         },
       },
     }),

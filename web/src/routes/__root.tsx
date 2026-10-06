@@ -1,3 +1,4 @@
+import { preloads } from '@pyyupsk/fonts/meta';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
 import {
@@ -32,6 +33,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: 'theme-color', content: '#172033' },
     ],
     links: [
+      ...preloads.map((preload) => ({
+        rel: 'preload',
+        as: 'font',
+        type: preload.type,
+        href: preload.href,
+        crossOrigin: 'anonymous' as const,
+      })),
       { rel: 'stylesheet', href: appCss },
       { rel: 'stylesheet', href: '/fonts.css' },
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
