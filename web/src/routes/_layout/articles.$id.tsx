@@ -95,6 +95,13 @@ function ArticleDetail() {
   const body = plainText(article.body_text);
   const summary = article.summary ? plainText(article.summary) : '';
   const images = article.attachments ?? [];
+  const paragraphs =
+    body && body !== summary
+      ? body
+          .split(/\n{2,}/)
+          .map((text) => text.trim())
+          .filter(Boolean)
+      : [];
 
   return (
     <main className="container max-w-3xl pt-6 pb-4 sm:pt-10">
@@ -134,12 +141,14 @@ function ArticleDetail() {
 
         {images.length > 0 && <ArticleGallery images={images} />}
 
-        {(summary || body) && (
+        {(summary || paragraphs.length > 0) && (
           <div className="mt-6 border-t-2 border-foreground pt-5">
             {summary && <p className="font-semibold text-foreground">{summary}</p>}
-            {body && body !== summary && (
-              <p className="mt-4 text-pretty whitespace-pre-line">{body}</p>
-            )}
+            {paragraphs.map((text) => (
+              <p key={text} className="mt-4 text-pretty whitespace-pre-line">
+                {text}
+              </p>
+            ))}
           </div>
         )}
 
