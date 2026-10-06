@@ -14,7 +14,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'สาระรัฐ · ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ',
+        title: 'สาระรัฐ · ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว',
+      },
+      {
+        name: 'description',
+        content:
+          'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว พร้อมลิงก์กลับไปยังต้นฉบับ',
+      },
+      {
+        property: 'og:site_name',
+        content: 'สาระรัฐ',
+      },
+      {
+        property: 'og:title',
+        content: 'สาระรัฐ · ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว',
+      },
+      {
+        property: 'og:description',
+        content:
+          'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว พร้อมลิงก์กลับไปยังต้นฉบับ',
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+      {
+        name: 'theme-color',
+        content: '#172033',
       },
     ],
     links: [
