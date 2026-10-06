@@ -1,20 +1,16 @@
-import type { ComponentProps } from 'react';
+import { Button as ButtonPrimitive } from '@base-ui/react/button';
+import { cva } from 'class-variance-authority';
 
 import { cn } from '@/lib/cn';
 
-export function Button({
-  className,
-  type = 'button',
-  ...props
-}: Readonly<ComponentProps<'button'>>) {
+const buttonVariants = cva(
+  'inline-flex shrink-0 items-center justify-center gap-2 border-2 border-foreground bg-card px-6 font-display text-sm font-semibold text-foreground whitespace-nowrap transition-colors duration-150 hover:bg-foreground hover:text-primary-foreground disabled:pointer-events-none disabled:opacity-60',
+);
+
+function Button({ className, ...props }: Readonly<ButtonPrimitive.Props>) {
   return (
-    <button
-      type={type}
-      className={cn(
-        'inline-flex h-11 items-center justify-center gap-2 border-2 border-foreground bg-card px-6 font-display text-sm font-semibold text-foreground transition-colors duration-150 hover:bg-foreground hover:text-primary-foreground disabled:opacity-60',
-        className,
-      )}
-      {...props}
-    />
+    <ButtonPrimitive data-slot="button" className={cn(buttonVariants(), className)} {...props} />
   );
 }
+
+export { Button, buttonVariants };

@@ -1,4 +1,5 @@
-import { ArrowUpRight } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { ArrowRight } from 'lucide-react';
 
 import type { FeedItem } from '@/lib/format';
 import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/lib/format';
@@ -9,14 +10,13 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
     <article className="group relative grid gap-x-6 gap-y-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
       <div className="md:col-start-2">
         <h2 className="text-title-sm font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-title-lg">
-          <a
-            href={article.canonical_url}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/articles/$id"
+            params={{ id: article.id }}
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
             <span className="highlight-sweep highlight">{article.title}</span>
-          </a>
+          </Link>
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{article.agencies.join(' · ')}</span>
@@ -39,10 +39,10 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           {excerpt(article.summary || article.body_text, 320)}
         </p>
         <p className="mt-auto flex items-center gap-1 pt-4 font-display text-sm font-semibold text-foreground">
-          อ่านต่อที่ต้นฉบับ
-          <ArrowUpRight
+          อ่านรายละเอียด
+          <ArrowRight
             aria-hidden="true"
-            className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+            className="size-4 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:transform-none"
           />
           {article.retrieved_at && (
             <span className="ml-auto font-sans text-xs font-normal text-muted-foreground">

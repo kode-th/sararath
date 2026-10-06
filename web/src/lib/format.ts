@@ -21,12 +21,25 @@ export function leadImage(item: ArticleItem) {
   return (item.attachments ?? [])[0];
 }
 
-function cleanText(value: string) {
+function stripMarkup(value: string) {
   return value
     .replace(/<[^>]*>/g, ' ')
     .replaceAll('&nbsp;', ' ')
     .replaceAll('&amp;', '&')
-    .replace(/\s+/g, ' ')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'");
+}
+
+function cleanText(value: string) {
+  return stripMarkup(value).replace(/\s+/g, ' ').trim();
+}
+
+// Article bodies keep their paragraph breaks, so only collapse each line's padding.
+export function plainText(value: string) {
+  return stripMarkup(value)
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n')
     .trim();
 }
 

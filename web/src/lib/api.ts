@@ -39,6 +39,17 @@ export async function fetchArticles(params: {
   return res.json();
 }
 
+export async function fetchArticle(id: string): Promise<ArticleItem> {
+  const res = await fetch(`${API_URL}/v1/articles/${encodeURIComponent(id)}`);
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  return res.json();
+}
+
+// The API answers 404 for a missing article and 422 for a malformed id.
+export function isMissingArticle(error: unknown) {
+  return error instanceof Error && (error.message === 'api 404' || error.message === 'api 422');
+}
+
 export async function fetchSources(): Promise<{ slug: string; name_th: string }[]> {
   const res = await fetch(`${API_URL}/v1/sources`);
   if (!res.ok) throw new Error(`api ${res.status}`);
