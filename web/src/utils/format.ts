@@ -21,9 +21,11 @@ export function leadImage(item: ArticleItem) {
   return (item.attachments ?? [])[0];
 }
 
+// `[^<>]` (not `[^>]`) keeps matching linear: a negated class that excludes `<`
+// can't cross another tag start, so runs scanned per `<` are disjoint.
 function stripMarkup(value: string) {
   return value
-    .replace(/<[^>]*>/g, ' ')
+    .replace(/<[^<>]*>/g, ' ')
     .replaceAll('&nbsp;', ' ')
     .replaceAll('&amp;', '&')
     .replaceAll('&quot;', '"')
