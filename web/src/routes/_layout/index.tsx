@@ -1,4 +1,4 @@
-import { queryOptions, useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute, useRouter, type ErrorComponentProps } from '@tanstack/react-router';
 import { ArrowDown, RotateCw } from 'lucide-react';
 import { Suspense, useEffect, useState } from 'react';
@@ -9,63 +9,18 @@ import { StoryRow } from '@/components/news/story-row';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SectionTab } from '@/components/ui/section-tab';
-import { fetchArticles, fetchSources, type ArticleItem, type ArticlesPage } from '@/lib/api';
+import { fetchArticles, type ArticleItem } from '@/lib/api';
+import {
+  ASIDE_COUNT,
+  FEED_LIMIT,
+  bangkokToday,
+  feedQuery,
+  quietFetch,
+  sourcesQuery,
+  type FeedLoaderData,
+  type FeedSearch,
+} from '@/lib/feed';
 import { formatTime, mergeDuplicates } from '@/lib/format';
-
-interface FeedSearch {
-  q?: string;
-  category?: string;
-  source?: string;
-  cursor?: string;
-}
-
-export type NewsSourceItem = { slug: string; name_th: string };
-
-interface FeedLoaderData {
-  page: ArticlesPage | undefined;
-  sources: NewsSourceItem[] | undefined;
-  today: string;
-}
-
-function bangkokToday() {
-  return new Intl.DateTimeFormat('th-TH', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date());
-}
-
-const feedQuery = (search: FeedSearch) =>
-  queryOptions({
-    queryKey: ['articles', search],
-    queryFn: () =>
-      fetchArticles({
-        q: search.q,
-        category: search.category,
-        source: search.source,
-        cursor: search.cursor,
-        limit: 12,
-      }),
-    staleTime: 60_000,
-  });
-
-const ASIDE_COUNT = 4;
-
-const sourcesQuery = queryOptions({
-  queryKey: ['news-sources'],
-  queryFn: fetchSources,
-  staleTime: 300_000,
-});
-
-async function quietFetch<T>(run: () => Promise<T>): Promise<T | undefined> {
-  try {
-    return await run();
-  } catch {
-    return undefined;
-  }
-}
 
 export const Route = createFileRoute('/_layout/')({
   validateSearch: (raw: Record<string, unknown>): FeedSearch => ({
@@ -158,7 +113,7 @@ function Feed() {
         category: search.category,
         source: search.source,
         cursor,
-        limit: 12,
+        limit: FEED_LIMIT,
       });
       setExtra((prev) => [...prev, ...next.items]);
       setCursor(next.next_cursor);
