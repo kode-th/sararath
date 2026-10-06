@@ -19,3 +19,12 @@ def test_parse_article_without_content():
     body, images = parse_article("<html></html>", "https://m/news-preview-9")
     assert body == ""
     assert images == ()
+
+
+def test_parse_article_keeps_br_paragraphs():
+    html = (
+        '<html><body><div class="txt-desc"><p>heading<br><br>'
+        "para one<br>one more<br><br>para two</p></div></body></html>"
+    )
+    body, _ = parse_article(html, "https://m/news-preview-9")
+    assert body == "heading\n\npara one\none more\n\npara two"

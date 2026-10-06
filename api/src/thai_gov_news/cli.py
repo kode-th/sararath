@@ -53,6 +53,7 @@ def build_parser() -> argparse.ArgumentParser:
     backfill.add_argument("--source", required=True)
     backfill.add_argument("--limit", type=int, default=200)
     backfill.add_argument("--dry-run", action="store_true")
+    backfill.add_argument("--all", dest="all_items", action="store_true")
 
     dedupe = sub.add_parser(
         "dedupe-articles", help="Drop duplicates sharing source, title, published_at"
@@ -152,7 +153,11 @@ def _cmd_openapi(_args: argparse.Namespace) -> int:
 def _cmd_backfill_body(args: argparse.Namespace) -> int:
     with get_session() as session:
         result = backfill_bodies(
-            session, args.source, limit=args.limit, dry_run=args.dry_run
+            session,
+            args.source,
+            limit=args.limit,
+            dry_run=args.dry_run,
+            reprocess=args.all_items,
         )
     print(
         f"backfill {args.source}: candidates={result.candidates} "

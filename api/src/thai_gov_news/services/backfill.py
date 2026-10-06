@@ -87,7 +87,12 @@ async def _refresh_moac(session: Session, articles: list[Article]) -> tuple[int,
 
 
 def backfill_bodies(
-    session: Session, slug: str, *, limit: int = 200, dry_run: bool = False
+    session: Session,
+    slug: str,
+    *,
+    limit: int = 200,
+    dry_run: bool = False,
+    reprocess: bool = False,
 ) -> BackfillResult:
     if slug not in SUPPORTED:
         raise SystemExit(f"error: no body backfill for source {slug!r}")
@@ -100,17 +105,16 @@ def backfill_bodies(
         .order_by(Article.published_at.desc().nulls_last(), Article.id.desc())
         .limit(limit)
     )
+    if not reprocess and slug == "prd":
+        base = base.where(or_(*[Article.body_text.like(m) for m in DIRTY_MARKERS]))
+    if not reprocess and slug != "prd":
+        base = base.where(~Article.attachments.any(Attachment.url.like(MOAC_ENRICHED)))
+    articles = list(session.scalars(base).all())
+    if dry_run:
+        return BackfillResult(candidates=len(articles), updated=0, failed=0)
     if slug == "prd":
-        stmt = base.where(or_(*[Article.body_text.like(m) for m in DIRTY_MARKERS]))
-        articles = list(session.scalars(stmt).all())
-        if dry_run:
-            return BackfillResult(candidates=len(articles), updated=0, failed=0)
         updated, failed = asyncio.run(_refresh_prd(articles))
     else:
-        stmt = base.where(~Article.attachments.any(Attachment.url.like(MOAC_ENRICHED)))
-        articles = list(session.scalars(stmt).all())
-        if dry_run:
-            return BackfillResult(candidates=len(articles), updated=0, failed=0)
         updated, failed = asyncio.run(_refresh_moac(session, articles))
     session.commit()
     return BackfillResult(candidates=len(articles), updated=updated, failed=failed)
