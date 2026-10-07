@@ -1,4 +1,11 @@
 @layer base {
+  html {
+    color-scheme: light;
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--color-border) transparent;
+    scrollbar-width: thin;
+  }
+
   body {
     margin: 0;
     display: flex;
@@ -9,6 +16,8 @@
     color: var(--color-foreground);
     line-height: 1.75;
     font-variant-numeric: tabular-nums;
+    caret-color: var(--color-foreground);
+    accent-color: var(--color-secondary);
   }
 
   h1,
@@ -27,6 +36,23 @@
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 3px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-muted-foreground);
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
   }
 
   button:not(:disabled),
