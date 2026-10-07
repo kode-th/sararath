@@ -6,6 +6,7 @@
 - `crawl --source <prd|moac|thaigov|rd>`, `crawl-due [--source X]`, `check`, `serve`, `openapi`.
 - `backfill-body --source X [--all] [--single-line] [--offset N] [--dry-run]` (prd/moac/thaigov).
 - `dedupe-articles`, `repair-links`, `strip-script` (all `--source X --dry-run`).
+- `prune-attachments [--source X] [--dry-run]` — drop stored attachments whose URL doesn't return an image; crawls validate new ones first.
 - `export-legacy --date YYYY-MM-DD --out data.json`.
 - Migrations: `uv run python -m alembic upgrade head` from `api/`.
 

@@ -51,6 +51,7 @@ uv run python -m sararath backfill-body --source moac  # re-fetch bodies (prd, m
 uv run python -m sararath dedupe-articles --source moac --dry-run  # drop duplicate rows
 uv run python -m sararath repair-links --source moac --dry-run    # fix malformed source URLs
 uv run python -m sararath strip-script --source prd --dry-run     # drop leaked script text
+uv run python -m sararath prune-attachments --source prd --dry-run # drop image URLs that don't resolve
 ```
 
 Also installed as the console script `sararath`.
