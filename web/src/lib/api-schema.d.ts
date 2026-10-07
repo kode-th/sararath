@@ -38,6 +38,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/v1/categories': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Categories */
+    get: operations['list_categories_v1_categories_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/v1/health': {
     parameters: {
       query?: never;
@@ -147,6 +164,23 @@ export interface components {
       /** Next Cursor */
       next_cursor: string | null;
     };
+    /** CategoriesPage */
+    CategoriesPage: {
+      /** Items */
+      items: components['schemas']['CategoryOut'][];
+    };
+    /** CategoryOut */
+    CategoryOut: {
+      /** Count */
+      count: number;
+      /** Value */
+      value: string;
+    };
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components['schemas']['ValidationError'][];
+    };
     /** HealthOut */
     HealthOut: {
       /** Db */
@@ -235,6 +269,19 @@ export interface components {
       /** Sources */
       sources: components['schemas']['SourceRef'][];
     };
+    /** ValidationError */
+    ValidationError: {
+      /** Context */
+      ctx?: Record<string, never>;
+      /** Input */
+      input?: unknown;
+      /** Location */
+      loc: (string | number)[];
+      /** Message */
+      msg: string;
+      /** Error Type */
+      type: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -320,6 +367,37 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  list_categories_v1_categories_get: {
+    parameters: {
+      query?: {
+        source?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CategoriesPage'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
       };
     };
   };

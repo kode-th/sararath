@@ -3,9 +3,11 @@ import { keepPreviousData, queryOptions } from '@tanstack/react-query';
 import { FEED_LIMIT } from '@/constants/feed';
 import {
   fetchArticles,
+  fetchCategories,
   fetchSources,
   fetchSuggest,
   type ArticlesPage,
+  type CategoryItem,
   type NewsSourceItem,
 } from '@/lib/api';
 
@@ -19,6 +21,7 @@ export interface FeedSearch {
 export interface FeedLoaderData {
   page: ArticlesPage | undefined;
   sources: NewsSourceItem[] | undefined;
+  categories: CategoryItem[] | undefined;
   today: string;
 }
 
@@ -41,6 +44,13 @@ export const sourcesQuery = queryOptions({
   queryFn: fetchSources,
   staleTime: 300_000,
 });
+
+export const categoriesQuery = (source?: string) =>
+  queryOptions({
+    queryKey: ['categories', source ?? null],
+    queryFn: () => fetchCategories(source),
+    staleTime: 300_000,
+  });
 
 export const suggestQuery = (q: string) =>
   queryOptions({

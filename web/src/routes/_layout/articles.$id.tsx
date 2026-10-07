@@ -144,7 +144,13 @@ function ArticleDetail() {
               {article.category && (
                 <>
                   <span aria-hidden="true">·</span>
-                  <span>{article.category}</span>
+                  <Link
+                    to="/"
+                    search={{ category: article.category, source: undefined, cursor: undefined }}
+                    className="underline decoration-accent hover:text-foreground"
+                  >
+                    {article.category}
+                  </Link>
                 </>
               )}
             </p>

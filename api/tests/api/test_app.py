@@ -157,6 +157,17 @@ def test_sources_and_health():
     assert health["sources"][0]["slug"] == "thaigov"
 
 
+def test_categories():
+    counted = {
+        item["value"]: item["count"]
+        for item in client().get("/v1/categories").json()["items"]
+    }
+    assert counted == {"ข่าวนายกรัฐมนตรี": 1, "ทั่วไป": 1}
+    assert (
+        client().get("/v1/categories", params={"source": "prd"}).json()["items"] == []
+    )
+
+
 def test_reference():
     res = client().get("/reference")
     assert res.status_code == 200

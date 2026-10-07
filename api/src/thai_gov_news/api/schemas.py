@@ -34,6 +34,15 @@ class ArticlesPage(BaseModel):
     next_cursor: str | None
 
 
+class CategoryOut(BaseModel):
+    value: str
+    count: int
+
+
+class CategoriesPage(BaseModel):
+    items: list[CategoryOut]
+
+
 class SuggestArticleOut(BaseModel):
     id: str
     title: str

@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from thai_gov_news.api.schemas import (
     ArticleOut,
     ArticlesPage,
+    CategoriesPage,
     HealthOut,
     RunsPage,
     SourcesPage,
@@ -174,6 +175,23 @@ def list_articles(
         "items": [article_out(a, s, n, attached.get(str(a.id))) for a, s, n in page],
         "next_cursor": next_cursor,
     }
+
+
+@app.get("/v1/categories", response_model=CategoriesPage)
+def list_categories(
+    source: str | None = None,
+    session: Session = Depends(get_db),
+) -> dict:
+    stmt = select(Article.category, func.count()).where(Article.category != "")
+    if source:
+        stmt = stmt.join(Source, Article.source_id == Source.id).where(
+            Source.slug == source
+        )
+    stmt = stmt.group_by(Article.category).order_by(
+        func.count().desc(), Article.category
+    )
+    rows = session.execute(stmt).all()
+    return {"items": [{"value": category, "count": count} for category, count in rows]}
 
 
 @app.get(

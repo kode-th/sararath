@@ -4,33 +4,43 @@ import { ArrowDown } from 'lucide-react';
 import { Suspense } from 'react';
 
 import { AgencyTabs } from '@/components/news/agency-tabs';
+import { CategorySelect } from '@/components/news/category-select';
 import { FeedError } from '@/components/news/feed-error';
 import { StoryRow } from '@/components/news/story-row';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
-import type { ArticlesPage, NewsSourceItem } from '@/lib/api';
-import { feedQuery, quietFetch, sourcesQuery, type FeedSearch } from '@/utils/feed';
+import type { ArticlesPage, CategoryItem, NewsSourceItem } from '@/lib/api';
+import {
+  categoriesQuery,
+  feedQuery,
+  quietFetch,
+  sourcesQuery,
+  type FeedSearch,
+} from '@/utils/feed';
 
-type SearchSearch = Pick<FeedSearch, 'q' | 'source'>;
+type SearchSearch = Pick<FeedSearch, 'q' | 'source' | 'category'>;
 
 interface SearchLoaderData {
   page: ArticlesPage | undefined;
   sources: NewsSourceItem[] | undefined;
+  categories: CategoryItem[] | undefined;
 }
 
 export const Route = createFileRoute('/_layout/search')({
   validateSearch: (raw: Record<string, unknown>): SearchSearch => ({
     q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
+    category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
   }),
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }): Promise<SearchLoaderData> => {
-    const [page, sources] = await Promise.all([
+    const [page, sources, categories] = await Promise.all([
       deps.q ? quietFetch(() => context.queryClient.query(feedQuery(deps))) : undefined,
       quietFetch(() => context.queryClient.query(sourcesQuery)),
+      quietFetch(() => context.queryClient.query(categoriesQuery(deps.source))),
     ]);
-    return { page, sources };
+    return { page, sources, categories };
   },
   staleTime: 30_000,
   component: SearchPage,
@@ -38,7 +48,7 @@ export const Route = createFileRoute('/_layout/search')({
 });
 
 function SearchPage() {
-  const { q, source } = Route.useSearch();
+  const { q, source, category } = Route.useSearch();
 
   if (!q) {
     return (
@@ -59,7 +69,7 @@ function SearchPage() {
         </main>
       }
     >
-      <Results key={`${q}|${source ?? ''}`} />
+      <Results key={`${q}|${source ?? ''}|${category ?? ''}`} />
     </Suspense>
   );
 }
@@ -75,6 +85,10 @@ function Results() {
     ...sourcesQuery,
     initialData: loader.sources,
   });
+  const { data: categories } = useSuspenseQuery({
+    ...categoriesQuery(search.source),
+    initialData: loader.categories,
+  });
   const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   return (
@@ -83,8 +97,14 @@ function Results() {
         ผลการค้นหา “{search.q}”
       </h1>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <AgencyTabs sources={sources} active={search.source} q={search.q} />
+        <CategorySelect
+          categories={categories}
+          source={search.source}
+          active={search.category}
+          q={search.q}
+        />
       </div>
 
       {error && (

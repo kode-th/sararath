@@ -4,6 +4,7 @@ import { ArrowDown } from 'lucide-react';
 import { Suspense } from 'react';
 
 import { AgencyTabs } from '@/components/news/agency-tabs';
+import { CategorySelect } from '@/components/news/category-select';
 import { FeedError } from '@/components/news/feed-error';
 import { LeadStory } from '@/components/news/lead-story';
 import { StoryRow } from '@/components/news/story-row';
@@ -14,6 +15,7 @@ import { HOME_ASIDE_COUNT } from '@/constants/feed';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import {
   bangkokToday,
+  categoriesQuery,
   feedQuery,
   quietFetch,
   sourcesQuery,
@@ -32,11 +34,12 @@ export const Route = createFileRoute('/_layout/')({
   }),
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }): Promise<FeedLoaderData> => {
-    const [page, sources] = await Promise.all([
+    const [page, sources, categories] = await Promise.all([
       quietFetch(() => context.queryClient.query(feedQuery(deps))),
       quietFetch(() => context.queryClient.query(sourcesQuery)),
+      quietFetch(() => context.queryClient.query(categoriesQuery(deps.source))),
     ]);
-    return { page, sources, today: bangkokToday() };
+    return { page, sources, categories, today: bangkokToday() };
   },
   staleTime: 30_000,
   component: Newsroom,
@@ -71,6 +74,10 @@ function Feed() {
     ...sourcesQuery,
     initialData: loader.sources,
   });
+  const { data: categories } = useSuspenseQuery({
+    ...categoriesQuery(search.source),
+    initialData: loader.categories,
+  });
   const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   const [lead, ...rest] = items;
@@ -90,8 +97,9 @@ function Feed() {
         </p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <AgencyTabs sources={sources} active={search.source} />
+        <CategorySelect categories={categories} source={search.source} active={search.category} />
       </div>
 
       {error && (

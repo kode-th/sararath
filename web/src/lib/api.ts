@@ -4,6 +4,7 @@ import type { components, paths } from '@/lib/api-schema';
 
 export type ArticleItem = components['schemas']['ArticleOut'];
 export type ArticlesPage = components['schemas']['ArticlesPage'];
+export type CategoryItem = components['schemas']['CategoryOut'];
 export type NewsSourceItem = components['schemas']['SourceOut'];
 export type SuggestResult = components['schemas']['SuggestOut'];
 
@@ -41,6 +42,14 @@ export async function fetchSuggest(q: string, limit = 6): Promise<SuggestResult>
 
 export async function fetchSources(): Promise<NewsSourceItem[]> {
   const { data, response } = await client.GET('/v1/sources');
+  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  return data.items;
+}
+
+export async function fetchCategories(source?: string): Promise<CategoryItem[]> {
+  const { data, response } = await client.GET('/v1/categories', {
+    params: { query: { source } },
+  });
   if (!response.ok || !data) throw new Error(`api ${response.status}`);
   return data.items;
 }
