@@ -1,7 +1,10 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getSql, health, listRuns, listSources } from '../db';
+import { getSql } from '../db/client';
+import { health } from '../db/health';
+import { listRuns } from '../db/runs';
+import { listSources } from '../db/sources';
 import type { Env } from '../env';
 import {
   ErrorSchema,

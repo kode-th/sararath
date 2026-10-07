@@ -2,8 +2,9 @@
 
 ## Layout (api/src/)
 
-- `app.ts`: Hono app; routes use `describeRoute` + `validator` (hono-openapi); CORS; app is chained so `AppType` captures routes; exports `AppType` and response types.
-- `db.ts`: `neon(env.DATABASE_URL)` per request + query fns; rows are zod-parsed (no blind assertions); `toIso` normalizes timestamps; `UUID_RE`.
+- `app.ts`: Hono app; groups routes via `.route('/v1', …)` so `AppType` captures them; CORS, `/openapi.json`, Scalar `/reference`, `onError`; exports only `app` + `AppType`.
+- `routes/`: `articles.ts`, `ops.ts` — each a chained sub-app with `describeRoute` + `validator` (hono-openapi).
+- `db/`: `client.ts` (`getSql`), `row.ts` (`UUID_RE`, `toIso`, zod row helpers), and one module per resource (`articles`, `categories`, `suggest`, `runs`, `sources`, `health`); rows are zod-parsed. No barrel.
 - `schemas.ts`: zod response + query schemas (mirror the former Pydantic models).
 - `env.ts`: explicit `Env` (DATABASE_URL secret, CORS_ORIGINS var).
 - `index.ts`: worker entry, default-exports app.

@@ -4,14 +4,14 @@ import { describeRoute, resolver, validator } from 'hono-openapi';
 import {
   attachmentsFor,
   getArticleRow,
-  getSql,
   listArticleRows,
-  listCategories,
   resolveCursor,
-  suggest,
   toArticle,
-  UUID_RE,
-} from '../db';
+} from '../db/articles';
+import { listCategories } from '../db/categories';
+import { getSql } from '../db/client';
+import { UUID_RE } from '../db/row';
+import { suggest } from '../db/suggest';
 import type { Env } from '../env';
 import {
   articleIdParamSchema,
