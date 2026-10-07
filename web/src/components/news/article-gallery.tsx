@@ -24,14 +24,15 @@ export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
   function go(delta: number) {
     const track = trackRef.current;
     if (!track) return;
-    track.scrollBy({ left: delta * track.clientWidth, behavior: 'smooth' });
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    track.scrollBy({ left: delta * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
   }
 
   return (
     <div className="relative mt-6">
       <div
         ref={trackRef}
-        className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto scroll-smooth border border-foreground/15"
+        className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto scroll-smooth border border-foreground/15 motion-reduce:scroll-auto"
       >
         {images.map((src, position) => (
           <Image

@@ -42,6 +42,15 @@ export const Route = createFileRoute('/news')({
     return { page, sources, categories };
   },
   staleTime: 30_000,
+  head: () => ({
+    meta: [
+      { title: 'ข่าวทั้งหมด · สาระรัฐ' },
+      {
+        name: 'description',
+        content: 'ค้นหาและกรองข่าวจากหน่วยงานรัฐไทยทั้งหมดตามหน่วยงานและหมวดหมู่ พร้อมลิงก์กลับไปยังต้นฉบับ',
+      },
+    ],
+  }),
   component: SearchPage,
   errorComponent: FeedError,
 });

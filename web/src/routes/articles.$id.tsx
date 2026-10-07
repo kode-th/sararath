@@ -41,6 +41,21 @@ export const Route = createFileRoute('/articles/$id')({
     await quietFetch(() => context.queryClient.query(feedQuery({ source: article.source.slug })));
     return article;
   },
+  head: ({ loaderData }) => {
+    if (!loaderData) return { meta: [{ title: 'ไม่พบข่าวนี้ · สาระรัฐ' }] };
+    const description = plainText(loaderData.summary || loaderData.body_text || '')
+      .replace(/\s+/g, ' ')
+      .slice(0, 160);
+    return {
+      meta: [
+        { title: `${loaderData.title} · สาระรัฐ` },
+        { name: 'description', content: description },
+        { property: 'og:title', content: loaderData.title },
+        { property: 'og:description', content: description },
+        { property: 'og:type', content: 'article' },
+      ],
+    };
+  },
   component: ArticleDetail,
   errorComponent: ArticleError,
   notFoundComponent: ArticleNotFound,
@@ -155,7 +170,7 @@ function ArticleDetail() {
               )}
             </p>
 
-            <h1 className="mt-2 text-title-md font-bold text-foreground sm:text-title-lg">
+            <h1 className="mt-2 text-title-sm font-bold text-foreground sm:text-4xl lg:text-title-lg">
               {article.title}
             </h1>
 

@@ -19,7 +19,7 @@ export function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        'flex h-9 items-center gap-2 border-2 border-foreground bg-card px-3 font-display text-sm font-semibold text-foreground transition-colors duration-150 hover:bg-muted',
+        'flex h-9 items-center gap-2 border-2 border-foreground bg-card px-3 font-display text-sm font-semibold text-foreground transition-colors duration-150 hover:bg-accent/40',
         className,
       )}
       {...props}
@@ -52,10 +52,7 @@ export function SelectPopup({
 }: Readonly<ComponentProps<typeof SelectPrimitive.Popup>>) {
   return (
     <SelectPrimitive.Popup
-      className={cn(
-        'min-w-(--anchor-width) border-2 border-foreground bg-card shadow-sm',
-        className,
-      )}
+      className={cn('min-w-(--anchor-width) border-2 border-foreground bg-card', className)}
       {...props}
     />
   );

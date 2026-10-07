@@ -18,9 +18,15 @@ export function Header() {
             search={{ category: undefined, source: undefined, cursor: undefined }}
             className="mr-auto flex items-center gap-3"
           >
-            <img src="/logo.svg" alt="" className="size-11" />
+            <img src="/logo.svg" alt="" width={44} height={44} className="size-11" />
             <span className="leading-tight">
-              <img src="/wordmark.svg" alt="สาระรัฐ" className="h-6 w-auto" />
+              <img
+                src="/wordmark.svg"
+                alt="สาระรัฐ"
+                width={422}
+                height={143}
+                className="h-6 w-auto"
+              />
               <span className="block text-xs text-muted-foreground">ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
             </span>
           </Link>

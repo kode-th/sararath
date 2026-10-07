@@ -55,7 +55,6 @@ export function formatShortDate(value: string | null) {
   return new Intl.DateTimeFormat('th-TH', {
     day: 'numeric',
     month: 'short',
-    year: 'numeric',
     timeZone: 'Asia/Bangkok',
   }).format(new Date(value));
 }

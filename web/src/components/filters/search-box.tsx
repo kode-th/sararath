@@ -111,7 +111,7 @@ export function SearchBox({ initialQuery }: Readonly<SearchBoxProps>) {
       onItemHighlighted={(item) => setHasHighlight(item !== undefined)}
       mode="none"
     >
-      <search className="w-full border-2 border-foreground bg-card sm:w-72">
+      <search className="w-full border-2 border-foreground bg-card has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-3 has-[input:focus-visible]:outline-ring sm:w-72">
         <form onSubmit={submit} className="flex items-center">
           <label htmlFor="site-search" className="sr-only">
             ค้นหาข่าว

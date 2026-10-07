@@ -49,7 +49,7 @@ export function AutocompleteGroupLabel({
   return (
     <AutocompletePrimitive.GroupLabel
       className={cn(
-        'block px-3 pt-2 pb-1 text-xs font-semibold text-muted-foreground select-none',
+        'block px-3 pt-2 pb-1 font-display text-sm font-semibold text-muted-foreground select-none',
         className,
       )}
       {...props}
