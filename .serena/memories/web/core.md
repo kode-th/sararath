@@ -9,9 +9,10 @@
 
 ## Data & components
 
-- Env: `import { env } from 'virtual:env/client'` (`env.VITE_API_URL`) is the API base, used in `src/lib/api.ts` and the footer reference link; schema in `web/env.ts`.
+- Env: `import { env } from 'virtual:env/client'` (`env.VITE_API_URL`) is the API base, used in `src/lib/api.ts` and the footer reference link; schema in `web/env.ts` (`@vite-env/core` + zod, defaults to `https://sararath-apis.fasu.dev`).
 - Query options in `src/utils/feed.ts` (`feedQuery`, `sourcesQuery`, `categoriesQuery`, `suggestQuery`); typed client in `src/lib/api.ts`.
 - `components/ui/` = Base UI wrappers (button, card, section-tab, select, autocomplete). `components/layout/` = header, footer, not-found. `components/filters/` = search-box, agency-tabs, category-select, filter-bar. `components/feed/` = feed-error, feed-fallback, error-card, load-more. `components/news/` = lead-story, story-row, story-list, article-gallery, highlight-title.
+- Hooks in `src/hooks/` (camelCase filenames): useDebouncedValue, useFeedPagination, useSplitLines.
 - Favicons use a light plate (`favicon.svg`) so the navy mark reads on dark browser chrome; in-page `logo.svg` stays transparent.
 
 ## References

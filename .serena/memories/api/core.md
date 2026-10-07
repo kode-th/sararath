@@ -3,7 +3,7 @@
 ## Layout (api/src/sararath/)
 
 - `collectors/`: base, http, html (`html_to_text`), rss (generic), prd, moac, thaigov.
-- `services/`: runner (collect→ingest→store), scheduler (due/stale), seed, ingest, dedupe, normalize, backfill, cleanup, links, thai_date, export_legacy.
+- `services/`: runner (collect→ingest→store), scheduler (due/stale), seed, ingest, dedupe, normalize, backfill, cleanup, links, images, thai_date, export_legacy.
 - `api/`: app.py (routes), schemas.py (Pydantic models). `models.py`, `cli.py`, `database.py`.
 - `migrations/` + alembic.ini, `sources/sources.yaml`, `tests/`, `typings/`, committed `openapi.json`.
 

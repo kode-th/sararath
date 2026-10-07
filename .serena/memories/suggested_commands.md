@@ -3,7 +3,7 @@
 ## Python (run from `api/`)
 
 - Always `uv run python -m sararath <cmd>`; bare `uv run pytest` / `uv run alembic` can fail to spawn here.
-- `crawl --source <prd|moac|thaigov|rd>`, `crawl-due [--source X]`, `check`, `serve`, `openapi`.
+- `crawl --source <prd|moac|thaigov|rd>`, `crawl-due [--source X]`, `check [--max-age-hours 26]`, `serve [--host --port]`, `openapi`.
 - `backfill-body --source X [--all] [--single-line] [--offset N] [--dry-run]` (prd/moac/thaigov).
 - `dedupe-articles`, `repair-links`, `strip-script` (all `--source X --dry-run`).
 - `prune-attachments [--source X] [--dry-run]` — drop stored attachments whose URL doesn't return an image; crawls validate new ones first.
