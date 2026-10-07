@@ -46,9 +46,9 @@ export async function fetchSources(): Promise<NewsSourceItem[]> {
   return data.items;
 }
 
-export async function fetchCategories(source?: string): Promise<CategoryItem[]> {
+export async function fetchCategories(source?: string, q?: string): Promise<CategoryItem[]> {
   const { data, response } = await client.GET('/v1/categories', {
-    params: { query: { source } },
+    params: { query: { source, q } },
   });
   if (!response.ok || !data) throw new Error(`api ${response.status}`);
   return data.items;

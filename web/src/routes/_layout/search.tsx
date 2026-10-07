@@ -38,7 +38,7 @@ export const Route = createFileRoute('/_layout/search')({
     const [page, sources, categories] = await Promise.all([
       deps.q ? quietFetch(() => context.queryClient.query(feedQuery(deps))) : undefined,
       quietFetch(() => context.queryClient.query(sourcesQuery)),
-      quietFetch(() => context.queryClient.query(categoriesQuery(deps.source))),
+      quietFetch(() => context.queryClient.query(categoriesQuery(deps.source, deps.q))),
     ]);
     return { page, sources, categories };
   },
@@ -86,7 +86,7 @@ function Results() {
     initialData: loader.sources,
   });
   const { data: categories } = useSuspenseQuery({
-    ...categoriesQuery(search.source),
+    ...categoriesQuery(search.source, search.q),
     initialData: loader.categories,
   });
   const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);

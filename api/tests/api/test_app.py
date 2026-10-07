@@ -166,6 +166,9 @@ def test_categories():
     assert (
         client().get("/v1/categories", params={"source": "prd"}).json()["items"] == []
     )
+    assert client().get("/v1/categories", params={"q": "ใหม่"}).json()["items"] == [
+        {"value": "ข่าวนายกรัฐมนตรี", "count": 1}
+    ]
 
 
 def test_reference():

@@ -180,12 +180,22 @@ def list_articles(
 @app.get("/v1/categories", response_model=CategoriesPage)
 def list_categories(
     source: str | None = None,
+    q: str | None = None,
     session: Session = Depends(get_db),
 ) -> dict:
     stmt = select(Article.category, func.count()).where(Article.category != "")
     if source:
         stmt = stmt.join(Source, Article.source_id == Source.id).where(
             Source.slug == source
+        )
+    if q:
+        like = f"%{q}%"
+        stmt = stmt.where(
+            or_(
+                Article.title.like(like),
+                Article.body_text.like(like),
+                Article.agency_name.like(like),
+            )
         )
     stmt = stmt.group_by(Article.category).order_by(
         func.count().desc(), Article.category

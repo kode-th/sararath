@@ -45,10 +45,10 @@ export const sourcesQuery = queryOptions({
   staleTime: 300_000,
 });
 
-export const categoriesQuery = (source?: string) =>
+export const categoriesQuery = (source?: string, q?: string) =>
   queryOptions({
-    queryKey: ['categories', source ?? null],
-    queryFn: () => fetchCategories(source),
+    queryKey: ['categories', source ?? null, q ?? null],
+    queryFn: () => fetchCategories(source, q),
     staleTime: 300_000,
   });
 
