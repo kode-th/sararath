@@ -16,6 +16,8 @@
 - `runner` saves raw HTML/JSON under `raw/` only for prd/thaigov; `_touch_known` overwrites a body only when the new one is longer.
 - Schema is owned here; the Hono worker only queries. Migrations run only from `crawl/`.
 - No FastAPI anymore: `serve`/`openapi` CLI commands removed; fastapi/scalar-fastapi/uvicorn deps removed.
+- prd uses the prd.go.th CMS JSON API (`/api/article`, group `ข่าวภาครัฐ`) with a `Referer: https://prd.go.th/main` header; bodies are in each article page's `__NEXT_DATA__`, images on Supabase storage.
+- `http._fetch_cffi` strips `content-encoding`/`content-length` (curl_cffi already decodes); dev images need `ca-certificates` so workerd can verify TLS.
 
 ## References
 

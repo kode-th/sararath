@@ -2,12 +2,14 @@ name: sararath
 
 services:
   # The read API is a Cloudflare Worker (see ../api); it is not run here.
+  # Local dev crawler. Scoped to the GH Actions sources; thaigov has its own
+  # service (scheduler-thaigov) so it is not crawled twice.
   scheduler:
     build: ./crawl
     command:
       - sh
       - -c
-      - while true; do uv run --no-sync python -m sararath crawl-due; sleep 3600; done
+      - while true; do uv run --no-sync python -m sararath crawl-due --source moac --source rd --source prd; sleep 3600; done
     environment:
       DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
     restart: unless-stopped

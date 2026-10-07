@@ -14,7 +14,7 @@
 
 ## Invariants
 
-- Read-only. Endpoints match the former FastAPI exactly (parity-tested vs live oracle): `/v1/articles` (+cursor), `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`; errors are `{detail}` with 422/404/503.
+- Read-only. Endpoints match the former FastAPI exactly (parity-verified before the retired FastAPI oracle): `/v1/articles` (+cursor), `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`; errors are `{detail}` with 422/404/503.
 - Public OpenAPI served live at `/openapi.json`; Scalar docs at `/docs`. No committed spec.
 - `web` imports `AppType` (RPC): do not add runtime-only imports that break web's DOM tsc.
 - hc query values are strings; query types come from the validators.

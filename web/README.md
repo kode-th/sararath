@@ -9,44 +9,42 @@ See the [root README](../README.md) for the full project.
 ```txt
 src/routes/
   __root.tsx            document shell, fonts, head; renders Header/Outlet/Footer and the 404
-  _layout.tsx           pass-through <Outlet />
-  _layout/index.tsx     feed (lead story, latest, previous, agency tabs, search)
-  _layout/articles.$id.tsx  article detail (not-found + error states)
+  index.tsx             home feed (lead story, "ล่าสุด", "ข่าวก่อนหน้า", agency tabs, category select)
+  news.tsx              browse/search (`q`, source + category filters)
+  articles.$id.tsx      article detail (gallery, "ล่าสุดจาก {agency}" rail, not-found + error states)
 src/components/
+  ui/                   Base UI wrappers (button, card, select, autocomplete, section-tab)
   layout/               header, footer, not-found
-  news/                 agency-tabs, lead-story, story-row
-  ui/                   button, card, section-tab
-src/lib/                cn.ts (clsx + tailwind-merge), api.ts (typed client), api-schema.d.ts (generated)
-src/utils/              format.ts, feed.ts (react-query options + helpers)
+  filters/              agency-tabs, category-select, filter-bar, search-box
+  feed/                 feed-error, feed-fallback, error-card, load-more
+  news/                 lead-story, story-list, story-row, article-gallery, highlight-title
+src/lib/                cn.ts (clsx + tailwind-merge), api.ts (Hono RPC client)
+src/utils/              feed.ts (react-query options), format.ts
 src/constants/          feed.ts
+src/hooks/              useFeedPagination, useDebouncedValue, useSplitLines
 src/assets/css/         styles.css (entry) -> theme.css, base.css, utilities.css
-tools/oxlint/           local oxlint JS plugins
 ```
 
-Conventions: component props are wrapped in `Readonly<…>`; imports use the `@/` alias (relative only `./`); Tailwind utilities only, no custom CSS classes or inline styles. `routeTree.gen.ts` and `api-schema.d.ts` are generated and excluded from format/lint.
+Conventions: component props are wrapped in `Readonly<…>` (use `PropsWithChildren` when the component takes children); imports use the `@/` alias (relative only `./`); Tailwind utilities only, no custom CSS classes or inline styles in pages. `src/routeTree.gen.ts` is generated and excluded from format/lint.
 
 ## Scripts
 
-| Script                            | Purpose                                           |
-| --------------------------------- | ------------------------------------------------- |
-| `bun run dev`                     | Vite dev server on :3000                          |
-| `bun run build`                   | production SSR + client build                     |
-| `bun run deploy`                  | `build` then `wrangler deploy`                    |
-| `bun run generate:api`            | regenerate `src/lib/api-schema.d.ts` from OpenAPI |
-| `bun run generate:routes`         | regenerate `src/routeTree.gen.ts`                 |
-| `bun run lint` / `lint:fix`       | oxlint `--type-aware`                             |
-| `bun run format` / `format:check` | oxfmt                                             |
-| `bun run typecheck`               | `tsc --noEmit`                                    |
+| Script                            | Purpose                            |
+| --------------------------------- | ---------------------------------- |
+| `bun run dev`                     | Vite dev server on :3000           |
+| `bun run build`                   | production SSR + client build      |
+| `bun run deploy`                  | `build` then `wrangler deploy`     |
+| `bun run generate:routes`         | regenerate `src/routeTree.gen.ts`  |
+| `bun run env:check` / `env:types` | validate / emit types for `env.ts` |
+| `bun run lint` / `lint:fix`       | oxlint `--type-aware`              |
+| `bun run format` / `format:check` | oxfmt                              |
+| `bun run typecheck`               | `tsc --noEmit`                     |
 
 ## API client
 
-Types are generated from the API, not mirrored by hand:
+`src/lib/api.ts` builds `hc<AppType>(API_URL)` (Hono RPC) and re-exports response types from `@sararath/api` (`ArticleItem`, `ArticlesPage`, `NewsSourceItem`, …) — no generated schema.
 
-1. The API schema is committed at `../api/openapi.json` (produced by `mise run api:openapi`).
-2. `bun run generate:api` turns it into `src/lib/api-schema.d.ts` (`openapi-typescript`).
-3. `src/lib/api.ts` wraps `openapi-fetch`; `ArticleItem`, `ArticlesPage`, `NewsSourceItem` are derived from the schema.
-
-The base URL comes from `VITE_API_URL`, defaulting to the live API (Cloudflare Worker). For local dev point it at `http://localhost:8787`.
+The base URL comes from `VITE_API_URL` (schema in `env.ts`), defaulting to the live API (Cloudflare Worker). For local dev point it at `http://localhost:8787`.
 
 ## Styling
 
@@ -54,12 +52,20 @@ Tailwind v4 via `@tailwindcss/vite`. Design tokens live in `src/assets/css/theme
 
 ## Develop
 
+The root Docker stack brings up the whole app with hot reload:
+
 ```bash
-bun install
-VITE_API_URL=http://localhost:8001 bun run dev    # http://localhost:3000
+mise run dev        # from the repo root; web :3000, api :8787, crawlers
 ```
 
-Or use the root Docker stack: `mise run dev`, which runs the web container on `:3000` with hot reload and points it at the API on `:8001`.
+It points web at the local worker (`VITE_API_URL=http://localhost:8787`), so the feed needs the api service — which `mise run dev` now starts.
+
+To run web alone on the host:
+
+```bash
+bun install
+VITE_API_URL=http://localhost:8787 bun run dev    # http://localhost:3000
+```
 
 ## Build and deploy
 
@@ -68,4 +74,4 @@ bun run build
 bun run deploy        # build + wrangler deploy
 ```
 
-`wrangler.jsonc` configures the Worker (`nodejs_compat`). Public vars go in `wrangler.jsonc` under `vars`; secrets via `wrangler secret put <NAME>`. Set `VITE_API_URL` for non-local environments. Temporary logs while `bun run dev` may show a `replaceRouteChunk` warning from `tsr` — harmless.
+`wrangler.jsonc` configures the Worker: `nodejs_compat`, the `sararath.fasu.dev` custom domain, and `workers_dev`/`preview_urls` off. `VITE_API_URL` is a build-time variable. Pushes to `main` deploy via Cloudflare Workers Builds (root dir `/`, build `bun run --filter @sararath/web build`, deploy `cd web && npx wrangler deploy`).

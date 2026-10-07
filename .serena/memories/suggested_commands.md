@@ -19,7 +19,7 @@
 
 ## Local stack
 
-- Dev uses the Neon prod DB. `mise run dev:api` (worker :8787), `mise run dev` (docker web :3000 + crawl shell).
+- Dev uses the Neon prod DB. `mise run dev` starts the whole stack in docker (api :8787, web :3000, crawl shell, scheduler); `mise run dev:api` runs the worker on the host instead. Dev containers run non-root as `LOCAL_UID`/`LOCAL_GID` (set them in `.env`).
 - Exec into crawl: `docker compose -f compose.yaml -f compose.dev.yaml exec crawl ...`. Migrations: `mise run migrate`.
 - thaigov scheduler: `docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov`.
 - `api/.dev.vars` (gitignored) must hold the `postgresql://` form; `.env` (gitignored) holds the `postgresql+psycopg://` form.
