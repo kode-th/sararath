@@ -4,7 +4,12 @@ import time
 import httpx
 import pytest
 
-from sararath.collectors.http import RateLimiter, fetch, should_impersonate
+from sararath.collectors.http import (
+    RateLimiter,
+    _decoded_headers,
+    fetch,
+    should_impersonate,
+)
 
 _real_sleep = asyncio.sleep
 
@@ -113,6 +118,16 @@ def test_should_impersonate_by_host():
     assert should_impersonate("https://www.prd.go.th/x", None) is False
     assert should_impersonate("https://www.prd.go.th/x", True) is True
     assert should_impersonate("https://www.thaigov.go.th/x", False) is False
+
+
+def test_decoded_headers_strips_encoding():
+    """curl_cffi decodes the body, so httpx must not decode it again."""
+    headers = {
+        "Content-Encoding": "gzip",
+        "Content-Length": "123",
+        "Content-Type": "text/html",
+    }
+    assert _decoded_headers(headers) == {"Content-Type": "text/html"}
 
 
 def test_injected_client_takes_precedence():

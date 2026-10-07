@@ -10,9 +10,22 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections.abc import Mapping
 from urllib.parse import urlsplit
 
 import httpx
+
+# curl_cffi already decompressed the body; keep httpx from decoding it again.
+_DECODED_HEADERS = frozenset({"content-encoding", "content-length"})
+
+
+def _decoded_headers(headers: Mapping[str, str | None]) -> dict[str, str]:
+    return {
+        key: value
+        for key, value in headers.items()
+        if value is not None and key.lower() not in _DECODED_HEADERS
+    }
+
 
 _RETRIE: tuple[type[BaseException], ...] = (
     TimeoutError,
@@ -138,11 +151,7 @@ async def _fetch_cffi(
             if _done(response.status_code, attempt, retries):
                 return httpx.Response(
                     status_code=response.status_code,
-                    headers={
-                        key: value
-                        for key, value in response.headers.items()
-                        if value is not None
-                    },
+                    headers=_decoded_headers(response.headers),
                     content=response.content,
                     request=httpx.Request("GET", str(response.url)),
                 )
