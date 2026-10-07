@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "b8b38f97-6b4b-47ba-8ccf-47776c792710",
+      "start_date": "2026-10-07T04:51:11+00:00",
+      "name_thai": "รัฐบาลเร่งเตรียมความพร้อม พืชสวนโลก"
+    },
+    {
+      "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "start_date": "2026-10-06T10:00:00+00:00",
+      "name_thai": "ข่าวที่สอง"
+    },
+    {
+      "id": "b8b38f97-6b4b-47ba-8ccf-47776c792710",
+      "start_date": "2026-10-07T04:51:11+00:00",
+      "name_thai": "ซ้ำ (ต้องถูกตัดออก)"
+    }
+  ],
+  "meta": { "totalItems": 2, "currentPage": 1 }
+}
