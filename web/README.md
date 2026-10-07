@@ -46,7 +46,7 @@ Types are generated from the API, not mirrored by hand:
 2. `bun run generate:api` turns it into `src/lib/api-schema.d.ts` (`openapi-typescript`).
 3. `src/lib/api.ts` wraps `openapi-fetch`; `ArticleItem`, `ArticlesPage`, `NewsSourceItem` are derived from the schema.
 
-The base URL comes from `VITE_API_URL`, defaulting to the live Render API. For local dev point it at `http://localhost:8001`.
+The base URL comes from `VITE_API_URL`, defaulting to the live API (Cloudflare Worker). For local dev point it at `http://localhost:8787`.
 
 ## Styling
 
