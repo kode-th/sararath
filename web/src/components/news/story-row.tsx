@@ -54,7 +54,6 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
             width={72}
             height={72}
             layout="fixed"
-            unstyled
             loading="lazy"
             decoding="async"
             ref={(node) => {

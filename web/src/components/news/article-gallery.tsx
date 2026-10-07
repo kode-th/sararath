@@ -41,7 +41,6 @@ export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
             width={1200}
             height={675}
             layout="constrained"
-            unstyled
             loading={position === 0 ? 'eager' : 'lazy'}
             decoding="async"
             onError={hideBrokenImage}

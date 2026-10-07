@@ -41,7 +41,6 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           width={1200}
           height={600}
           layout="constrained"
-          unstyled
           decoding="async"
           onError={hideBrokenImage}
           className="aspect-2/1 w-full border border-foreground/15 object-cover md:col-start-1 md:row-span-2 md:row-start-1 md:aspect-auto md:h-full md:max-h-104"
