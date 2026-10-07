@@ -38,19 +38,22 @@ export const Route = createFileRoute('/articles/$id')({
         if (isMissingArticle(error)) throw notFound();
         throw error;
       });
-    await quietFetch(() => context.queryClient.query(feedQuery({ source: article.source.slug })));
-    return article;
+    const related = await quietFetch(() =>
+      context.queryClient.query(feedQuery({ source: article.source.slug })),
+    );
+    return { article, related };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: 'ไม่พบข่าวนี้ · สาระรัฐ' }] };
-    const description = plainText(loaderData.summary || loaderData.body_text || '')
+    const { article } = loaderData;
+    const description = plainText(article.summary || article.body_text || '')
       .replace(/\s+/g, ' ')
       .slice(0, 160);
     return {
       meta: [
-        { title: `${loaderData.title} · สาระรัฐ` },
+        { title: `${article.title} · สาระรัฐ` },
         { name: 'description', content: description },
-        { property: 'og:title', content: loaderData.title },
+        { property: 'og:title', content: article.title },
         { property: 'og:description', content: description },
         { property: 'og:type', content: 'article' },
       ],
@@ -130,9 +133,13 @@ function ArticleDetail() {
           .map((text) => text.trim())
           .filter(Boolean)
       : [];
-  const { data: related } = useQuery(feedQuery({ source: article.source.slug }));
+  const { related } = Route.useLoaderData();
+  const { data: relatedPage } = useQuery({
+    ...feedQuery({ source: article.source.slug }),
+    placeholderData: related,
+  });
   const more = markDuplicates(
-    (related?.items ?? []).filter((item) => item.id !== article.id),
+    (relatedPage?.items ?? []).filter((item) => item.id !== article.id),
   ).slice(0, ARTICLE_ASIDE_COUNT);
 
   return (
