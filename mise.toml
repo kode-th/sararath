@@ -77,9 +77,18 @@ run = "bun run typecheck"
 # --- test / build ---------------------------------------------------------
 
 [tasks.test]
-description = "Run pytest"
+description = "Run Python and worker tests"
+depends = ["test:py", "test:api"]
+
+[tasks."test:py"]
+description = "Run pytest (crawl)"
 dir = "crawl"
 run = "uv run python -m pytest"
+
+[tasks."test:api"]
+description = "Run vitest (worker)"
+dir = "api"
+run = "bun run test"
 
 [tasks."web:build"]
 description = "Build the web app (SSR smoke)"

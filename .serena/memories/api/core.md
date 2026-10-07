@@ -8,6 +8,7 @@
 - `db/`: `client.ts` (`getDb` → `drizzle(neon(url))` via `drizzle-orm/neon-http`), `row.ts` (`UUID_RE`, `toIso` — normalizes Postgres text timestamps like `+00`), `queries/` with one module per resource, and `generated/schema.ts` (Drizzle tables produced by `drizzle-kit pull` from the live DB; never hand-edit; regenerate with `bun run db:pull` or `mise run api:db:pull`). No barrel.
 - `schemas.ts`: zod response + query schemas (mirror the former Pydantic models).
 - `env.ts`: explicit `Env` (DATABASE_URL secret, CORS_ORIGINS var).
+- `tests/`: Vitest route tests (`app.request()`, `@api/db/*` mocked); `vitest.config.ts` aliases `@api`.
 - `index.ts`: worker entry, default-exports app.
 - `wrangler.jsonc` (name `sararath-api`, main `src/index.ts`, observability logs+traces), `tsconfig.json` (types `@cloudflare/workers-types`).
 

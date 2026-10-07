@@ -11,6 +11,7 @@
 - Hono (+ `hono/client` for RPC), `hono-openapi` (`describeRoute`/`validator`/`openAPIRouteHandler`), `@scalar/hono-api-reference`, zod v4.
 - `@neondatabase/serverless` HTTP driver (no Hyperdrive) + `drizzle-orm/neon-http` query builder. `wrangler` + `@cloudflare/workers-types`. The Drizzle schema is generated from the live DB with `drizzle-kit pull` (`api/src/db/generated/schema.ts`), not hand-written; no `drizzle-kit push`/`migrate` (Alembic owns migrations).
 - Exports `AppType`; web imports it via the `@sararath/api` workspace package.
+- Tests: Vitest (`api/tests/app.test.ts`) using `app.request()` with the `@api/db/*` modules mocked; `bun run test`.
 
 ## web/
 

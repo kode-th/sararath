@@ -45,7 +45,8 @@ The web client does **not** read this document — it imports the worker's `AppT
 ## Deploy
 
 ```bash
-bun run deploy         # wrangler deploy --minify
+bunx wrangler secret put DATABASE_URL   # the plain postgresql:// URL
+bun run deploy                          # wrangler deploy --minify
 ```
 
-Requires a Cloudflare login and the `DATABASE_URL` secret set on the worker.
+Served at the custom domain `sararath-apis.fasu.dev` on the `sararath-api` Worker. Workers have no cold start, so no keep-alive is needed.
