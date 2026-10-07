@@ -18,9 +18,16 @@ interface CategorySelectProps {
   active?: string;
   source?: string;
   q?: string;
+  target: 'home' | 'search';
 }
 
-export function CategorySelect({ categories, active, source, q }: Readonly<CategorySelectProps>) {
+export function CategorySelect({
+  categories,
+  active,
+  source,
+  q,
+  target,
+}: Readonly<CategorySelectProps>) {
   const navigate = useNavigate();
   const items = [
     { label: 'ทุกหมวดหมู่', value: null },
@@ -36,10 +43,10 @@ export function CategorySelect({ categories, active, source, q }: Readonly<Categ
       value={active ?? null}
       onValueChange={(value) => {
         const category = typeof value === 'string' ? value : undefined;
-        if (q === undefined) {
-          void navigate({ to: '/', search: { category, source, cursor: undefined } });
-        } else {
+        if (target === 'search') {
           void navigate({ to: '/search', search: { q, category, source } });
+        } else {
+          void navigate({ to: '/', search: { category, source, cursor: undefined } });
         }
       }}
     >

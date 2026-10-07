@@ -24,6 +24,13 @@ export function Header() {
               <span className="block text-xs text-muted-foreground">ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
             </span>
           </Link>
+          <Link
+            to="/search"
+            search={{ q: undefined, source: undefined, category: undefined }}
+            className="font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
+          >
+            ข่าวทั้งหมด
+          </Link>
           <SearchBox key={search.q ?? ''} initialQuery={search.q} />
         </div>
       </header>

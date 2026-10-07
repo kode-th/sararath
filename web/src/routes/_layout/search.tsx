@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_layout/search')({
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }): Promise<SearchLoaderData> => {
     const [page, sources, categories] = await Promise.all([
-      deps.q ? quietFetch(() => context.queryClient.query(feedQuery(deps))) : undefined,
+      quietFetch(() => context.queryClient.query(feedQuery(deps))),
       quietFetch(() => context.queryClient.query(sourcesQuery)),
       quietFetch(() => context.queryClient.query(categoriesQuery(deps.source, deps.q))),
     ]);
@@ -48,28 +48,17 @@ export const Route = createFileRoute('/_layout/search')({
 });
 
 function SearchPage() {
-  const { q, source, category } = Route.useSearch();
-
-  if (!q) {
-    return (
-      <main className="container max-w-6xl py-16">
-        <h1 className="text-title-md font-bold text-foreground sm:text-5xl">ค้นหาข่าว</h1>
-        <p className="mt-3 max-w-[60ch] text-muted-foreground">
-          พิมพ์คำค้นหาในช่องด้านบนเพื่อค้นหาข่าวจากหน่วยงานรัฐ
-        </p>
-      </main>
-    );
-  }
+  const search = Route.useSearch();
 
   return (
     <Suspense
       fallback={
         <main className="grid min-h-[60vh] place-items-center">
-          <p className="text-sm text-muted-foreground">กำลังค้นหา…</p>
+          <p className="text-sm text-muted-foreground">{search.q ? 'กำลังค้นหา…' : 'กำลังโหลดข่าว…'}</p>
         </main>
       }
     >
-      <Results key={`${q}|${source ?? ''}|${category ?? ''}`} />
+      <Results key={`${search.q ?? ''}|${search.source ?? ''}|${search.category ?? ''}`} />
     </Suspense>
   );
 }
@@ -94,17 +83,29 @@ function Results() {
   return (
     <main className="container max-w-6xl">
       <h1 className="pt-5 text-title-md font-bold text-foreground sm:pt-10 sm:text-5xl">
-        ผลการค้นหา “{search.q}”
+        {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวทั้งหมด'}
       </h1>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <AgencyTabs sources={sources} active={search.source} q={search.q} />
-        <CategorySelect
-          categories={categories}
-          source={search.source}
-          active={search.category}
-          q={search.q}
-        />
+        <AgencyTabs sources={sources} active={search.source} q={search.q} target="search" />
+        <div className="flex items-center gap-4">
+          <CategorySelect
+            categories={categories}
+            source={search.source}
+            active={search.category}
+            q={search.q}
+            target="search"
+          />
+          {(search.source || search.category) && (
+            <Link
+              to="/search"
+              search={{ q: search.q, source: undefined, category: undefined }}
+              className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
+            >
+              ล้างตัวกรอง
+            </Link>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -115,14 +116,16 @@ function Results() {
 
       {items.length === 0 ? (
         <div className="py-16">
-          <h2 className="text-2xl font-bold text-foreground">ไม่พบข่าวที่ตรงกับ “{search.q}”</h2>
-          {search.source ? (
+          <h2 className="text-2xl font-bold text-foreground">
+            {search.q ? `ไม่พบข่าวที่ตรงกับ “${search.q}”` : 'ไม่พบข่าวตามตัวกรองที่เลือก'}
+          </h2>
+          {search.source || search.category ? (
             <Link
               to="/search"
-              search={{ q: search.q, source: undefined }}
+              search={{ q: search.q, source: undefined, category: undefined }}
               className="mt-3 inline-block font-display font-semibold text-foreground underline decoration-accent"
             >
-              ล้างตัวกรองหน่วยงาน
+              ล้างตัวกรอง
             </Link>
           ) : (
             <Link

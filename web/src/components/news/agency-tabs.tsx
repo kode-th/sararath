@@ -6,9 +6,10 @@ interface AgencyTabsProps {
   sources: { slug: string; name_th: string }[];
   active?: string;
   q?: string;
+  target: 'home' | 'search';
 }
 
-export function AgencyTabs({ sources, active, q }: Readonly<AgencyTabsProps>) {
+export function AgencyTabs({ sources, active, q, target }: Readonly<AgencyTabsProps>) {
   const tabs = [{ slug: undefined, name_th: 'ทุกหน่วยงาน' }, ...sources];
 
   return (
@@ -24,10 +25,10 @@ export function AgencyTabs({ sources, active, q }: Readonly<AgencyTabsProps>) {
           );
           return (
             <li key={tab.slug ?? 'all'}>
-              {q === undefined ? (
+              {target === 'search' ? (
                 <Link
-                  to="/"
-                  search={{ category: undefined, source: tab.slug, cursor: undefined }}
+                  to="/search"
+                  search={{ q, source: tab.slug }}
                   aria-current={current ? 'page' : undefined}
                   className={className}
                 >
@@ -35,8 +36,8 @@ export function AgencyTabs({ sources, active, q }: Readonly<AgencyTabsProps>) {
                 </Link>
               ) : (
                 <Link
-                  to="/search"
-                  search={{ q, source: tab.slug }}
+                  to="/"
+                  search={{ category: undefined, source: tab.slug, cursor: undefined }}
                   aria-current={current ? 'page' : undefined}
                   className={className}
                 >

@@ -98,8 +98,22 @@ function Feed() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <AgencyTabs sources={sources} active={search.source} />
-        <CategorySelect categories={categories} source={search.source} active={search.category} />
+        <AgencyTabs sources={sources} active={search.source} target="home" />
+        <div className="flex items-center gap-4">
+          <CategorySelect
+            categories={categories}
+            source={search.source}
+            active={search.category}
+            target="home"
+          />
+          <Link
+            to="/search"
+            search={{ q: undefined, source: undefined, category: undefined }}
+            className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
+          >
+            ข่าวทั้งหมด
+          </Link>
+        </div>
       </div>
 
       {error && (
