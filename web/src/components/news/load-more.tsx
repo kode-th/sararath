@@ -2,13 +2,13 @@ import { ArrowDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-interface LoadMoreButtonProps {
+interface LoadMoreProps {
   cursor: string | null;
   loading: boolean;
   onLoadMore: () => void;
 }
 
-export function LoadMoreButton({ cursor, loading, onLoadMore }: Readonly<LoadMoreButtonProps>) {
+export function LoadMore({ cursor, loading, onLoadMore }: Readonly<LoadMoreProps>) {
   if (!cursor) return null;
 
   return (

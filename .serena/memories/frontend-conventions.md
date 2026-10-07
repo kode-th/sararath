@@ -15,3 +15,4 @@
 
 1. Tailwind utilities only: no custom CSS classes, no inline `style={{}}` in pages. `styles.css` holds the tailwind import, `@theme` tokens, and minimal base rules.
 2. Imports use the `@/` alias for anything outside the current directory; relative imports only as `./` (never `../`).
+3. Filenames: at most ONE dash. `foo-bar.tsx` is allowed; `foo-bar-baz.tsx` is not. Enforced by the local oxlint rule `filename/single-dash` (`web/tools/oxlint/single-dash-filename.js`, scoped to `src/**` via `.oxlintrc.json`).

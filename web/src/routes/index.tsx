@@ -2,12 +2,12 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
+import { ErrorCard } from '@/components/news/error-card';
 import { FeedError } from '@/components/news/feed-error';
-import { FeedErrorCard } from '@/components/news/feed-error-card';
 import { FeedFallback } from '@/components/news/feed-fallback';
 import { FilterBar } from '@/components/news/filter-bar';
 import { LeadStory } from '@/components/news/lead-story';
-import { LoadMoreButton } from '@/components/news/load-more-button';
+import { LoadMore } from '@/components/news/load-more';
 import { StoryList } from '@/components/news/story-list';
 import { SectionTab } from '@/components/ui/section-tab';
 import { HOME_ASIDE_COUNT } from '@/constants/feed';
@@ -98,7 +98,7 @@ function Feed() {
         target="home"
       />
 
-      {error && <FeedErrorCard message={error} />}
+      {error && <ErrorCard message={error} />}
 
       {lead ? (
         <div className="grid gap-8 pt-6 sm:pt-8 lg:grid-cols-12 lg:gap-12">
@@ -138,7 +138,7 @@ function Feed() {
             </Link>
           </div>
           <StoryList items={more} thumbnail className="grid gap-x-12 md:grid-cols-2" />
-          <LoadMoreButton cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
+          <LoadMore cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>

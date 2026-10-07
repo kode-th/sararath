@@ -8,6 +8,10 @@
       "rules": { "unicorn/filename-case": ["error", { "case": "camelCase" }] }
     },
     {
+      "files": ["src/**"],
+      "rules": { "filename/single-dash": "error" }
+    },
+    {
       "files": ["src/components/ui/**"],
       "rules": {
         "design-system/no-member-expression": "off",
@@ -29,7 +33,8 @@
     "@shadcn/lint",
     "./tools/oxlint/jsx-child-element-spacing.js",
     "./tools/oxlint/no-super-linear-backtracking.js",
-    "./tools/oxlint/no-member-expression.js"
+    "./tools/oxlint/no-member-expression.js",
+    "./tools/oxlint/single-dash-filename.js"
   ],
   "settings": {
     "shadcn": {

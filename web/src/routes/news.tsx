@@ -2,11 +2,11 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
+import { ErrorCard } from '@/components/news/error-card';
 import { FeedError } from '@/components/news/feed-error';
-import { FeedErrorCard } from '@/components/news/feed-error-card';
 import { FeedFallback } from '@/components/news/feed-fallback';
 import { FilterBar } from '@/components/news/filter-bar';
-import { LoadMoreButton } from '@/components/news/load-more-button';
+import { LoadMore } from '@/components/news/load-more';
 import { StoryList } from '@/components/news/story-list';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import type { ArticlesPage, CategoryItem, NewsSourceItem } from '@/lib/api';
@@ -88,7 +88,7 @@ function Results() {
         target="search"
       />
 
-      {error && <FeedErrorCard message={error} />}
+      {error && <ErrorCard message={error} />}
 
       {items.length === 0 ? (
         <div className="py-16">
@@ -116,7 +116,7 @@ function Results() {
       ) : (
         <section aria-label="ผลการค้นหา" className="mt-6">
           <StoryList items={items} thumbnail />
-          <LoadMoreButton cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
+          <LoadMore cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>
