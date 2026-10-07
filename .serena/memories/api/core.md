@@ -4,7 +4,7 @@
 
 - `app.ts`: Hono app; groups routes via `.route('/v1', …)` so `AppType` captures them; CORS, `/openapi.json`, Scalar `/reference`, `onError`; exports only `app` + `AppType`.
 - `routes/`: `articles.ts`, `ops.ts` — each a chained sub-app with `describeRoute` + `validator` (hono-openapi).
-- `db/`: `client.ts` (`getSql`), `row.ts` (`UUID_RE`, `toIso`, zod row helpers), and one module per resource (`articles`, `categories`, `suggest`, `runs`, `sources`, `health`); rows are zod-parsed. No barrel.
+- `db/`: `client.ts` (`getDb` → `drizzle(neon(url))` via `drizzle-orm/neon-http`), `schema.ts` (pgTable mirror of the Alembic-owned tables, read-only), `row.ts` (`UUID_RE`, `toIso`), and one module per resource (`articles`, `categories`, `suggest`, `runs`, `sources`, `health`) using the Drizzle query builder. No barrel.
 - `schemas.ts`: zod response + query schemas (mirror the former Pydantic models).
 - `env.ts`: explicit `Env` (DATABASE_URL secret, CORS_ORIGINS var).
 - `index.ts`: worker entry, default-exports app.

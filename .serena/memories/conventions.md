@@ -9,5 +9,5 @@
 - `@base-ui/react` imports and JSX member expressions (`<Foo.Bar/>`) only in `web/src/components/ui/`; wrap primitives there.
 - `cn()` from `@/lib/cn` only for conditional/merged classNames. Tailwind utilities only.
 - web imports: `@/` alias; relative only `./` (never `../`). `src/lib` = `cn` + API client; helpers `utils/`, literals `constants/`, hooks camelCase in `src/hooks/`.
-- Worker: zod-parse DB rows instead of asserting; keep responses matching the former FastAPI shape.
+- Worker DB access uses Drizzle (`api/src/db/`) over the Neon HTTP driver. `api/src/db/schema.ts` mirrors `crawl/src/sararath/models.py` read-only; Alembic stays the single migration owner — never add `drizzle-kit push`/`migrate`. Keep responses matching the former FastAPI shape.
 - Commits: Conventional Commits, SHORT one-line subject. Branches `feat/name`, `fix/name`. Thai copy: native and plain.

@@ -3,13 +3,14 @@ import { describeRoute, resolver, validator } from 'hono-openapi';
 
 import {
   attachmentsFor,
+  type CursorRow,
   getArticleRow,
   listArticleRows,
   resolveCursor,
   toArticle,
 } from '../db/articles';
 import { listCategories } from '../db/categories';
-import { getSql } from '../db/client';
+import { getDb } from '../db/client';
 import { UUID_RE } from '../db/row';
 import { suggest } from '../db/suggest';
 import type { Env } from '../env';
@@ -69,19 +70,19 @@ export const articles = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const query = c.req.valid('query');
-      const sql = getSql(c.env);
-      let marker: { id: string; published_at: string | null } | null = null;
+      const db = getDb(c.env);
+      let marker: CursorRow | null = null;
       if (query.cursor) {
         if (!UUID_RE.test(query.cursor)) {
           return c.json({ detail: 'bad cursor' }, 422);
         }
-        marker = await resolveCursor(sql, query.cursor);
+        marker = await resolveCursor(db, query.cursor);
         if (!marker) return c.json({ detail: 'cursor not found' }, 404);
       }
-      const rows = await listArticleRows(sql, query, marker, query.limit + 1);
+      const rows = await listArticleRows(db, query, marker, query.limit + 1);
       const page = rows.slice(0, query.limit);
       const attachments = await attachmentsFor(
-        sql,
+        db,
         page.map((row) => row.id),
       );
       return c.json(
@@ -122,10 +123,10 @@ export const articles = new Hono<{ Bindings: Env }>()
       if (!UUID_RE.test(article_id)) {
         return c.json({ detail: 'bad article id' }, 422);
       }
-      const sql = getSql(c.env);
-      const row = await getArticleRow(sql, article_id);
+      const db = getDb(c.env);
+      const row = await getArticleRow(db, article_id);
       if (!row) return c.json({ detail: 'article not found' }, 404);
-      const attachments = await attachmentsFor(sql, [row.id]);
+      const attachments = await attachmentsFor(db, [row.id]);
       return c.json(toArticle(row, attachments.get(row.id) ?? []), 200);
     },
   )
@@ -146,7 +147,7 @@ export const articles = new Hono<{ Bindings: Env }>()
     validator('query', categoriesQuerySchema),
     async (c) => {
       const { source, q } = c.req.valid('query');
-      const items = await listCategories(getSql(c.env), source, q);
+      const items = await listCategories(getDb(c.env), source, q);
       return c.json({ items }, 200);
     },
   )
@@ -168,6 +169,6 @@ export const articles = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const { q, limit } = c.req.valid('query');
-      return c.json(await suggest(getSql(c.env), q.trim(), limit), 200);
+      return c.json(await suggest(getDb(c.env), q.trim(), limit), 200);
     },
   );

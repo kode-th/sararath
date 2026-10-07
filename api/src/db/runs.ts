@@ -1,46 +1,41 @@
-import { z } from 'zod';
+import { desc, eq } from 'drizzle-orm';
 
 import type { RunOut } from '../schemas';
-import type { Sql } from './client';
-import { dbInt, timestamp, toIso } from './row';
-
-const runRowSchema = z.object({
-  started_at: timestamp,
-  finished_at: timestamp,
-  status: z.string(),
-  http_status: z.number().nullable(),
-  found_count: dbInt,
-  inserted_count: dbInt,
-  skipped_count: dbInt,
-  error: z.string().nullable(),
-  slug: z.string(),
-});
+import type { Db } from './client';
+import { toIso } from './row';
+import { collectorRuns, sources } from './schema';
 
 export async function listRuns(
-  sql: Sql,
+  db: Db,
   source: string | undefined,
   limit: number,
 ): Promise<RunOut[]> {
-  const rows = runRowSchema.array().parse(
-    await sql`
-    SELECT r.started_at, r.finished_at, r.status, r.http_status, r.found_count,
-           r.inserted_count, r.skipped_count, r.error, s.slug
-    FROM collector_runs r
-    JOIN sources s ON r.source_id = s.id
-    ${source ? sql`WHERE s.slug = ${source}` : sql``}
-    ORDER BY r.started_at DESC
-    LIMIT ${limit}
-  `,
-  );
+  const rows = await db
+    .select({
+      startedAt: collectorRuns.startedAt,
+      finishedAt: collectorRuns.finishedAt,
+      status: collectorRuns.status,
+      httpStatus: collectorRuns.httpStatus,
+      foundCount: collectorRuns.foundCount,
+      insertedCount: collectorRuns.insertedCount,
+      skippedCount: collectorRuns.skippedCount,
+      error: collectorRuns.error,
+      slug: sources.slug,
+    })
+    .from(collectorRuns)
+    .innerJoin(sources, eq(collectorRuns.sourceId, sources.id))
+    .where(source ? eq(sources.slug, source) : undefined)
+    .orderBy(desc(collectorRuns.startedAt))
+    .limit(limit);
   return rows.map((row) => ({
     source: row.slug,
-    started_at: toIso(row.started_at) ?? '',
-    finished_at: toIso(row.finished_at),
+    started_at: toIso(row.startedAt) ?? '',
+    finished_at: toIso(row.finishedAt),
     status: row.status,
-    http_status: row.http_status,
-    found_count: row.found_count,
-    inserted_count: row.inserted_count,
-    skipped_count: row.skipped_count,
+    http_status: row.httpStatus,
+    found_count: row.foundCount,
+    inserted_count: row.insertedCount,
+    skipped_count: row.skippedCount,
     error: row.error,
   }));
 }

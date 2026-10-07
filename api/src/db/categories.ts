@@ -1,30 +1,31 @@
-import { z } from 'zod';
+import { and, asc, count, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
 
 import type { CategoryOut } from '../schemas';
-import type { Sql } from './client';
-import { dbInt } from './row';
-
-const categoryRowSchema = z.object({
-  value: z.string(),
-  count: dbInt,
-});
+import type { Db } from './client';
+import { articles, sources } from './schema';
 
 export async function listCategories(
-  sql: Sql,
+  db: Db,
   source: string | undefined,
   q: string | undefined,
 ): Promise<CategoryOut[]> {
-  const like = q ? `%${q}%` : null;
-  return categoryRowSchema.array().parse(
-    await sql`
-    SELECT a.category AS value, count(*)::int AS count
-    FROM articles a
-    ${source ? sql`JOIN sources s ON a.source_id = s.id` : sql``}
-    WHERE a.category <> ''
-    ${source ? sql`AND s.slug = ${source}` : sql``}
-    ${like ? sql`AND (a.title LIKE ${like} OR a.body_text LIKE ${like} OR a.agency_name LIKE ${like})` : sql``}
-    GROUP BY a.category
-    ORDER BY count DESC, a.category
-  `,
-  );
+  const likeQ = q ? `%${q}%` : undefined;
+  const conditions: (SQL | undefined)[] = [
+    ne(articles.category, ''),
+    source ? eq(sources.slug, source) : undefined,
+    likeQ
+      ? or(
+          like(articles.title, likeQ),
+          like(articles.bodyText, likeQ),
+          like(articles.agencyName, likeQ),
+        )
+      : undefined,
+  ];
+  return db
+    .select({ value: articles.category, count: count() })
+    .from(articles)
+    .innerJoin(sources, eq(articles.sourceId, sources.id))
+    .where(and(...conditions))
+    .groupBy(articles.category)
+    .orderBy(desc(count()), asc(articles.category));
 }

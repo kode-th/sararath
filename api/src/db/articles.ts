@@ -1,32 +1,31 @@
-import { z } from 'zod';
+import { and, desc, eq, inArray, isNull, like, lt, or, sql, type SQL } from 'drizzle-orm';
 
 import type { ArticleOut } from '../schemas';
-import type { Sql } from './client';
-import { timestamp, toIso } from './row';
+import type { Db } from './client';
+import { toIso } from './row';
+import { articles, attachments, sources } from './schema';
 
-const cursorRowSchema = z.object({
-  id: z.string(),
-  published_at: z.string().nullable(),
-});
-export type CursorRow = z.infer<typeof cursorRowSchema>;
+export interface CursorRow {
+  id: string;
+  publishedAt: Date | null;
+}
 
-const articleRowSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  summary: z.string().nullable(),
-  body_text: z.string(),
-  category: z.string(),
-  agency_name: z.string(),
-  canonical_url: z.string(),
-  language: z.string(),
-  published_at: timestamp,
-  published_raw: z.string(),
-  first_seen_at: timestamp,
-  last_seen_at: timestamp,
-  slug: z.string(),
-  name_th: z.string(),
-});
-type ArticleRow = z.infer<typeof articleRowSchema>;
+const articleColumns = {
+  id: articles.id,
+  title: articles.title,
+  summary: articles.summary,
+  bodyText: articles.bodyText,
+  category: articles.category,
+  agencyName: articles.agencyName,
+  canonicalUrl: articles.canonicalUrl,
+  language: articles.language,
+  publishedAt: articles.publishedAt,
+  publishedRaw: articles.publishedRaw,
+  firstSeenAt: articles.firstSeenAt,
+  lastSeenAt: articles.lastSeenAt,
+  slug: sources.slug,
+  nameTh: sources.nameTh,
+};
 
 export interface ArticleFilters {
   source?: string;
@@ -37,105 +36,97 @@ export interface ArticleFilters {
   q?: string;
 }
 
-export async function resolveCursor(sql: Sql, id: string): Promise<CursorRow | null> {
-  const rows = cursorRowSchema.array().parse(
-    await sql`
-    SELECT id, published_at::text AS published_at
-    FROM articles
-    WHERE id = ${id}::uuid
-  `,
-  );
-  return rows[0] ?? null;
+export async function resolveCursor(db: Db, id: string): Promise<CursorRow | null> {
+  const [row] = await db
+    .select({ id: articles.id, publishedAt: articles.publishedAt })
+    .from(articles)
+    .where(eq(articles.id, id))
+    .limit(1);
+  return row ?? null;
 }
 
+export async function getArticleRow(db: Db, id: string) {
+  const [row] = await db
+    .select(articleColumns)
+    .from(articles)
+    .innerJoin(sources, eq(articles.sourceId, sources.id))
+    .where(eq(articles.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+export type ArticleRow = NonNullable<Awaited<ReturnType<typeof getArticleRow>>>;
+
 export async function listArticleRows(
-  sql: Sql,
+  db: Db,
   filters: ArticleFilters,
   marker: CursorRow | null,
   limit: number,
 ): Promise<ArticleRow[]> {
   const { source, agency, category, published_from, published_to, q } = filters;
-  const like = q ? `%${q}%` : null;
-  const agencyLike = agency ? `%${agency}%` : null;
-  return articleRowSchema.array().parse(
-    await sql`
-    SELECT a.id, a.title, a.summary, a.body_text, a.category, a.agency_name,
-           a.canonical_url, a.language, a.published_at, a.published_raw,
-           a.first_seen_at, a.last_seen_at, s.slug, s.name_th
-    FROM articles a
-    JOIN sources s ON a.source_id = s.id
-    WHERE TRUE
-    ${source ? sql`AND s.slug = ${source}` : sql``}
-    ${agencyLike ? sql`AND a.agency_name LIKE ${agencyLike}` : sql``}
-    ${category ? sql`AND a.category = ${category}` : sql``}
-    ${published_from ? sql`AND a.published_at::date >= ${published_from}::date` : sql``}
-    ${published_to ? sql`AND a.published_at::date <= ${published_to}::date` : sql``}
-    ${like ? sql`AND (a.title LIKE ${like} OR a.body_text LIKE ${like} OR a.agency_name LIKE ${like})` : sql``}
-    ${
-      marker
-        ? marker.published_at === null
-          ? sql`AND a.published_at IS NULL AND a.id < ${marker.id}::uuid`
-          : sql`AND (a.published_at < ${marker.published_at}::timestamptz
-                     OR a.published_at IS NULL
-                     OR (a.published_at = ${marker.published_at}::timestamptz AND a.id < ${marker.id}::uuid))`
-        : sql``
-    }
-    ORDER BY a.published_at DESC NULLS LAST, a.id DESC
-    LIMIT ${limit}
-  `,
-  );
+  const likeQ = q ? `%${q}%` : undefined;
+  const conditions: (SQL | undefined)[] = [
+    source ? eq(sources.slug, source) : undefined,
+    agency ? like(articles.agencyName, `%${agency}%`) : undefined,
+    category ? eq(articles.category, category) : undefined,
+    published_from ? sql`${articles.publishedAt}::date >= ${published_from}::date` : undefined,
+    published_to ? sql`${articles.publishedAt}::date <= ${published_to}::date` : undefined,
+    likeQ
+      ? or(
+          like(articles.title, likeQ),
+          like(articles.bodyText, likeQ),
+          like(articles.agencyName, likeQ),
+        )
+      : undefined,
+    marker
+      ? marker.publishedAt === null
+        ? and(isNull(articles.publishedAt), lt(articles.id, marker.id))
+        : or(
+            lt(articles.publishedAt, marker.publishedAt),
+            isNull(articles.publishedAt),
+            and(eq(articles.publishedAt, marker.publishedAt), lt(articles.id, marker.id)),
+          )
+      : undefined,
+  ];
+  return db
+    .select(articleColumns)
+    .from(articles)
+    .innerJoin(sources, eq(articles.sourceId, sources.id))
+    .where(and(...conditions))
+    .orderBy(sql`${articles.publishedAt} desc nulls last`, desc(articles.id))
+    .limit(limit);
 }
 
-export async function getArticleRow(sql: Sql, id: string): Promise<ArticleRow | null> {
-  const rows = articleRowSchema.array().parse(
-    await sql`
-    SELECT a.id, a.title, a.summary, a.body_text, a.category, a.agency_name,
-           a.canonical_url, a.language, a.published_at, a.published_raw,
-           a.first_seen_at, a.last_seen_at, s.slug, s.name_th
-    FROM articles a
-    JOIN sources s ON a.source_id = s.id
-    WHERE a.id = ${id}::uuid
-  `,
-  );
-  return rows[0] ?? null;
-}
-
-export async function attachmentsFor(sql: Sql, ids: string[]): Promise<Map<string, string[]>> {
+export async function attachmentsFor(db: Db, ids: string[]): Promise<Map<string, string[]>> {
   const grouped = new Map<string, string[]>();
   if (ids.length === 0) return grouped;
-  const rows = z
-    .object({ article_id: z.string(), url: z.string() })
-    .array()
-    .parse(
-      await sql`
-      SELECT article_id, url
-      FROM attachments
-      WHERE article_id = ANY(string_to_array(${ids.join(',')}, ',')::uuid[])
-    `,
-    );
+  const rows = await db
+    .select({ articleId: attachments.articleId, url: attachments.url })
+    .from(attachments)
+    .where(inArray(attachments.articleId, ids));
   for (const row of rows) {
-    const urls = grouped.get(row.article_id) ?? [];
+    const urls = grouped.get(row.articleId) ?? [];
     urls.push(row.url);
-    grouped.set(row.article_id, urls);
+    grouped.set(row.articleId, urls);
   }
   return grouped;
 }
 
-export function toArticle(row: ArticleRow, attachments: string[]): ArticleOut {
+export function toArticle(row: ArticleRow, attachmentUrls: string[]): ArticleOut {
   return {
     id: row.id,
-    source: { slug: row.slug, name_th: row.name_th },
+    source: { slug: row.slug, name_th: row.nameTh },
     title: row.title,
     summary: row.summary,
-    body_text: row.body_text,
+    body_text: row.bodyText,
     category: row.category,
-    agency_name: row.agency_name,
-    canonical_url: row.canonical_url,
+    agency_name: row.agencyName,
+    canonical_url: row.canonicalUrl,
     language: row.language,
-    published_at: toIso(row.published_at),
-    published_raw: row.published_raw,
-    retrieved_at: toIso(row.first_seen_at),
-    last_seen_at: toIso(row.last_seen_at),
-    attachments,
+    published_at: toIso(row.publishedAt),
+    published_raw: row.publishedRaw,
+    retrieved_at: toIso(row.firstSeenAt),
+    last_seen_at: toIso(row.lastSeenAt),
+    attachments: attachmentUrls,
   };
 }

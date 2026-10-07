@@ -1,9 +1,10 @@
 import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 import type { Env } from '../env';
 
-export type Sql = ReturnType<typeof neon>;
-
-export function getSql(env: Env): Sql {
-  return neon(env.DATABASE_URL);
+export function getDb(env: Env) {
+  return drizzle(neon(env.DATABASE_URL));
 }
+
+export type Db = ReturnType<typeof getDb>;

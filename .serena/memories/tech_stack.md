@@ -9,7 +9,7 @@
 ## api/ (Cloudflare Worker)
 
 - Hono (+ `hono/client` for RPC), `hono-openapi` (`describeRoute`/`validator`/`openAPIRouteHandler`), `@scalar/hono-api-reference`, zod v4.
-- `@neondatabase/serverless` HTTP driver (no Hyperdrive). `wrangler` + `@cloudflare/workers-types`.
+- `@neondatabase/serverless` HTTP driver (no Hyperdrive) + `drizzle-orm/neon-http` query builder. `wrangler` + `@cloudflare/workers-types`. Schema is Alembic-owned; `api/src/db/schema.ts` mirrors it (no drizzle-kit).
 - Exports `AppType`; web imports it via the `@sararath/api` workspace package.
 
 ## web/

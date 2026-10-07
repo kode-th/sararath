@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getSql } from '../db/client';
+import { getDb } from '../db/client';
 import { health } from '../db/health';
 import { listRuns } from '../db/runs';
 import { listSources } from '../db/sources';
@@ -33,7 +33,7 @@ export const ops = new Hono<{ Bindings: Env }>()
     }),
     async (c) => {
       const { source, limit } = c.req.valid('query');
-      const items = await listRuns(getSql(c.env), source, limit);
+      const items = await listRuns(getDb(c.env), source, limit);
       return c.json({ items }, 200);
     },
   )
@@ -52,7 +52,7 @@ export const ops = new Hono<{ Bindings: Env }>()
       },
     }),
     async (c) => {
-      const items = await listSources(getSql(c.env));
+      const items = await listSources(getDb(c.env));
       return c.json({ items }, 200);
     },
   )
@@ -73,7 +73,7 @@ export const ops = new Hono<{ Bindings: Env }>()
       },
     }),
     async (c) => {
-      const out = await health(getSql(c.env));
+      const out = await health(getDb(c.env));
       if (!out) return c.json({ detail: 'db unreachable' }, 503);
       return c.json(out, 200);
     },
