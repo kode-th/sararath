@@ -65,7 +65,7 @@ uv run python -m sararath crawl-due --source rd   # restrict to sources
 uv run python -m sararath check                   # exit 1 when a source is stale
 uv run python -m sararath export-legacy --date 2026-09-20 --out data.json
 uv run python -m sararath openapi                 # print the OpenAPI schema
-uv run python -m sararath backfill-body --source moac  # refresh bodies (prd, moac)
+uv run python -m sararath backfill-body --source moac  # refresh bodies (prd, moac); --single-line for long single-line only
 uv run python -m sararath dedupe-articles --source moac --dry-run  # drop duplicate rows
 uv run python -m sararath repair-links --source moac --dry-run    # fix malformed source URLs
 uv run python -m sararath strip-script --source prd --dry-run     # drop leaked script text

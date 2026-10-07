@@ -6,7 +6,7 @@ import asyncio
 from dataclasses import dataclass
 
 import httpx
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from sararath.collectors.base import DiscoveredItem
@@ -26,6 +26,9 @@ DIRTY_MARKERS = ("%function(%", "%jQuery(%", "%$(")
 MOAC_ENRICHED = "%/data/news/l/%"
 
 SUPPORTED = {"prd", "moac", "thaigov"}
+
+# A body without paragraph breaks that is long enough to have had structure.
+SINGLE_LINE_MIN_LENGTH = 300
 
 
 @dataclass
@@ -141,6 +144,7 @@ def backfill_bodies(
     offset: int = 0,
     dry_run: bool = False,
     reprocess: bool = False,
+    single_line: bool = False,
 ) -> BackfillResult:
     if slug not in SUPPORTED:
         raise SystemExit(f"error: no body backfill for source {slug!r}")
@@ -157,6 +161,11 @@ def backfill_bodies(
     condition = _candidate_query(slug, reprocess)
     if condition is not None:
         stmt = stmt.where(condition)
+    if single_line:
+        stmt = stmt.where(
+            ~Article.body_text.like("%\n%"),
+            func.length(Article.body_text) > SINGLE_LINE_MIN_LENGTH,
+        )
     articles = list(session.scalars(stmt).all())
     if dry_run:
         return BackfillResult(candidates=len(articles), updated=0, failed=0)

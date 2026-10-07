@@ -55,6 +55,11 @@ def build_parser() -> argparse.ArgumentParser:
     backfill.add_argument("--offset", type=int, default=0)
     backfill.add_argument("--dry-run", action="store_true")
     backfill.add_argument("--all", dest="all_items", action="store_true")
+    backfill.add_argument(
+        "--single-line",
+        action="store_true",
+        help="Only bodies without paragraph breaks (long single-line)",
+    )
 
     dedupe = sub.add_parser(
         "dedupe-articles", help="Drop duplicates sharing source, title, published_at"
@@ -166,6 +171,7 @@ def _cmd_backfill_body(args: argparse.Namespace) -> int:
             offset=args.offset,
             dry_run=args.dry_run,
             reprocess=args.all_items,
+            single_line=args.single_line,
         )
     print(
         f"backfill {args.source}: candidates={result.candidates} "

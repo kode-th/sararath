@@ -47,7 +47,7 @@ uv run python -m sararath check --max-age-hours 26    # exit 1 when stale
 uv run python -m sararath serve --host 0.0.0.0 --port 8000
 uv run python -m sararath export-legacy --date 2026-09-20 --out data.json
 uv run python -m sararath openapi > openapi.json      # dump the OpenAPI schema
-uv run python -m sararath backfill-body --source moac  # re-fetch bodies (prd, moac)
+uv run python -m sararath backfill-body --source moac  # re-fetch bodies (prd, moac); --single-line for long single-line only
 uv run python -m sararath dedupe-articles --source moac --dry-run  # drop duplicate rows
 uv run python -m sararath repair-links --source moac --dry-run    # fix malformed source URLs
 uv run python -m sararath strip-script --source prd --dry-run     # drop leaked script text

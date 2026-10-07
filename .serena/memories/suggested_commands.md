@@ -4,7 +4,7 @@
 
 - Always `uv run python -m sararath <cmd>`; bare `uv run pytest` / `uv run alembic` can fail to spawn here.
 - `crawl --source <prd|moac|thaigov|rd>`, `crawl-due [--source X]`, `check`, `serve`, `openapi`.
-- `backfill-body --source X [--all] [--offset N] [--dry-run]` (prd/moac/thaigov).
+- `backfill-body --source X [--all] [--single-line] [--offset N] [--dry-run]` (prd/moac/thaigov).
 - `dedupe-articles`, `repair-links`, `strip-script` (all `--source X --dry-run`).
 - `export-legacy --date YYYY-MM-DD --out data.json`.
 - Migrations: `uv run python -m alembic upgrade head` from `api/`.
