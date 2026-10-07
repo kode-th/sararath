@@ -3,6 +3,14 @@
   "name": "sararath-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-07",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "sararath-apis.fasu.dev",
+      "custom_domain": true,
+    },
+  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1,
