@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
 import { getDb } from '../db/client';
-import { suggest } from '../db/suggest';
+import { suggest } from '../db/queries/suggest';
 import type { Env } from '../env';
 import { SuggestSchema, suggestQuerySchema } from '../schemas';
 

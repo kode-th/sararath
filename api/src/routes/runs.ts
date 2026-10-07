@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
 import { getDb } from '../db/client';
-import { listRuns } from '../db/runs';
+import { listRuns } from '../db/queries/runs';
 import type { Env } from '../env';
 import { RunsPageSchema, runsQuerySchema } from '../schemas';
 

@@ -1,9 +1,9 @@
 import { desc, eq } from 'drizzle-orm';
 
-import type { RunOut } from '../schemas';
-import type { Db } from './client';
-import { toIso } from './row';
-import { collectorRuns, sources } from './schema';
+import type { RunOut } from '../../schemas';
+import type { Db } from '../client';
+import { toIso } from '../row';
+import { collectorRuns, sources } from '../schema';
 
 export async function listRuns(
   db: Db,
@@ -27,6 +27,7 @@ export async function listRuns(
     .where(source ? eq(sources.slug, source) : undefined)
     .orderBy(desc(collectorRuns.startedAt))
     .limit(limit);
+
   return rows.map((row) => ({
     source: row.slug,
     started_at: toIso(row.startedAt) ?? '',

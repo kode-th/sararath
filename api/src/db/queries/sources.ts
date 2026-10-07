@@ -1,9 +1,9 @@
 import { asc } from 'drizzle-orm';
 
-import type { SourceOut } from '../schemas';
-import type { Db } from './client';
-import { toIso } from './row';
-import { sources } from './schema';
+import type { SourceOut } from '../../schemas';
+import type { Db } from '../client';
+import { toIso } from '../row';
+import { sources } from '../schema';
 
 export async function listSources(db: Db): Promise<SourceOut[]> {
   const rows = await db
@@ -18,6 +18,7 @@ export async function listSources(db: Db): Promise<SourceOut[]> {
     })
     .from(sources)
     .orderBy(asc(sources.slug));
+
   return rows.map((row) => ({
     slug: row.slug,
     name_th: row.nameTh,

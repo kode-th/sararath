@@ -1,8 +1,8 @@
 import { and, asc, count, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
 
-import type { CategoryOut } from '../schemas';
-import type { Db } from './client';
-import { articles, sources } from './schema';
+import type { CategoryOut } from '../../schemas';
+import type { Db } from '../client';
+import { articles, sources } from '../schema';
 
 export async function listCategories(
   db: Db,
@@ -10,6 +10,7 @@ export async function listCategories(
   q: string | undefined,
 ): Promise<CategoryOut[]> {
   const likeQ = q ? `%${q}%` : undefined;
+
   const conditions: (SQL | undefined)[] = [
     ne(articles.category, ''),
     source ? eq(sources.slug, source) : undefined,
@@ -21,6 +22,7 @@ export async function listCategories(
         )
       : undefined,
   ];
+
   return db
     .select({ value: articles.category, count: count() })
     .from(articles)

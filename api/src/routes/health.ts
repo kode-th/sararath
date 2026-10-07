@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { describeRoute, resolver } from 'hono-openapi';
 
 import { getDb } from '../db/client';
-import { health } from '../db/health';
+import { health } from '../db/queries/health';
 import type { Env } from '../env';
 import { ErrorSchema, HealthSchema } from '../schemas';
 

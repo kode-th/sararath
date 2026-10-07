@@ -1,8 +1,8 @@
 import { asc, desc, like, sql } from 'drizzle-orm';
 
-import type { SuggestOut } from '../schemas';
-import type { Db } from './client';
-import { articles, sources } from './schema';
+import type { SuggestOut } from '../../schemas';
+import type { Db } from '../client';
+import { articles, sources } from '../schema';
 
 export async function suggest(db: Db, term: string, limit: number): Promise<SuggestOut> {
   if (term === '') return { sources: [], articles: [] };
@@ -20,8 +20,10 @@ export async function suggest(db: Db, term: string, limit: number): Promise<Sugg
     .where(like(articles.title, likeTerm))
     .orderBy(sql`${articles.publishedAt} desc nulls last`, desc(articles.id))
     .limit(limit * 4);
+
   const seen = new Set<string>();
   const articlesOut: { id: string; title: string }[] = [];
+
   for (const row of rows) {
     const key = row.title.replace(/\s+/g, ' ').trim().toLowerCase();
     if (seen.has(key)) continue;
@@ -29,6 +31,7 @@ export async function suggest(db: Db, term: string, limit: number): Promise<Sugg
     articlesOut.push({ id: row.id, title: row.title });
     if (articlesOut.length >= limit) break;
   }
+
   return {
     sources: sourceRows.map((row) => ({
       slug: row.slug,

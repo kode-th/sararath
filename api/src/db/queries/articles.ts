@@ -1,9 +1,9 @@
 import { and, desc, eq, inArray, isNull, like, lt, or, sql, type SQL } from 'drizzle-orm';
 
-import type { ArticleOut } from '../schemas';
-import type { Db } from './client';
-import { toIso } from './row';
-import { articles, attachments, sources } from './schema';
+import type { ArticleOut } from '../../schemas';
+import type { Db } from '../client';
+import { toIso } from '../row';
+import { articles, attachments, sources } from '../schema';
 
 export interface CursorRow {
   id: string;
@@ -42,6 +42,7 @@ export async function resolveCursor(db: Db, id: string): Promise<CursorRow | nul
     .from(articles)
     .where(eq(articles.id, id))
     .limit(1);
+
   return row ?? null;
 }
 
@@ -52,6 +53,7 @@ export async function getArticleRow(db: Db, id: string) {
     .innerJoin(sources, eq(articles.sourceId, sources.id))
     .where(eq(articles.id, id))
     .limit(1);
+
   return row ?? null;
 }
 
@@ -64,7 +66,9 @@ export async function listArticleRows(
   limit: number,
 ): Promise<ArticleRow[]> {
   const { source, agency, category, published_from, published_to, q } = filters;
+
   const likeQ = q ? `%${q}%` : undefined;
+
   const conditions: (SQL | undefined)[] = [
     source ? eq(sources.slug, source) : undefined,
     agency ? like(articles.agencyName, `%${agency}%`) : undefined,
@@ -88,6 +92,7 @@ export async function listArticleRows(
           )
       : undefined,
   ];
+
   return db
     .select(articleColumns)
     .from(articles)
@@ -99,16 +104,20 @@ export async function listArticleRows(
 
 export async function attachmentsFor(db: Db, ids: string[]): Promise<Map<string, string[]>> {
   const grouped = new Map<string, string[]>();
+
   if (ids.length === 0) return grouped;
+
   const rows = await db
     .select({ articleId: attachments.articleId, url: attachments.url })
     .from(attachments)
     .where(inArray(attachments.articleId, ids));
+
   for (const row of rows) {
     const urls = grouped.get(row.articleId) ?? [];
     urls.push(row.url);
     grouped.set(row.articleId, urls);
   }
+
   return grouped;
 }
 

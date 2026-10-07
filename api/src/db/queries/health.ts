@@ -1,9 +1,9 @@
 import { asc, sql } from 'drizzle-orm';
 
-import type { HealthOut } from '../schemas';
-import type { Db } from './client';
-import { toIso } from './row';
-import { sources } from './schema';
+import type { HealthOut } from '../../schemas';
+import type { Db } from '../client';
+import { toIso } from '../row';
+import { sources } from '../schema';
 
 export async function health(db: Db): Promise<HealthOut | null> {
   try {
@@ -11,6 +11,7 @@ export async function health(db: Db): Promise<HealthOut | null> {
   } catch {
     return null;
   }
+
   const rows = await db
     .select({
       slug: sources.slug,
@@ -19,6 +20,7 @@ export async function health(db: Db): Promise<HealthOut | null> {
     })
     .from(sources)
     .orderBy(asc(sources.slug));
+
   return {
     db: 'ok',
     sources: rows.map((row) => ({

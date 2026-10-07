@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { describeRoute, resolver } from 'hono-openapi';
 
 import { getDb } from '../db/client';
-import { listSources } from '../db/sources';
+import { listSources } from '../db/queries/sources';
 import type { Env } from '../env';
 import { SourcesPageSchema } from '../schemas';
 

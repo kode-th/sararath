@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
+import { getDb } from '../db/client';
 import {
   attachmentsFor,
   type CursorRow,
@@ -8,8 +9,7 @@ import {
   listArticleRows,
   resolveCursor,
   toArticle,
-} from '../db/articles';
-import { getDb } from '../db/client';
+} from '../db/queries/articles';
 import { UUID_RE } from '../db/row';
 import type { Env } from '../env';
 import {

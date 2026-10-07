@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { listCategories } from '../db/categories';
 import { getDb } from '../db/client';
+import { listCategories } from '../db/queries/categories';
 import type { Env } from '../env';
 import { CategoriesPageSchema, categoriesQuerySchema } from '../schemas';
 
