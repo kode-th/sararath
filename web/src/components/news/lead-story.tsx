@@ -1,14 +1,17 @@
 import { Link } from '@tanstack/react-router';
 import { Image } from '@unpic/react';
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 
 import { HighlightTitle } from '@/components/news/highlight-title';
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
-import { excerpt, formatDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
+import { excerpt, formatDate, formatTime, leadImage } from '@/utils/format';
 
 export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
-  const image = leadImage(article);
+  const [imageFailed, setImageFailed] = useState(false);
+  const image = imageFailed ? undefined : leadImage(article);
+
   return (
     <article
       className={cn(
@@ -42,7 +45,10 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
           height={600}
           layout="constrained"
           decoding="async"
-          onError={hideBrokenImage}
+          ref={(node) => {
+            if (node?.complete && node.naturalWidth === 0) setImageFailed(true);
+          }}
+          onError={() => setImageFailed(true)}
           className="aspect-2/1 w-full border border-foreground/15 object-cover md:col-start-1 md:row-span-2 md:row-start-1 md:aspect-auto md:h-full md:max-h-104"
         />
       )}

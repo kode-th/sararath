@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
-import { formatShortDate, formatTime, hideBrokenImage, leadImage } from '@/utils/format';
+import { formatShortDate, formatTime, leadImage } from '@/utils/format';
 
 interface StoryRowProps {
   article: FeedItem;
@@ -13,7 +13,8 @@ interface StoryRowProps {
 
 export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>) {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const image = thumbnail ? leadImage(article) : undefined;
+  const [imageFailed, setImageFailed] = useState(false);
+  const image = thumbnail && !imageFailed ? leadImage(article) : undefined;
 
   return (
     <li className="border-b border-foreground/15">
@@ -57,10 +58,12 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
             loading="lazy"
             decoding="async"
             ref={(node) => {
-              if (node?.complete && node.naturalWidth > 0) setImageLoaded(true);
+              if (!node?.complete) return;
+              if (node.naturalWidth > 0) setImageLoaded(true);
+              else setImageFailed(true);
             }}
             onLoad={() => setImageLoaded(true)}
-            onError={hideBrokenImage}
+            onError={() => setImageFailed(true)}
             className={cn(
               'aspect-square w-full border object-cover',
               imageLoaded ? 'border-foreground/15' : 'border-transparent',
