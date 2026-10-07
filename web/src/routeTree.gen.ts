@@ -9,115 +9,86 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LayoutRouteImport } from './routes/_layout'
-import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
-import { Route as LayoutNewsRouteImport } from './routes/_layout/news'
-import { Route as LayoutArticlesIdRouteImport } from './routes/_layout/articles.$id'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as ArticlesIdRouteImport } from './routes/articles.$id'
 
-const LayoutRoute = LayoutRouteImport.update({
-  id: '/_layout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LayoutIndexRoute = LayoutIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutNewsRoute = LayoutNewsRouteImport.update({
+const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutArticlesIdRoute = LayoutArticlesIdRouteImport.update({
+const ArticlesIdRoute = ArticlesIdRouteImport.update({
   id: '/articles/$id',
   path: '/articles/$id',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutIndexRoute
-  '/news': typeof LayoutNewsRoute
-  '/articles/$id': typeof LayoutArticlesIdRoute
+  '/': typeof IndexRoute
+  '/news': typeof NewsRoute
+  '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRoutesByTo {
-  '/news': typeof LayoutNewsRoute
-  '/': typeof LayoutIndexRoute
-  '/articles/$id': typeof LayoutArticlesIdRoute
+  '/': typeof IndexRoute
+  '/news': typeof NewsRoute
+  '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_layout': typeof LayoutRouteWithChildren
-  '/_layout/news': typeof LayoutNewsRoute
-  '/_layout/': typeof LayoutIndexRoute
-  '/_layout/articles/$id': typeof LayoutArticlesIdRoute
+  '/': typeof IndexRoute
+  '/news': typeof NewsRoute
+  '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/news' | '/articles/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/news' | '/' | '/articles/$id'
-  id:
-    | '__root__'
-    | '/_layout'
-    | '/_layout/news'
-    | '/_layout/'
-    | '/_layout/articles/$id'
+  to: '/' | '/news' | '/articles/$id'
+  id: '__root__' | '/' | '/news' | '/articles/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  LayoutRoute: typeof LayoutRouteWithChildren
+  IndexRoute: typeof IndexRoute
+  NewsRoute: typeof NewsRoute
+  ArticlesIdRoute: typeof ArticlesIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof LayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_layout/': {
-      id: '/_layout/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_layout/news': {
-      id: '/_layout/news'
+    '/news': {
+      id: '/news'
       path: '/news'
       fullPath: '/news'
-      preLoaderRoute: typeof LayoutNewsRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_layout/articles/$id': {
-      id: '/_layout/articles/$id'
+    '/articles/$id': {
+      id: '/articles/$id'
       path: '/articles/$id'
       fullPath: '/articles/$id'
-      preLoaderRoute: typeof LayoutArticlesIdRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof ArticlesIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface LayoutRouteChildren {
-  LayoutNewsRoute: typeof LayoutNewsRoute
-  LayoutIndexRoute: typeof LayoutIndexRoute
-  LayoutArticlesIdRoute: typeof LayoutArticlesIdRoute
-}
-
-const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutNewsRoute: LayoutNewsRoute,
-  LayoutIndexRoute: LayoutIndexRoute,
-  LayoutArticlesIdRoute: LayoutArticlesIdRoute,
-}
-
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
-  LayoutRoute: LayoutRouteWithChildren,
+  IndexRoute: IndexRoute,
+  NewsRoute: NewsRoute,
+  ArticlesIdRoute: ArticlesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

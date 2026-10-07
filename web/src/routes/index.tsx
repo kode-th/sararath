@@ -26,7 +26,7 @@ import { formatTime } from '@/utils/format';
 
 type HomeSearch = Omit<FeedSearch, 'q'>;
 
-export const Route = createFileRoute('/_layout/')({
+export const Route = createFileRoute('/')({
   validateSearch: (raw: Record<string, unknown>): HomeSearch => ({
     category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,

@@ -30,7 +30,7 @@ const articleQuery = (id: string) =>
     staleTime: 300_000,
   });
 
-export const Route = createFileRoute('/_layout/articles/$id')({
+export const Route = createFileRoute('/articles/$id')({
   loader: async ({ context, params }) => {
     const article = await context.queryClient
       .query({ ...articleQuery(params.id), staleTime: 'static' })

@@ -27,7 +27,7 @@ interface SearchLoaderData {
   categories: CategoryItem[] | undefined;
 }
 
-export const Route = createFileRoute('/_layout/news')({
+export const Route = createFileRoute('/news')({
   validateSearch: (raw: Record<string, unknown>): SearchSearch => ({
     q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
