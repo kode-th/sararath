@@ -4,78 +4,110 @@
     {
       "name": "@theme",
       "description": "Tailwind v4: define design tokens. Each variable generates a CSS custom property and matching utilities and variants, for example --color-brand-500 gives bg-brand-500 and text-brand-500. Forms: @theme (default), @theme inline (inline the value instead of var()), @theme static (emit even when unused). @keyframes may be nested here.",
-      "references": [{ "name": "Tailwind: Theme variables", "url": "https://tailwindcss.com/docs/theme" }]
+      "references": [
+        { "name": "Tailwind: Theme variables", "url": "https://tailwindcss.com/docs/theme" }
+      ]
     },
     {
       "name": "@utility",
       "description": "Tailwind v4: register a custom utility that works with every variant (hover:, sm:, dark:, and so on). Replaces the v3 @layer utilities pattern.",
       "references": [
-        { "name": "Tailwind: Adding custom utilities", "url": "https://tailwindcss.com/docs/adding-custom-styles#adding-custom-utilities" }
+        {
+          "name": "Tailwind: Adding custom utilities",
+          "url": "https://tailwindcss.com/docs/adding-custom-styles#adding-custom-utilities"
+        }
       ]
     },
     {
       "name": "@variant",
       "description": "Tailwind v4: apply a variant's styles inside plain CSS, the CSS-first equivalent of a variant prefix.",
       "references": [
-        { "name": "Tailwind: Using variants", "url": "https://tailwindcss.com/docs/adding-custom-styles#using-variants" }
+        {
+          "name": "Tailwind: Using variants",
+          "url": "https://tailwindcss.com/docs/adding-custom-styles#using-variants"
+        }
       ]
     },
     {
       "name": "@custom-variant",
       "description": "Tailwind v4: define your own variant for class names, for example @custom-variant pointer-coarse (@media (pointer: coarse)); then use it as pointer-coarse:...",
       "references": [
-        { "name": "Tailwind: Adding custom variants", "url": "https://tailwindcss.com/docs/adding-custom-styles#adding-custom-variants" }
+        {
+          "name": "Tailwind: Adding custom variants",
+          "url": "https://tailwindcss.com/docs/adding-custom-styles#adding-custom-variants"
+        }
       ]
     },
     {
       "name": "@apply",
       "description": "Tailwind: inline existing utilities into a CSS rule. Prefer a component or theme variable for repeated patterns. In v4 it does not work across separately bundled stylesheets without @reference.",
       "references": [
-        { "name": "Tailwind: @apply", "url": "https://tailwindcss.com/docs/functions-and-directives#apply-directive" }
+        {
+          "name": "Tailwind: @apply",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#apply-directive"
+        }
       ]
     },
     {
       "name": "@source",
       "description": "Tailwind v4: add a file or directory to scan for class names, or safelist utilities with @source inline(...). Paths are relative to the stylesheet that declares it.",
       "references": [
-        { "name": "Tailwind: Detecting classes", "url": "https://tailwindcss.com/docs/detecting-classes-in-source-files" }
+        {
+          "name": "Tailwind: Detecting classes",
+          "url": "https://tailwindcss.com/docs/detecting-classes-in-source-files"
+        }
       ]
     },
     {
       "name": "@reference",
       "description": "Tailwind v4: import theme variables, custom utilities and variants from another stylesheet without duplicating any CSS. Needed for @apply in CSS modules and Vue/Svelte style blocks.",
       "references": [
-        { "name": "Tailwind: @reference", "url": "https://tailwindcss.com/docs/functions-and-directives#reference-directive" }
+        {
+          "name": "Tailwind: @reference",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#reference-directive"
+        }
       ]
     },
     {
       "name": "@plugin",
       "description": "Tailwind v4: load a JavaScript plugin from CSS, for example @plugin \"@tailwindcss/typography\";",
       "references": [
-        { "name": "Tailwind: @plugin", "url": "https://tailwindcss.com/docs/functions-and-directives#plugin-directive" }
+        {
+          "name": "Tailwind: @plugin",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#plugin-directive"
+        }
       ]
     },
     {
       "name": "@config",
       "description": "Tailwind v4: load a legacy JavaScript config explicitly, it is no longer auto-detected. corePlugins, safelist and separator are not supported.",
       "references": [
-        { "name": "Tailwind: @config", "url": "https://tailwindcss.com/docs/functions-and-directives#config-directive" }
+        {
+          "name": "Tailwind: @config",
+          "url": "https://tailwindcss.com/docs/functions-and-directives#config-directive"
+        }
       ]
     },
     {
       "name": "@tailwind",
       "description": "Tailwind v3 only: inject base, components or utilities. Removed in v4, use @import \"tailwindcss\"; instead.",
-      "references": [{ "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }]
+      "references": [
+        { "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }
+      ]
     },
     {
       "name": "@screen",
       "description": "Tailwind v3 only: nest breakpoint styles. Removed in v4, use the sm: and md: variants.",
-      "references": [{ "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }]
+      "references": [
+        { "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }
+      ]
     },
     {
       "name": "@responsive",
       "description": "Tailwind v3 only: generate responsive utilities. Removed in v4.",
-      "references": [{ "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }]
+      "references": [
+        { "name": "Tailwind v4 upgrade guide", "url": "https://tailwindcss.com/docs/upgrade-guide" }
+      ]
     }
   ]
 }

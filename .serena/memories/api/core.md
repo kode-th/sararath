@@ -1,20 +1,22 @@
-# api/ module
+# api/ module (Hono worker on Cloudflare Workers)
 
-## Layout (api/src/sararath/)
+## Layout (api/src/)
 
-- `collectors/`: base, http, html (`html_to_text`), rss (generic), prd, moac, thaigov.
-- `services/`: runner (collect→ingest→store), scheduler (due/stale), seed, ingest, dedupe, normalize, backfill, cleanup, links, images, thai_date, export_legacy.
-- `api/`: app.py (routes), schemas.py (Pydantic models). `models.py`, `cli.py`, `database.py`.
-- `migrations/` + alembic.ini, `sources/sources.yaml`, `tests/`, `typings/`, committed `openapi.json`.
+- `app.ts`: Hono app; routes use `describeRoute` + `validator` (hono-openapi); CORS; app is chained so `AppType` captures routes; exports `AppType` and response types.
+- `db.ts`: `neon(env.DATABASE_URL)` per request + query fns; rows are zod-parsed (no blind assertions); `toIso` normalizes timestamps; `UUID_RE`.
+- `schemas.ts`: zod response + query schemas (mirror the former Pydantic models).
+- `env.ts`: explicit `Env` (DATABASE_URL secret, CORS_ORIGINS var).
+- `index.ts`: worker entry, default-exports app.
+- `wrangler.jsonc` (name `sararath-api`, main `src/index.ts`, observability logs+traces), `tsconfig.json` (types `@cloudflare/workers-types`).
 
 ## Invariants
 
-- `normalize_record` MUST preserve body paragraph breaks via `normalize_body` (never whitespace-collapse `body_text`). Collectors emit `\n\n`; `backfill-body` bypasses normalize.
-- moac store identity = (source, title, published_at) with batch collapse (`_collapse_stories`), so crawls don't duplicate.
-- `runner` saves raw HTML/JSON under `raw/` only for prd/thaigov (rss passes none). `_touch_known` overwrites a body only when the new one is longer.
-- `/v1/articles`: `q` is LIKE over title/body/agency; `category` is exact match. `/v1/categories` counts are scoped by `source` and `q`.
-- Read-only API; collectors are the only writers.
+- Read-only. Endpoints match the former FastAPI exactly (parity-tested vs live oracle): `/v1/articles` (+cursor), `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`; errors are `{detail}` with 422/404/503.
+- Public OpenAPI served live at `/openapi.json`; Scalar at `/reference`. No committed spec.
+- `web` imports `AppType` (RPC): do not add runtime-only imports that break web's DOM tsc.
+- hc query values are strings; query types come from the validators.
+- Workers best practice: current `compatibility_date`, observability logs+traces, no hardcoded secrets, structured `console.error` in `onError`.
 
 ## References
 
-- `mem:domain`, `mem:task_completion`, `mem:suggested_commands`.
+- `mem:domain`, `mem:tech_stack`, `mem:conventions`, `mem:web/core`.

@@ -1,26 +1,28 @@
 # Core — สาระรัฐ / Sararath
 
 Independent index of Thai government news. Not affiliated with any government agency.
-Pipeline: collectors → Postgres (Neon) → FastAPI read API → TanStack Start SSR (Cloudflare Workers).
+Pipeline: crawl (Python) → Neon Postgres → api (Hono Worker) → web (TanStack Start SSR).
 
 ## Source map
 
-- `api/` Python 3.13, uv, src-layout module `sararath` (dist `sararath-api`). See `mem:api/core`.
-- `web/` Bun + TanStack Start SSR + React 19 + Tailwind v4 + oxc. Package `@sararath/web`. See `mem:web/core`.
-- Root glue: compose[.dev].yaml, render.yaml, mise.toml, lefthook.yml, commitlint.config.mjs, .github/workflows/crawl.yml.
-- `api/raw/**` is crawl output (gitignored, not source). `.private/` is a beacon clone (never edit). `.impeccable/`, `DESIGN.md`, `PRODUCT.md`, `raw/` are design context, not tracked source.
+- `crawl/` Python 3.13, uv, module `sararath` (dist `sararath-crawl`). Writers: collectors, services, migrations, CLI, scheduler. See `mem:crawl/core`.
+- `api/` Hono on Cloudflare Workers, package `@sararath/api`. Read-only API over Neon via `@neondatabase/serverless`; exports `AppType`. See `mem:api/core`.
+- `web/` Bun + TanStack Start SSR + React 19 + Tailwind v4, package `@sararath/web`. Consumes the worker via Hono RPC. See `mem:web/core`.
+- Root glue: bun workspaces (`api`, `web`), shared oxc config (`.oxlintrc.json`, `.oxfmtrc.json`), `tools/oxlint/` JS plugins, compose[.dev].yaml, mise.toml, lefthook.yml, commitlint.config.mjs, .github/workflows/crawl.yml.
+- No `render.yaml` (removed); the read API is the CF Worker.
+- `crawl/raw/**` is crawl output (gitignored). `.private/` is a beacon clone (never edit). `.impeccable/`, `DESIGN.md`, `PRODUCT.md` are design context.
 
 ## Invariants
 
-- UI copy is Thai; brand is สาระรัฐ (Latin: Sararath). Tagline: ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว.
-- Must read as independent, never official; never imitate government branding (no Garuda).
-- The API is read-only; the web app never writes to the DB.
-- No local Postgres: dev, GitHub Actions, and Render share the same Neon `DATABASE_URL`, so local crawls/backfills/migrations write to production.
-- Every article links back to its canonical source URL.
-- Search route is `/news` (renamed from `/search`); no redirect for the old path.
+- UI copy Thai; brand สาระรัฐ (Latin: Sararath). Tagline: ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว.
+- Independent, never official; never imitate gov branding (no Garuda).
+- API is read-only; only `crawl/` writes the DB.
+- No local Postgres: dev, GitHub Actions, and prod share one Neon `DATABASE_URL`.
+- `DATABASE_URL` scheme differs: `crawl/` uses `postgresql+psycopg://`; `api/` uses `postgresql://`.
+- Every article links to its canonical source URL.
+- Search route is `/news` (renamed from `/search`).
 
 ## References
 
 - `mem:tech_stack`, `mem:suggested_commands`, `mem:conventions`, `mem:task_completion`, `mem:git_policy`
-- `mem:domain` (sources, article data model)
-- `mem:api/core`, `mem:web/core`
+- `mem:domain`, `mem:crawl/core`, `mem:api/core`, `mem:web/core`

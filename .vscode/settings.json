@@ -1,11 +1,12 @@
 {
-  "python.defaultInterpreterPath": "${workspaceFolder}/api/.venv/bin/python",
+  "python.defaultInterpreterPath": "${workspaceFolder}/crawl/.venv/bin/python",
   "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
+  "python.testing.cwd": "${workspaceFolder}/crawl",
   "python.terminal.useEnvFile": true,
-  "python.analysis.extraPaths": ["api/src"],
-  "python.analysis.stubPath": "api/typings",
+  "python.analysis.extraPaths": ["crawl/src"],
+  "python.analysis.stubPath": "crawl/typings",
   "python.analysis.typeCheckingMode": "basic",
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
@@ -35,22 +36,33 @@
   "[css]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
   "oxc.enable": true,
   "oxc.lint.run": "onSave",
-  "oxc.tsConfigPath": "web/tsconfig.json",
-  "oxc.path.oxlint": "web/node_modules/.bin/oxlint",
-  "oxc.path.oxfmt": "web/node_modules/.bin/oxfmt",
-  "editor.formatOnSave": true,
+  "oxc.typeAware": true,
+  "oxc.disableNestedConfig": false,
+  "oxc.path.oxlint": "node_modules/.bin/oxlint",
+  "oxc.path.oxfmt": "node_modules/.bin/oxfmt",
+  "oxc.path.tsgolint": "node_modules/.bin/tsgolint",
   "js/ts.tsdk.path": "web/node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "tailwindCSS.classFunctions": ["cn", "clsx"],
   "tailwindCSS.experimental.configFile": "web/src/assets/css/styles.css",
   "css.customData": [".vscode/tailwind.css-data.json"],
   "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/.wrangler/**": true,
+    "**/dist/**": true
   },
   "search.exclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/bun.lock": true,
+    "**/uv.lock": true
   },
   "files.readonlyInclude": {
     "**/routeTree.gen.ts": true

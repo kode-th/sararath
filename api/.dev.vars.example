@@ -1,0 +1,5 @@
+# Local Worker secrets (gitignored). Copy to `.dev.vars` and fill in.
+# The Neon URL must use the plain `postgresql://` scheme here.
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/govnews?sslmode=require
+# Optional; defaults to `*`.
+# CORS_ORIGINS=https://sararath.fasu.dev

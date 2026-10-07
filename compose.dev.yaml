@@ -1,61 +1,46 @@
 name: sararath
 
 services:
-  api:
+  # Build target and interactive shell for migrations/seeds/CLI against the dev
+  # database. The read API is a Cloudflare Worker (see ../api); run it with
+  # `mise run dev:api` on the host.
+  crawl:
     build:
-      context: ./api
+      context: ./crawl
       target: dev
-    command:
-      - uv
-      - run
-      - --no-sync
-      - uvicorn
-      - sararath.api.app:app
-      - --host
-      - 0.0.0.0
-      - --port
-      - "8000"
-      - --reload
-      - --reload-dir
-      - src
+    command: ['sh', '-c', 'sleep infinity']
     environment:
       DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
-      CORS_ORIGINS: "*"
     volumes:
-      - ./api/src:/app/src
-      - ./api/migrations:/app/migrations
-      - ./api/alembic.ini:/app/alembic.ini
-      - ./api/sources:/app/sources
-    ports:
-      - "8001:8000"
+      - ./crawl/src:/app/src
+      - ./crawl/migrations:/app/migrations
+      - ./crawl/alembic.ini:/app/alembic.ini
+      - ./crawl/sources:/app/sources
     develop:
       watch:
         - action: rebuild
-          path: ./api/pyproject.toml
+          path: ./crawl/pyproject.toml
         - action: rebuild
-          path: ./api/uv.lock
+          path: ./crawl/uv.lock
 
   web:
     build:
-      context: ./web
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: web/Dockerfile.dev
     working_dir: /app
     network_mode: host
     environment:
-      VITE_API_URL: http://localhost:8001
+      VITE_API_URL: http://localhost:8787
     volumes:
-      - ./web:/app
+      - .:/app
       - web_node_modules:/app/node_modules
-    command: sh -c "bun install && exec node node_modules/vite/bin/vite.js dev --host 0.0.0.0 --port 3000"
+    command: sh -c "bun install && exec bun run --filter @sararath/web dev"
     develop:
       watch:
         - action: rebuild
-          path: ./web/package.json
+          path: ./bun.lock
         - action: rebuild
-          path: ./web/bun.lock
-
-  scheduler:
-    profiles: ["jobs"]
+          path: ./web/package.json
 
 volumes:
   web_node_modules:

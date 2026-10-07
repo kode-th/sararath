@@ -1,26 +1,9 @@
 name: sararath
 
 services:
-  api:
-    build: ./api
-    command: ["uv", "run", "--no-sync", "python", "-m", "sararath", "serve"]
-    environment:
-      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
-    ports:
-      - "8001:8000"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/health')\"",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
+  # The read API is a Cloudflare Worker (see ../api); it is not run here.
   scheduler:
-    build: ./api
+    build: ./crawl
     command:
       - sh
       - -c
@@ -32,8 +15,8 @@ services:
   # thaigov's Cloudflare bot check 403s datacenter IPs, so GitHub Actions never
   # crawls it. Run this on a residential/TH host; it writes to DATABASE_URL (Neon).
   scheduler-thaigov:
-    build: ./api
-    profiles: ["thaigov"]
+    build: ./crawl
+    profiles: ['thaigov']
     command:
       - sh
       - -c

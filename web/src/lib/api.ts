@@ -1,17 +1,19 @@
-import createClient from 'openapi-fetch';
+import type {
+  AppType,
+  ArticleOut as ArticleItem,
+  ArticlesPage,
+  CategoryOut as CategoryItem,
+  SourceOut as NewsSourceItem,
+  SuggestOut as SuggestResult,
+} from '@sararath/api';
+import { hc } from 'hono/client';
 import { env } from 'virtual:env/client';
 
-import type { components, paths } from '@/lib/api-schema';
-
-export type ArticleItem = components['schemas']['ArticleOut'];
-export type ArticlesPage = components['schemas']['ArticlesPage'];
-export type CategoryItem = components['schemas']['CategoryOut'];
-export type NewsSourceItem = components['schemas']['SourceOut'];
-export type SuggestResult = components['schemas']['SuggestOut'];
+export type { ArticleItem, ArticlesPage, CategoryItem, NewsSourceItem, SuggestResult };
 
 export const API_URL = env.VITE_API_URL;
 
-const client = createClient<paths>({ baseUrl: API_URL });
+const client = hc<AppType>(API_URL);
 
 export async function fetchArticles(params: {
   q?: string;
@@ -20,38 +22,48 @@ export async function fetchArticles(params: {
   limit?: number;
   cursor?: string;
 }): Promise<ArticlesPage> {
-  const { data, response } = await client.GET('/v1/articles', { params: { query: params } });
-  if (!response.ok || !data) throw new Error(`api ${response.status}`);
-  return data;
+  const res = await client.v1.articles.$get({
+    query: {
+      ...(params.q ? { q: params.q } : {}),
+      ...(params.source ? { source: params.source } : {}),
+      ...(params.category ? { category: params.category } : {}),
+      ...(params.cursor ? { cursor: params.cursor } : {}),
+      limit: String(params.limit ?? 20),
+    },
+  });
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  return res.json();
 }
 
 export async function fetchArticle(id: string): Promise<ArticleItem> {
-  const { data, response } = await client.GET('/v1/articles/{article_id}', {
-    params: { path: { article_id: id } },
+  const res = await client.v1.articles[':article_id'].$get({
+    param: { article_id: id },
   });
-  if (!response.ok || !data) throw new Error(`api ${response.status}`);
-  return data;
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  return res.json();
 }
 
 export async function fetchSuggest(q: string, limit = 6): Promise<SuggestResult> {
-  const { data, response } = await client.GET('/v1/suggest', {
-    params: { query: { q, limit } },
+  const res = await client.v1.suggest.$get({
+    query: { q, limit: String(limit) },
   });
-  if (!response.ok || !data) throw new Error(`api ${response.status}`);
-  return data;
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  return res.json();
 }
 
 export async function fetchSources(): Promise<NewsSourceItem[]> {
-  const { data, response } = await client.GET('/v1/sources');
-  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  const res = await client.v1.sources.$get();
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  const data = await res.json();
   return data.items;
 }
 
 export async function fetchCategories(source?: string, q?: string): Promise<CategoryItem[]> {
-  const { data, response } = await client.GET('/v1/categories', {
-    params: { query: { source, q } },
+  const res = await client.v1.categories.$get({
+    query: { ...(source ? { source } : {}), ...(q ? { q } : {}) },
   });
-  if (!response.ok || !data) throw new Error(`api ${response.status}`);
+  if (!res.ok) throw new Error(`api ${res.status}`);
+  const data = await res.json();
   return data.items;
 }
 

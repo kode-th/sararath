@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
+  "env": {
+    "es2024": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "jsPlugins": [
+    "./tools/oxlint/single-dash-filename.js",
+    "./tools/oxlint/no-super-linear-backtracking.js",
+    "./tools/oxlint/no-member-expression.js",
+    "./tools/oxlint/jsx-child-element-spacing.js"
+  ],
+  "overrides": [
+    {
+      "files": ["**/src/**"],
+      "rules": { "filename/single-dash": "error" }
+    }
+  ],
+  "rules": {
+    "import/first": "error",
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/prefer-optional-chain": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "eqeqeq": "error",
+    "no-console": "error",
+    "no-param-reassign": "error",
+    "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+    "regex-safety/no-super-linear-backtracking": "error",
+    "unicorn/prefer-string-slice": "error",
+    "unicorn/throw-new-error": "error",
+    "promise/no-return-wrap": "error",
+    "promise/prefer-await-to-then": "error"
+  }
+}

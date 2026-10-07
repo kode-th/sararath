@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: api worker",
+      "detail": "wrangler dev on :8787 (api/.dev.vars required)",
+      "type": "shell",
+      "command": "mise run dev:api",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev: web + crawl",
+      "detail": "docker compose dev stack (web :3000)",
+      "type": "shell",
+      "command": "mise run dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "migrate",
+      "detail": "alembic upgrade head against DATABASE_URL",
+      "type": "shell",
+      "command": "mise run migrate",
+      "problemMatcher": []
+    },
+    {
+      "label": "format",
+      "type": "shell",
+      "command": "mise run format",
+      "problemMatcher": []
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "mise run lint",
+      "problemMatcher": []
+    },
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "mise run typecheck",
+      "problemMatcher": []
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "mise run test",
+      "problemMatcher": []
+    },
+    {
+      "label": "web: build",
+      "type": "shell",
+      "command": "mise run web:build",
+      "problemMatcher": []
+    }
+  ]
+}

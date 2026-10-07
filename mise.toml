@@ -6,63 +6,70 @@ python = "3.13.15"
 uv = "0.12.17"
 
 [tasks.lint]
-description = "Lint Python and web"
-depends = ["lint:py", "web:lint"]
+description = "Lint Python and TypeScript"
+depends = ["lint:py", "lint:ts"]
 
 [tasks."lint:py"]
 description = "Run ruff check"
-dir = "api"
+dir = "crawl"
 run = "uv run ruff check ."
 
+[tasks."lint:ts"]
+description = "Run oxlint across api and web"
+run = "bun run lint"
+
+[tasks."api:lint"]
+description = "Run oxlint (worker only)"
+dir = "api"
+run = "bun run lint"
+
 [tasks."web:lint"]
-description = "Run oxlint"
+description = "Run oxlint (web only)"
 dir = "web"
 run = "bun run lint"
 
-[tasks."web:lint:fix"]
-description = "Run oxlint with fixes"
-dir = "web"
-run = "bun run lint:fix"
-
 [tasks.format]
-description = "Format Python and web"
-depends = ["format:py", "web:format"]
+description = "Format Python and TypeScript"
+depends = ["format:py", "format:ts"]
 
 [tasks."format:check"]
-description = "Check formatting (Python and web)"
-depends = ["format:py:check", "web:format:check"]
+description = "Check formatting (Python and TypeScript)"
+depends = ["format:py:check", "format:ts:check"]
 
 [tasks."format:py"]
 description = "Run ruff format"
-dir = "api"
+dir = "crawl"
 run = "uv run ruff format ."
 
 [tasks."format:py:check"]
 description = "Check Python formatting"
-dir = "api"
+dir = "crawl"
 run = "uv run ruff format --check ."
 
-[tasks."web:format"]
-description = "Run oxfmt"
-dir = "web"
+[tasks."format:ts"]
+description = "Run oxfmt across the repo"
 run = "bun run format"
 
-[tasks."web:format:check"]
-description = "Check web formatting"
-dir = "web"
+[tasks."format:ts:check"]
+description = "Check TypeScript/JSON formatting"
 run = "bun run format:check"
 
 [tasks.typecheck]
-description = "Typecheck Python and web"
-depends = ["typecheck:py", "web:typecheck"]
+description = "Typecheck Python, api and web"
+depends = ["typecheck:py", "api:typecheck", "web:typecheck"]
 
 [tasks."typecheck:py"]
 description = "Run pyright"
-dir = "api"
+dir = "crawl"
 run = "pyright"
 
+[tasks."api:typecheck"]
+description = "Run tsc (worker)"
+dir = "api"
+run = "bun run typecheck"
+
 [tasks."web:typecheck"]
-description = "Run tsc"
+description = "Run tsc (web)"
 dir = "web"
 run = "bun run typecheck"
 
@@ -71,24 +78,19 @@ description = "Build the web app"
 dir = "web"
 run = "bun run build"
 
-[tasks."api:openapi"]
-description = "Dump the read API OpenAPI schema to api/openapi.json"
-dir = "api"
-run = "uv run python -m sararath openapi > openapi.json"
-
-[tasks."web:api-schema"]
-description = "Generate web API client types from api/openapi.json"
-dir = "web"
-run = "bun run generate:api"
-
 [tasks.test]
 description = "Run pytest"
-dir = "api"
+dir = "crawl"
 run = "uv run python -m pytest"
 
 [tasks.dev]
-description = "Start dev stack (db + api + web) with hot reload and file watch"
+description = "Start dev stack (web + crawl) with hot reload"
 run = "docker compose -f compose.yaml -f compose.dev.yaml up --watch"
+
+[tasks."dev:api"]
+description = "Run the Hono worker locally on :8787 (needs api/.dev.vars)"
+dir = "api"
+run = "bun run dev"
 
 [tasks."dev:down"]
 description = "Stop dev stack"
@@ -108,4 +110,4 @@ run = "docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov stop
 
 [tasks.migrate]
 description = "Apply migrations to the dev database"
-run = "docker compose -f compose.yaml -f compose.dev.yaml exec api uv run --no-sync python -m alembic upgrade head"
+run = "docker compose -f compose.yaml -f compose.dev.yaml exec crawl uv run --no-sync python -m alembic upgrade head"

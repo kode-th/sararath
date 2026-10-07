@@ -1,7 +1,8 @@
-// Local oxlint JS plugin.
-// App filenames in web/ may contain at most one dash: `foo-bar.tsx` is allowed,
-// `foo-bar-baz.tsx` is not. Scoped to src/ via the .oxlintrc override so tool
-// files and standard asset names (e.g. apple-touch-icon.png) are unaffected.
+// Shared oxlint JS plugin.
+// App filenames in api/ and web/ may contain at most one dash: `foo-bar.tsx` is
+// allowed, `foo-bar-baz.tsx` is not. Scoped to **/src/** via the root
+// .oxlintrc.json override so tool files and standard asset names
+// (e.g. apple-touch-icon.png) are unaffected.
 function basename(filename) {
   return filename.split(/[\\/]/).pop() ?? filename;
 }

@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "sortImports": {
+    "internalPattern": ["@/"]
+  },
+  "sortPackageJson": {
+    "sortScripts": true
+  },
+  "ignorePatterns": [
+    "**/routeTree.gen.ts",
+    "**/vite-env.d.ts",
+    "**/worker-configuration.d.ts",
+    "**/bun.lock",
+    "**/dist",
+    "**/.wrangler",
+    "crawl/**"
+  ],
+  "overrides": [
+    {
+      "files": ["web/**"],
+      "options": {
+        "sortTailwindcss": {
+          "stylesheet": "web/src/assets/css/styles.css"
+        }
+      }
+    }
+  ]
+}

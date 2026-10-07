@@ -1,8 +1,22 @@
 {
   "name": "sararath",
   "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "type": "module",
+  "scripts": {
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix"
+  },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
-    "@commitlint/config-conventional": "^21.2.3"
+    "@commitlint/config-conventional": "^21.2.3",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
+    "oxlint-tsgolint": "^7.0.2003"
   }
 }

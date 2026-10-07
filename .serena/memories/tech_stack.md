@@ -1,24 +1,28 @@
 # Tech stack
 
-## api/
+## crawl/ (Python)
 
-- Python 3.13, uv (build backend `uv_build`). Import module `sararath`, distribution `sararath-api`.
-- FastAPI + Pydantic response models (drive OpenAPI), SQLAlchemy 2 + Alembic, psycopg (pooled Neon Postgres).
-- Collectors: httpx, feedparser, selectolax (Lexbor). Docs UI: scalar-fastapi.
-- `openapi.json` is committed and generated (`mise run api:openapi`).
+- Python 3.13, uv (build backend `uv_build`). Import module `sararath`, distribution `sararath-crawl`.
+- SQLAlchemy 2 + Alembic, psycopg (pooled Neon). Collectors: httpx, feedparser, selectolax (Lexbor).
+- No web framework: the read API moved to the Worker (fastapi/uvicorn/scalar-fastapi removed).
+
+## api/ (Cloudflare Worker)
+
+- Hono (+ `hono/client` for RPC), `hono-openapi` (`describeRoute`/`validator`/`openAPIRouteHandler`), `@scalar/hono-api-reference`, zod v4.
+- `@neondatabase/serverless` HTTP driver (no Hyperdrive). `wrangler` + `@cloudflare/workers-types`.
+- Exports `AppType`; web imports it via the `@sararath/api` workspace package.
 
 ## web/
 
 - Bun (installs/scripts), Vite, TanStack Start + Router + Query, React 19.
-- Tailwind v4 (CSS `@theme` tokens in `src/assets/css/theme.css`).
-- Base UI (`@base-ui/react`) — imports allowed only in `src/components/ui/`.
-- `@unpic/react` `<Image>` (no transforms for gov origins; sizing/loading only).
-- API types generated: `openapi-typescript` → `src/lib/api-schema.d.ts` (committed, excluded from oxfmt/oxlint); client `openapi-fetch` in `src/lib/api.ts`.
-- Lint/format: oxc (`oxlint --type-aware`, `oxfmt`). Deploy: wrangler → Cloudflare Workers.
+- Tailwind v4 (`@theme` tokens in `src/assets/css/theme.css`).
+- Base UI (`@base-ui/react`) — imports only in `src/components/ui/`. `@unpic/react` `<Image>`.
+- Hono RPC client (`hono/client`); no generated OpenAPI types.
+- `@vite-env/core` + zod env (`web/env.ts`, `virtual:env/client`).
 
-## infra
+## tooling / infra
 
-- mise tasks orchestrate gates; lefthook git hooks; commitlint Conventional Commits.
+- bun workspaces (`api`, `web`) at the root; shared oxc config + `tools/oxlint/` JS plugins.
+- mise tasks orchestrate gates; lefthook hooks; commitlint Conventional Commits.
 - Scheduler: GitHub Actions hourly `crawl-due` (moac/rd/prd); `thaigov` from a residential/TH host.
-- API host: Render (`https://sararath-apis.fasu.dev`). DB: Neon (shared by dev and prod; no local Postgres).
-- Web env: `@vite-env/core` + zod — schema in `web/env.ts`, plugin `viteEnv({ configFile: './env.ts' })`, app imports `env` from `virtual:env/client`; generated `web/vite-env.d.ts`; CLI scripts `env:check|env:types|env:generate`.
+- DB: Neon (shared by dev and prod; no local Postgres). API host: CF Workers `sararath-apis.fasu.dev`. Web: CF Workers `sararath`.

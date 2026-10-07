@@ -5,6 +5,11 @@
     "charliermarsh.ruff",
     "oxc.oxc-vscode",
     "bradlc.vscode-tailwindcss",
+    "oven.bun-vscode",
+    "redhat.vscode-yaml",
+    "GitHub.vscode-github-actions",
+    "ms-azuretools.vscode-docker",
+    "tamasfe.even-better-toml",
     "SonarSource.sonarlint-vscode"
   ]
 }

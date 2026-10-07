@@ -1,5 +1,5 @@
 [project]
-name = "sararath-api"
+name = "sararath-crawl"
 version = "0.1.0"
 description = "Independent index of Thai government news (Sararath)"
 readme = "README.md"
@@ -7,15 +7,12 @@ authors = [{ name = "Pongsakorn Thipayanate", email = "contact@fasu.dev" }]
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.20.0",
-    "fastapi>=0.141.1",
     "feedparser>=6.0.14",
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.6",
     "pyyaml>=6.0.3",
-    "scalar-fastapi>=1.9.0",
     "selectolax>=0.4.12",
     "sqlalchemy>=2.0.54",
-    "uvicorn[standard]>=0.53.0",
 ]
 
 [project.scripts]

@@ -2,7 +2,7 @@ name: crawl-due
 
 on:
   schedule:
-    - cron: "15 * * * *"
+    - cron: '15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,11 +14,11 @@ jobs:
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version-file: api/.python-version
+          python-version-file: crawl/.python-version
       - run: uv sync --no-dev
-        working-directory: api
+        working-directory: crawl
       - run: uv run python -m sararath crawl-due --source moac --source rd --source prd
-        working-directory: api
+        working-directory: crawl
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 # thaigov excluded: its API 403s datacenter IPs (bot protection).

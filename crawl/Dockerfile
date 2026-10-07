@@ -30,4 +30,4 @@ COPY --chown=app:app migrations ./migrations
 COPY --chown=app:app sources ./sources
 RUN uv sync --frozen
 
-CMD ["uv", "run", "--no-sync", "uvicorn", "sararath.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "src"]
+CMD ["uv", "run", "--no-sync", "python", "-m", "sararath"]

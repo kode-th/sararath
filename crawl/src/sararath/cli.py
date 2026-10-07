@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 from sararath.database import get_session
@@ -36,17 +35,11 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--out", required=True, help="Output JSON path")
     export.add_argument("--manifest", default=None, help="Manifest path to update")
 
-    serve = sub.add_parser("serve", help="Run read API")
-    serve.add_argument("--host", default="0.0.0.0")
-    serve.add_argument("--port", type=int, default=8000)
-
     crawl_due = sub.add_parser("crawl-due", help="Crawl enabled sources past interval")
     crawl_due.add_argument("--source", action="append", default=None)
 
     check = sub.add_parser("check", help="Exit 1 when a source is stale")
     check.add_argument("--max-age-hours", type=int, default=26)
-
-    sub.add_parser("openapi", help="Print the read API OpenAPI schema")
 
     backfill = sub.add_parser(
         "backfill-body", help="Re-fetch article bodies for a source"
@@ -116,13 +109,6 @@ def _cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_serve(args: argparse.Namespace) -> int:
-    import uvicorn
-
-    uvicorn.run("sararath.api.app:app", host=args.host, port=args.port)
-    return 0
-
-
 def _crawl_one(slug: str) -> tuple[str, bool]:
     try:
         with get_session() as session:
@@ -160,13 +146,6 @@ def _cmd_check(args: argparse.Namespace) -> int:
         print(f"stale {source.slug}: last_success_at={source.last_success_at}")
     print(f"check: stale={len(stale)} max_age_hours={args.max_age_hours}")
     return 1 if stale else 0
-
-
-def _cmd_openapi(_args: argparse.Namespace) -> int:
-    from sararath.api.app import app
-
-    print(json.dumps(app.openapi(), indent=2, sort_keys=True))
-    return 0
 
 
 def _cmd_backfill_body(args: argparse.Namespace) -> int:
@@ -235,14 +214,10 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_crawl(args)
     if args.command == "export-legacy":
         return _cmd_export(args)
-    if args.command == "serve":
-        return _cmd_serve(args)
     if args.command == "crawl-due":
         return _cmd_crawl_due(args)
     if args.command == "check":
         return _cmd_check(args)
-    if args.command == "openapi":
-        return _cmd_openapi(args)
     if args.command == "backfill-body":
         return _cmd_backfill_body(args)
     if args.command == "dedupe-articles":

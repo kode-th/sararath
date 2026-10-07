@@ -1,11 +1,13 @@
 # Conventions
 
 - Frontend component/import/Tailwind rules: read `mem:frontend-conventions` before editing `web/`.
-- Base UI imports and JSX member expressions (`<Foo.Bar/>`) are allowed ONLY in `web/src/components/ui/`; wrap primitives there and export named components. Enforced by oxlint `no-restricted-imports` + `design-system/no-member-expression`.
-- Components live in a subfolder of `web/src/components/`: `ui/` (global primitives), `layout/` (page chrome), `filters/` (filter/search controls), `feed/` (feed state and pagination), `news/` (news content). Never directly in `components/`.
-- `cn()` from `@/lib/cn` only for conditional/merged classNames; static strings stay plain. Tailwind utilities only; no custom classes except `@utility` in utilities.css.
-- `web/src/lib` = only `cn` + API client. App helpers → `src/utils/`, literals → `src/constants/`, hook files camelCase in `src/hooks/`.
-- Imports: `@/` alias; relative only `./` (never `../`).
-- API: routes in `api/src/sararath/api/app.py`; declare Pydantic response models in `schemas.py` so OpenAPI is real; after API changes regenerate `openapi.json` + `api-schema.d.ts`.
-- Commits: Conventional Commits, SHORT one-line subject (commitlint via lefthook). Branches `feat/name`, `fix/name`.
-- Thai copy: native and plain.
+- Script names are `foo` or `foo:bar`, never `foo-bar` (package.json + mise tasks).
+- oxc is shared: root `.oxlintrc.json` is the baseline; `api/.oxlintrc.json` and `web/.oxlintrc.json` `extends` it. Nested config = nearest file wins; `options.typeAware` only in the root config (we pass `--type-aware` on the CLI instead).
+- Custom oxlint JS plugins live in `tools/oxlint/` (shared): `filename/single-dash` (scoped to `**/src/**`), `regex-safety/no-super-linear-backtracking`; web-only `design-system/no-member-expression`, `jsx/child-element-spacing` are enabled only in `web/.oxlintrc.json`.
+- `oxfmt` is shared: root `.oxfmtrc.json` with a `web/**` override for Tailwind class sorting. No per-package formatter config.
+- Components live in a subfolder of `web/src/components/`: `ui/`, `layout/`, `filters/`, `feed/`, `news/`.
+- `@base-ui/react` imports and JSX member expressions (`<Foo.Bar/>`) only in `web/src/components/ui/`; wrap primitives there.
+- `cn()` from `@/lib/cn` only for conditional/merged classNames. Tailwind utilities only.
+- web imports: `@/` alias; relative only `./` (never `../`). `src/lib` = `cn` + API client; helpers `utils/`, literals `constants/`, hooks camelCase in `src/hooks/`.
+- Worker: zod-parse DB rows instead of asserting; keep responses matching the former FastAPI shape.
+- Commits: Conventional Commits, SHORT one-line subject. Branches `feat/name`, `fix/name`. Thai copy: native and plain.

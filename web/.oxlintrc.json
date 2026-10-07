@@ -1,15 +1,24 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["../.oxlintrc.json"],
+  "ignorePatterns": ["vite-env.d.ts", "routeTree.gen.ts"],
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react", "jsx-a11y"],
-  "ignorePatterns": ["src/lib/api-schema.d.ts", "vite-env.d.ts"],
+  "jsPlugins": [
+    "@shadcn/lint",
+    "../tools/oxlint/jsx-child-element-spacing.js",
+    "../tools/oxlint/no-member-expression.js",
+    "../tools/oxlint/single-dash-filename.js",
+    "../tools/oxlint/no-super-linear-backtracking.js"
+  ],
+  "settings": {
+    "shadcn": {
+      "ui": "@/components"
+    }
+  },
   "overrides": [
     {
       "files": ["src/hooks/**"],
       "rules": { "unicorn/filename-case": ["error", { "case": "camelCase" }] }
-    },
-    {
-      "files": ["src/**"],
-      "rules": { "filename/single-dash": "error" }
     },
     {
       "files": ["src/components/ui/**"],
@@ -29,26 +38,6 @@
       }
     }
   ],
-  "jsPlugins": [
-    "@shadcn/lint",
-    "./tools/oxlint/jsx-child-element-spacing.js",
-    "./tools/oxlint/no-super-linear-backtracking.js",
-    "./tools/oxlint/no-member-expression.js",
-    "./tools/oxlint/single-dash-filename.js"
-  ],
-  "settings": {
-    "shadcn": {
-      "ui": "@/components"
-    }
-  },
-  "env": {
-    "es2024": true
-  },
-  "categories": {
-    "correctness": "error",
-    "suspicious": "error",
-    "perf": "warn"
-  },
   "rules": {
     "no-restricted-imports": [
       "error",
@@ -65,34 +54,10 @@
         ]
       }
     ],
-    "import/first": "error",
-    "import/no-cycle": "error",
-    "import/no-duplicates": "error",
-    "import/no-self-import": "error",
-    "typescript/consistent-type-imports": "error",
-    "no-eval": "error",
-    "no-implied-eval": "error",
-    "no-new-func": "error",
-    "no-script-url": "error",
-    "eqeqeq": "error",
-    "no-console": "error",
-    "no-param-reassign": "error",
-    "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
-    "no-var": "error",
-    "prefer-const": "error",
-    "prefer-template": "error",
-    "unicorn/prefer-string-slice": "error",
-    "unicorn/throw-new-error": "error",
-    "typescript/no-explicit-any": "error",
-    "typescript/no-non-null-assertion": "error",
-    "promise/no-return-wrap": "error",
-    "promise/prefer-await-to-then": "error",
     "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
     "shadcn/no-unknown-classes": "error",
     "jsx/child-element-spacing": "error",
-    "regex-safety/no-super-linear-backtracking": "error",
     "design-system/no-member-expression": "error",
-    "typescript/prefer-optional-chain": "error",
     "react/react-in-jsx-scope": "off"
   }
 }
