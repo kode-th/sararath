@@ -1,6 +1,6 @@
 # Sararath
 
-Independent index of Thai government news. Collectors crawl agency sites into Postgres, a read API serves it, and a TanStack Start frontend renders it. The site is not affiliated with any government agency and links every item back to its source.
+Independent index of Thai government news — **Sararath** (สาระรัฐ). Collectors crawl agency sites into Postgres; a FastAPI read API and a TanStack Start frontend serve one feed with search plus agency and category filters, and every item links back to its original source. Sararath is not affiliated with any government agency.
 
 ## Architecture
 

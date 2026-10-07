@@ -8,9 +8,9 @@ export function Footer() {
           <img src="/logo.svg" alt="" className="size-11" />
           <p className="leading-6">
             <span className="font-semibold text-foreground">สาระรัฐ </span>
-            <span>· ข่าวตรงจากเว็บไซต์หน่วยงานรัฐ</span>
+            <span>· ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว</span>
             <span className="block">
-              ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐใด ข่าวทุกชิ้นลิงก์กลับไปยังต้นฉบับ
+              ดำเนินการโดยอิสระ ไม่ได้สังกัดหน่วยงานรัฐใด และทุกรายการลิงก์กลับไปยังต้นฉบับ
             </span>
           </p>
         </div>

@@ -16,15 +16,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'สาระรัฐ · ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว' },
+      { name: 'application-name', content: 'Sararath' },
       {
         name: 'description',
-        content: 'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว พร้อมลิงก์กลับไปยังต้นฉบับ',
+        content:
+          'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว ค้นหาและกรองตามหน่วยงานหรือหมวดหมู่ได้ พร้อมลิงก์กลับไปยังต้นฉบับ',
       },
-      { property: 'og:site_name', content: 'สาระรัฐ' },
+      { property: 'og:site_name', content: 'สาระรัฐ (Sararath)' },
       { property: 'og:title', content: 'สาระรัฐ · ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว' },
       {
         property: 'og:description',
-        content: 'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว พร้อมลิงก์กลับไปยังต้นฉบับ',
+        content:
+          'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว ค้นหาและกรองตามหน่วยงานหรือหมวดหมู่ได้ พร้อมลิงก์กลับไปยังต้นฉบับ',
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
