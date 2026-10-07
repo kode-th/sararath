@@ -1,19 +1,17 @@
-import type {
-  AppType,
-  ArticleOut as ArticleItem,
-  ArticlesPage,
-  CategoryOut as CategoryItem,
-  SourceOut as NewsSourceItem,
-  SuggestOut as SuggestResult,
-} from '@sararath/api';
-import { hc } from 'hono/client';
+import type { AppType } from '@sararath/api';
+import { hc, type InferResponseType } from 'hono/client';
 import { env } from 'virtual:env/client';
 
-export type { ArticleItem, ArticlesPage, CategoryItem, NewsSourceItem, SuggestResult };
+const client = hc<AppType>(env.VITE_API_URL);
 
-export const API_URL = env.VITE_API_URL;
-
-const client = hc<AppType>(API_URL);
+export type ArticlesPage = InferResponseType<typeof client.v1.articles.$get, 200>;
+export type ArticleItem = ArticlesPage['items'][number];
+export type CategoryItem = InferResponseType<
+  typeof client.v1.categories.$get,
+  200
+>['items'][number];
+export type NewsSourceItem = InferResponseType<typeof client.v1.sources.$get, 200>['items'][number];
+export type SuggestResult = InferResponseType<typeof client.v1.suggest.$get, 200>;
 
 export async function fetchArticles(params: {
   q?: string;
