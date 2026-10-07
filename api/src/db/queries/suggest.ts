@@ -1,8 +1,8 @@
 import { asc, desc, like, sql } from 'drizzle-orm';
 
-import type { SuggestOut } from '../../schemas';
-import type { Db } from '../client';
-import { articles, sources } from '../generated/schema';
+import type { Db } from '@api/db/client';
+import { articles, sources } from '@api/db/generated/schema';
+import type { SuggestOut } from '@api/schemas';
 
 export async function suggest(db: Db, term: string, limit: number): Promise<SuggestOut> {
   if (term === '') return { sources: [], articles: [] };

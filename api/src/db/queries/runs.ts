@@ -1,9 +1,9 @@
 import { desc, eq } from 'drizzle-orm';
 
-import type { RunOut } from '../../schemas';
-import type { Db } from '../client';
-import { collectorRuns, sources } from '../generated/schema';
-import { toIso } from '../row';
+import type { Db } from '@api/db/client';
+import { collectorRuns, sources } from '@api/db/generated/schema';
+import { toIso } from '@api/db/row';
+import type { RunOut } from '@api/schemas';
 
 export async function listRuns(
   db: Db,

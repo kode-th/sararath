@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getDb } from '../db/client';
-import { suggest } from '../db/queries/suggest';
-import type { Env } from '../env';
-import { SuggestSchema, suggestQuerySchema } from '../schemas';
+import { getDb } from '@api/db/client';
+import { suggest } from '@api/db/queries/suggest';
+import type { Env } from '@api/env';
+import { SuggestSchema, suggestQuerySchema } from '@api/schemas';
 
 export const suggestRoute = new Hono<{ Bindings: Env }>().get(
   '/',

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getDb } from '../db/client';
+import { getDb } from '@api/db/client';
 import {
   attachmentsFor,
   type CursorRow,
@@ -9,16 +9,16 @@ import {
   listArticleRows,
   resolveCursor,
   toArticle,
-} from '../db/queries/articles';
-import { UUID_RE } from '../db/row';
-import type { Env } from '../env';
+} from '@api/db/queries/articles';
+import { UUID_RE } from '@api/db/row';
+import type { Env } from '@api/env';
 import {
   articleIdParamSchema,
   ArticleSchema,
   ArticlesPageSchema,
   articlesQuerySchema,
   ErrorSchema,
-} from '../schemas';
+} from '@api/schemas';
 
 export const articlesRoute = new Hono<{ Bindings: Env }>()
   .get(

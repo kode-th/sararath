@@ -1,8 +1,8 @@
 import { and, asc, count, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
 
-import type { CategoryOut } from '../../schemas';
-import type { Db } from '../client';
-import { articles, sources } from '../generated/schema';
+import type { Db } from '@api/db/client';
+import { articles, sources } from '@api/db/generated/schema';
+import type { CategoryOut } from '@api/schemas';
 
 export async function listCategories(
   db: Db,

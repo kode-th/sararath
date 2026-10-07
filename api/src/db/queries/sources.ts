@@ -1,9 +1,9 @@
 import { asc } from 'drizzle-orm';
 
-import type { SourceOut } from '../../schemas';
-import type { Db } from '../client';
-import { sources } from '../generated/schema';
-import { toIso } from '../row';
+import type { Db } from '@api/db/client';
+import { sources } from '@api/db/generated/schema';
+import { toIso } from '@api/db/row';
+import type { SourceOut } from '@api/schemas';
 
 export async function listSources(db: Db): Promise<SourceOut[]> {
   const rows = await db

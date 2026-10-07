@@ -3,8 +3,8 @@ import { Hono } from 'hono';
 import { openAPIRouteHandler } from 'hono-openapi';
 import { cors } from 'hono/cors';
 
-import type { Env } from './env';
-import { routes } from './routes/__root';
+import type { Env } from '@api/env';
+import { routes } from '@api/routes/__root';
 
 const base = new Hono<{ Bindings: Env }>()
   .use(

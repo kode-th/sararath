@@ -2,7 +2,7 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
   "sortImports": {
-    "internalPattern": ["@/"]
+    "internalPattern": ["@/", "@api/"]
   },
   "sortPackageJson": {
     "sortScripts": true

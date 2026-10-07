@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver } from 'hono-openapi';
 
-import { getDb } from '../db/client';
-import { listSources } from '../db/queries/sources';
-import type { Env } from '../env';
-import { SourcesPageSchema } from '../schemas';
+import { getDb } from '@api/db/client';
+import { listSources } from '@api/db/queries/sources';
+import type { Env } from '@api/env';
+import { SourcesPageSchema } from '@api/schemas';
 
 export const sourcesRoute = new Hono<{ Bindings: Env }>().get(
   '/',

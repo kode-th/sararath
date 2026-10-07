@@ -5,6 +5,9 @@
     "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "paths": {
+      "@api/*": ["./src/*"]
+    },
     "types": ["@cloudflare/workers-types"],
     "strict": true,
     "noEmit": true,

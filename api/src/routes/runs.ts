@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getDb } from '../db/client';
-import { listRuns } from '../db/queries/runs';
-import type { Env } from '../env';
-import { RunsPageSchema, runsQuerySchema } from '../schemas';
+import { getDb } from '@api/db/client';
+import { listRuns } from '@api/db/queries/runs';
+import type { Env } from '@api/env';
+import { RunsPageSchema, runsQuerySchema } from '@api/schemas';
 
 export const runsRoute = new Hono<{ Bindings: Env }>().get(
   '/',

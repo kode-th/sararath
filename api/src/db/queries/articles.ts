@@ -1,9 +1,9 @@
 import { and, desc, eq, inArray, isNull, like, lt, or, sql, type SQL } from 'drizzle-orm';
 
-import type { ArticleOut } from '../../schemas';
-import type { Db } from '../client';
-import { articles, attachments, sources } from '../generated/schema';
-import { toIso } from '../row';
+import type { Db } from '@api/db/client';
+import { articles, attachments, sources } from '@api/db/generated/schema';
+import { toIso } from '@api/db/row';
+import type { ArticleOut } from '@api/schemas';
 
 export interface CursorRow {
   id: string;

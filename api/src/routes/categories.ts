@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { describeRoute, resolver, validator } from 'hono-openapi';
 
-import { getDb } from '../db/client';
-import { listCategories } from '../db/queries/categories';
-import type { Env } from '../env';
-import { CategoriesPageSchema, categoriesQuerySchema } from '../schemas';
+import { getDb } from '@api/db/client';
+import { listCategories } from '@api/db/queries/categories';
+import type { Env } from '@api/env';
+import { CategoriesPageSchema, categoriesQuerySchema } from '@api/schemas';
 
 export const categoriesRoute = new Hono<{ Bindings: Env }>().get(
   '/',
