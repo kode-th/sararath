@@ -21,7 +21,7 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
         to="/articles/$id"
         params={{ id: article.id }}
         className={cn(
-          'group grid gap-3 py-3 transition-colors duration-150 hover:bg-accent/40 focus-visible:bg-accent/40',
+          'group grid h-full gap-3 py-3 transition-colors duration-150 hover:bg-accent/40 focus-visible:bg-accent/40',
           image ? 'grid-cols-[3.5rem_minmax(0,1fr)_4.5rem]' : 'grid-cols-[3.5rem_minmax(0,1fr)]',
         )}
       >
