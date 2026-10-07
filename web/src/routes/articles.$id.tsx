@@ -15,7 +15,7 @@ import { ArrowLeft, ArrowUpRight, RotateCw } from 'lucide-react';
 import { useEffect } from 'react';
 
 import { ArticleGallery } from '@/components/news/article-gallery';
-import { StoryRow } from '@/components/news/story-row';
+import { StoryList } from '@/components/news/story-list';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { SectionTab } from '@/components/ui/section-tab';
 import { ARTICLE_ASIDE_COUNT } from '@/constants/feed';
@@ -202,11 +202,7 @@ function ArticleDetail() {
             className="mt-10 max-w-3xl lg:sticky lg:top-24 lg:col-span-4 lg:mt-0 lg:self-start"
           >
             <SectionTab id="agency-heading">ล่าสุดจาก {article.source.name_th}</SectionTab>
-            <ol>
-              {more.map((item) => (
-                <StoryRow key={item.id} article={item} />
-              ))}
-            </ol>
+            <StoryList items={more} />
           </aside>
         )}
       </div>

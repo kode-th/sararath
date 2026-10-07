@@ -1,14 +1,13 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { ArrowDown } from 'lucide-react';
 import { Suspense } from 'react';
 
-import { AgencyTabs } from '@/components/news/agency-tabs';
-import { CategorySelect } from '@/components/news/category-select';
 import { FeedError } from '@/components/news/feed-error';
-import { StoryRow } from '@/components/news/story-row';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { FeedErrorCard } from '@/components/news/feed-error-card';
+import { FeedFallback } from '@/components/news/feed-fallback';
+import { FilterBar } from '@/components/news/filter-bar';
+import { LoadMoreButton } from '@/components/news/load-more-button';
+import { StoryList } from '@/components/news/story-list';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import type { ArticlesPage, CategoryItem, NewsSourceItem } from '@/lib/api';
 import {
@@ -51,13 +50,7 @@ function SearchPage() {
   const search = Route.useSearch();
 
   return (
-    <Suspense
-      fallback={
-        <main className="grid min-h-[60vh] place-items-center">
-          <p className="text-sm text-muted-foreground">{search.q ? 'กำลังค้นหา…' : 'กำลังโหลดข่าว…'}</p>
-        </main>
-      }
-    >
+    <Suspense fallback={<FeedFallback message={search.q ? 'กำลังค้นหา…' : 'กำลังโหลดข่าว…'} />}>
       <Results key={`${search.q ?? ''}|${search.source ?? ''}|${search.category ?? ''}`} />
     </Suspense>
   );
@@ -86,33 +79,16 @@ function Results() {
         {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวทั้งหมด'}
       </h1>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <AgencyTabs sources={sources} active={search.source} q={search.q} target="search" />
-        <div className="flex items-center gap-4">
-          {(search.q || search.source || search.category) && (
-            <Link
-              to="/news"
-              search={{ q: undefined, source: undefined, category: undefined }}
-              className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
-            >
-              ล้างตัวกรอง
-            </Link>
-          )}
-          <CategorySelect
-            categories={categories}
-            source={search.source}
-            active={search.category}
-            q={search.q}
-            target="search"
-          />
-        </div>
-      </div>
+      <FilterBar
+        sources={sources}
+        categories={categories}
+        source={search.source}
+        category={search.category}
+        q={search.q}
+        target="search"
+      />
 
-      {error && (
-        <Card role="alert" className="mt-6 border-destructive p-4 text-sm text-destructive">
-          {error}
-        </Card>
-      )}
+      {error && <FeedErrorCard message={error} />}
 
       {items.length === 0 ? (
         <div className="py-16">
@@ -139,22 +115,8 @@ function Results() {
         </div>
       ) : (
         <section aria-label="ผลการค้นหา" className="mt-6">
-          <ol>
-            {items.map((article) => (
-              <StoryRow key={article.id} article={article} thumbnail />
-            ))}
-          </ol>
-          {cursor && (
-            <Button onClick={loadMore} disabled={loadingMore} className="mt-6 w-full">
-              {loadingMore ? (
-                'กำลังโหลด…'
-              ) : (
-                <>
-                  โหลดข่าวเพิ่ม <ArrowDown aria-hidden="true" className="size-4" />
-                </>
-              )}
-            </Button>
-          )}
+          <StoryList items={items} thumbnail />
+          <LoadMoreButton cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>

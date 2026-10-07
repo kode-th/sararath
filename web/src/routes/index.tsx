@@ -1,15 +1,14 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { ArrowDown } from 'lucide-react';
 import { Suspense } from 'react';
 
-import { AgencyTabs } from '@/components/news/agency-tabs';
-import { CategorySelect } from '@/components/news/category-select';
 import { FeedError } from '@/components/news/feed-error';
+import { FeedErrorCard } from '@/components/news/feed-error-card';
+import { FeedFallback } from '@/components/news/feed-fallback';
+import { FilterBar } from '@/components/news/filter-bar';
 import { LeadStory } from '@/components/news/lead-story';
-import { StoryRow } from '@/components/news/story-row';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { LoadMoreButton } from '@/components/news/load-more-button';
+import { StoryList } from '@/components/news/story-list';
 import { SectionTab } from '@/components/ui/section-tab';
 import { HOME_ASIDE_COUNT } from '@/constants/feed';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
@@ -51,13 +50,7 @@ function Newsroom() {
   const feedKey = `${search.category ?? ''}|${search.source ?? ''}`;
 
   return (
-    <Suspense
-      fallback={
-        <main className="grid min-h-[60vh] place-items-center">
-          <p className="text-sm text-muted-foreground">กำลังโหลดข่าว…</p>
-        </main>
-      }
-    >
+    <Suspense fallback={<FeedFallback message="กำลังโหลดข่าว…" />}>
       <Feed key={feedKey} />
     </Suspense>
   );
@@ -97,21 +90,15 @@ function Feed() {
         </p>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <AgencyTabs sources={sources} active={search.source} target="home" />
-        <CategorySelect
-          categories={categories}
-          source={search.source}
-          active={search.category}
-          target="home"
-        />
-      </div>
+      <FilterBar
+        sources={sources}
+        categories={categories}
+        source={search.source}
+        category={search.category}
+        target="home"
+      />
 
-      {error && (
-        <Card role="alert" className="mt-6 border-destructive p-4 text-sm text-destructive">
-          {error}
-        </Card>
-      )}
+      {error && <FeedErrorCard message={error} />}
 
       {lead ? (
         <div className="grid gap-8 pt-6 sm:pt-8 lg:grid-cols-12 lg:gap-12">
@@ -121,11 +108,7 @@ function Feed() {
           {latest.length > 0 && (
             <section aria-labelledby="latest-heading" className="lg:col-span-4">
               <SectionTab id="latest-heading">ล่าสุด</SectionTab>
-              <ol>
-                {latest.map((article) => (
-                  <StoryRow key={article.id} article={article} />
-                ))}
-              </ol>
+              <StoryList items={latest} />
             </section>
           )}
         </div>
@@ -154,22 +137,8 @@ function Feed() {
               ดูข่าวทั้งหมด →
             </Link>
           </div>
-          <ol className="grid gap-x-12 md:grid-cols-2">
-            {more.map((article) => (
-              <StoryRow key={article.id} article={article} thumbnail />
-            ))}
-          </ol>
-          {cursor && (
-            <Button onClick={loadMore} disabled={loadingMore} className="mt-6 w-full">
-              {loadingMore ? (
-                'กำลังโหลด…'
-              ) : (
-                <>
-                  โหลดข่าวเพิ่ม <ArrowDown aria-hidden="true" className="size-4" />
-                </>
-              )}
-            </Button>
-          )}
+          <StoryList items={more} thumbnail className="grid gap-x-12 md:grid-cols-2" />
+          <LoadMoreButton cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>
