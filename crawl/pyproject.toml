@@ -34,7 +34,7 @@ target-version = "py313"
 src = ["src"]
 
 [tool.ruff.lint]
-select = ["E", "F"]
+select = ["E", "F", "SIM117", "ASYNC100"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning:feedparser.*"]

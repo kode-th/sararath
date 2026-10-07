@@ -29,18 +29,25 @@ limiter = RateLimiter(min_interval=0.25)
 async def _is_image(client: httpx.AsyncClient, url: str) -> bool:
     await limiter.wait(url)
     try:
-        async with asyncio.timeout(TIMEOUT):
-            async with client.stream(
+        async with (
+            asyncio.timeout(TIMEOUT),
+            client.stream(
                 "GET",
                 url,
                 headers={"User-Agent": USER_AGENT, "Range": "bytes=0-1"},
                 follow_redirects=True,
-            ) as response:
-                content_type = response.headers.get("content-type", "")
-                return response.status_code in (
-                    200,
-                    206,
-                ) and content_type.lower().startswith("image/")
+            ) as response,
+        ):
+            content_type = response.headers.get("content-type", "")
+            is_image = response.status_code in (
+                200,
+                206,
+            ) and content_type.lower().startswith("image/")
+            if is_image:
+                # Read one chunk so the cancellation scope has a checkpoint.
+                async for _chunk in response.aiter_bytes():
+                    break
+            return is_image
     except Exception:
         return False
 

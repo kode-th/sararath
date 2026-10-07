@@ -121,14 +121,16 @@ async def _fetch_cffi(
     delay = 1.0
     for attempt in range(retries + 1):
         try:
-            async with asyncio.timeout(TIMEOUT):
-                async with AsyncSession() as session:
-                    response = await session.get(
-                        url,
-                        headers=headers,
-                        impersonate=IMPERSONATE,
-                        allow_redirects=True,
-                    )
+            async with (
+                asyncio.timeout(TIMEOUT),
+                AsyncSession() as session,
+            ):
+                response = await session.get(
+                    url,
+                    headers=headers,
+                    impersonate=IMPERSONATE,
+                    allow_redirects=True,
+                )
         except errors:
             if attempt >= retries:
                 raise
