@@ -1,6 +1,6 @@
 # Sararath APIs
 
-Python 3.13 service (uv, `uv_build` src-layout, package `sararath`): crawls Thai government sites into Postgres and serves a FastAPI read API.
+Python 3.13 service (uv, `uv_build` src-layout, distribution `sararath-api`, import package `sararath`): crawls Thai government sites into Postgres and serves a FastAPI read API.
 
 See the [root README](../README.md) for the full project.
 
