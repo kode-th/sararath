@@ -17,7 +17,7 @@ export function Footer() {
         <div className="flex items-center gap-4">
           <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐประมาณทุก 1–2 ชั่วโมง</span>
           <a
-            href="https://thai-gov-news-apis.onrender.com/reference"
+            href="https://sararath-apis.fasu.dev/reference"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"

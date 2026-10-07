@@ -8,7 +8,7 @@ export type CategoryItem = components['schemas']['CategoryOut'];
 export type NewsSourceItem = components['schemas']['SourceOut'];
 export type SuggestResult = components['schemas']['SuggestOut'];
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'https://thai-gov-news-apis.onrender.com';
+export const API_URL = import.meta.env.VITE_API_URL ?? 'https://sararath-apis.fasu.dev';
 
 const client = createClient<paths>({ baseUrl: API_URL });
 

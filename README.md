@@ -12,7 +12,7 @@ Independent index of Thai government news. Collectors crawl agency sites into Po
 | API        | FastAPI, Render free        | Blueprint `render.yaml`, `rootDir: api`, keep-alive via cron-job.org every 10 min                 |
 | Frontend   | TanStack Start, Tailwind v4 | `web/`, SSR; deploy to Cloudflare Workers with `wrangler`                                         |
 
-Live API: `https://thai-gov-news-apis.onrender.com` — `/v1/articles`, `/v1/articles/{id}`, `/v1/sources`, `/v1/runs`, `/v1/health`, docs at `/reference` and `/openapi.json`.
+Live API: `https://sararath-apis.fasu.dev` — `/v1/articles`, `/v1/articles/{id}`, `/v1/sources`, `/v1/runs`, `/v1/health`, docs at `/reference` and `/openapi.json`.
 
 ## Repository layout
 
