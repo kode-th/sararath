@@ -99,21 +99,12 @@ function Feed() {
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <AgencyTabs sources={sources} active={search.source} target="home" />
-        <div className="flex items-center gap-4">
-          <CategorySelect
-            categories={categories}
-            source={search.source}
-            active={search.category}
-            target="home"
-          />
-          <Link
-            to="/search"
-            search={{ q: undefined, source: undefined, category: undefined }}
-            className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
-          >
-            ข่าวทั้งหมด
-          </Link>
-        </div>
+        <CategorySelect
+          categories={categories}
+          source={search.source}
+          active={search.category}
+          target="home"
+        />
       </div>
 
       {error && (
@@ -153,7 +144,16 @@ function Feed() {
 
       {more.length > 0 && (
         <section aria-labelledby="more-heading" className="mt-10">
-          <SectionTab id="more-heading">ข่าวก่อนหน้า</SectionTab>
+          <div className="relative">
+            <SectionTab id="more-heading">ข่าวก่อนหน้า</SectionTab>
+            <Link
+              to="/search"
+              search={{ q: undefined, source: undefined, category: undefined }}
+              className="absolute top-0 right-0 font-display text-sm leading-7 font-semibold text-muted-foreground hover:text-foreground"
+            >
+              ดูข่าวทั้งหมด →
+            </Link>
+          </div>
           <ol className="grid gap-x-12 md:grid-cols-2">
             {more.map((article) => (
               <StoryRow key={article.id} article={article} thumbnail />
