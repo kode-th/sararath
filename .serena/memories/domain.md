@@ -15,5 +15,5 @@
 
 ## API surface (Hono worker)
 
-- `/v1/articles` (source, agency, category, published_from, published_to, q, limit, cursor), `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`. Docs `/reference`, schema `/openapi.json`.
+- `/v1/articles` (source, agency, category, published_from, published_to, q, limit, cursor), `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`. Docs `/docs`, schema `/openapi.json`.
 - Host `https://sararath-apis.fasu.dev` (CF Worker); DB Neon (pooled).

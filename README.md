@@ -9,10 +9,10 @@ Independent index of Thai government news — **Sararath** (สาระรั�
 | Postgres  | Neon free                   | Pooled URL. Crawlers use `postgresql+psycopg://`, the worker uses `postgresql://`         |
 | Crawlers  | Python 3.13, uv             | `crawl/` — `rss`, `prd`, `thaigov` collectors, migrations, CLI                            |
 | Scheduler | GitHub Actions              | Hourly `crawl-due` (`.github/workflows/crawl.yml`): moac/rd/prd only; thaigov 403s DC IPs |
-| Read API  | Hono on Cloudflare Workers  | `api/` — Neon serverless driver, OpenAPI + Scalar at `/reference`                         |
+| Read API  | Hono on Cloudflare Workers  | `api/` — Neon serverless driver, OpenAPI + Scalar at `/docs`                              |
 | Frontend  | TanStack Start, Tailwind v4 | `web/`, SSR, deploys to Cloudflare Workers, talks to the worker via Hono RPC              |
 
-Live API: `https://sararath-apis.fasu.dev` — `/v1/articles`, `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`, docs at `/reference`, schema at `/openapi.json`.
+Live API: `https://sararath-apis.fasu.dev` — `/v1/articles`, `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`, docs at `/docs`, schema at `/openapi.json`.
 
 ## Repository layout
 
@@ -84,7 +84,7 @@ uv run python -m sararath prune-attachments --source prd --dry-run # drop image 
 
 Web is typed end-to-end from the worker via **Hono RPC**: `api/src/app.ts` exports `AppType`, `web/src/lib/api.ts` builds an `hc<AppType>` client, and response types are the worker's zod schemas (re-exported from `@sararath/api`). Nothing is mirrored by hand and no generated schema is committed.
 
-The public contract is served live: `/openapi.json` (generated from the route `describeRoute`/`validator` metadata) and `/reference` (Scalar, downloadable as JSON/YAML).
+The public contract is served live: `/openapi.json` (generated from the route `describeRoute`/`validator` metadata) and `/docs` (Scalar, downloadable as JSON/YAML).
 
 ## Gates
 

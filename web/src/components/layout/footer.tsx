@@ -18,7 +18,7 @@ export function Footer() {
         <div className="flex items-center gap-4">
           <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐประมาณทุก 1–2 ชั่วโมง</span>
           <a
-            href={`${env.VITE_API_URL}/reference`}
+            href={`${env.VITE_API_URL}/docs`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex min-h-11 items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"
