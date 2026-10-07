@@ -55,7 +55,7 @@ docker compose -f compose.yaml -f compose.dev.yaml exec crawl \
 Open <http://localhost:3000>. Notes:
 
 - Dev, GitHub Actions, and production all use the same Neon `DATABASE_URL`, so local crawls/backfills/migrations write to **production** — treat them accordingly.
-- The `scheduler` service is parked behind the `jobs` profile; it crawls every due source into `DATABASE_URL`. To keep `thaigov` fresh, run `mise run scheduler:thaigov` on a residential/TH host.
+- The `scheduler` service is parked behind the `jobs` profile; it crawls every due source into `DATABASE_URL`. To keep `thaigov` fresh, start the thaigov scheduler on a residential/TH host with `docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov`.
 - `web` runs with `network_mode: host` so SSR and the browser both reach the worker on `localhost:8787`; the container runs Vite on Node (bun is only used for installs).
 - Ports: worker `8787`, web `3000`.
 
@@ -78,7 +78,7 @@ uv run python -m sararath prune-attachments --source prd --dry-run # drop image 
 
 ## Sources and cadence
 
-`crawl/sources/sources.yaml` defines four sources and their `crawl_interval_minutes`: `prd` and `thaigov` 60, `moac` and `rd` 120. `crawl-due` crawls a source only when `now - last_success_at >= interval`, so with the hourly job sources refresh roughly every 1–2 hours. `thaigov` is excluded from the GitHub workflow (its API 403s datacenter IPs); crawl it from residential/TH networks with `mise run scheduler:thaigov`.
+`crawl/sources/sources.yaml` defines four sources and their `crawl_interval_minutes`: `prd` and `thaigov` 60, `moac` and `rd` 120. `crawl-due` crawls a source only when `now - last_success_at >= interval`, so with the hourly job sources refresh roughly every 1–2 hours. `thaigov` is excluded from the GitHub workflow (its API 403s datacenter IPs); crawl it from residential/TH networks with `docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov`.
 
 ## Types and API docs
 
@@ -106,4 +106,4 @@ mise run web:build       # vite build (SSR smoke)
 - Crawlers: GitHub Actions secret `DATABASE_URL` feeds the hourly `crawl/` workflow.
 - Worker (`sararath-api`): `cd api && bun run deploy` (`wrangler deploy --minify`); set the secret with `wrangler secret put DATABASE_URL`. Custom domain `sararath-apis.fasu.dev`.
 - Web (`sararath`): `cd web && bun run deploy`; `VITE_API_URL` is optional — the client defaults to `https://sararath-apis.fasu.dev`.
-- `thaigov` is not crawled by Actions; start `mise run scheduler:thaigov` on a residential/TH host.
+- `thaigov` is not crawled by Actions; start it on a residential/TH host with `docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov`.

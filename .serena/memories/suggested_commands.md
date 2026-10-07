@@ -21,6 +21,6 @@
 
 - Dev uses the Neon prod DB. `mise run dev:api` (worker :8787), `mise run dev` (docker web :3000 + crawl shell).
 - Exec into crawl: `docker compose -f compose.yaml -f compose.dev.yaml exec crawl ...`. Migrations: `mise run migrate`.
-- thaigov scheduler: `mise run scheduler:thaigov`.
+- thaigov scheduler: `docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov`.
 - `api/.dev.vars` (gitignored) must hold the `postgresql://` form; `.env` (gitignored) holds the `postgresql+psycopg://` form.
 - Git/files behave as standard Linux.

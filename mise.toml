@@ -5,35 +5,14 @@ lefthook = "latest"
 python = "3.13.15"
 uv = "0.12.17"
 
-[tasks.lint]
-description = "Lint Python and TypeScript"
-depends = ["lint:py", "lint:ts"]
-
-[tasks."lint:py"]
-description = "Run ruff check"
-dir = "crawl"
-run = "uv run ruff check ."
-
-[tasks."lint:ts"]
-description = "Run oxlint across api and web"
-run = "bun run lint"
-
-[tasks."api:lint"]
-description = "Run oxlint (worker only)"
-dir = "api"
-run = "bun run lint"
-
-[tasks."web:lint"]
-description = "Run oxlint (web only)"
-dir = "web"
-run = "bun run lint"
+# --- format ---------------------------------------------------------------
 
 [tasks.format]
 description = "Format Python and TypeScript"
 depends = ["format:py", "format:ts"]
 
 [tasks."format:check"]
-description = "Check formatting (Python and TypeScript)"
+description = "Check Python and TypeScript formatting"
 depends = ["format:py:check", "format:ts:check"]
 
 [tasks."format:py"]
@@ -51,37 +30,58 @@ description = "Run oxfmt across the repo"
 run = "bun run format"
 
 [tasks."format:ts:check"]
-description = "Check TypeScript/JSON formatting"
+description = "Check TypeScript and JSON formatting"
 run = "bun run format:check"
+
+# --- lint -----------------------------------------------------------------
+
+[tasks.lint]
+description = "Lint Python and TypeScript"
+depends = ["lint:py", "lint:ts"]
+
+[tasks."lint:py"]
+description = "Run ruff check"
+dir = "crawl"
+run = "uv run ruff check ."
+
+[tasks."lint:ts"]
+description = "Run oxlint --type-aware across api and web"
+run = "bun run lint"
+
+# --- typecheck ------------------------------------------------------------
 
 [tasks.typecheck]
 description = "Typecheck Python, api and web"
-depends = ["typecheck:py", "api:typecheck", "web:typecheck"]
+depends = ["typecheck:py", "typecheck:api", "typecheck:web"]
 
 [tasks."typecheck:py"]
 description = "Run pyright"
 dir = "crawl"
 run = "pyright"
 
-[tasks."api:typecheck"]
+[tasks."typecheck:api"]
 description = "Run tsc (worker)"
 dir = "api"
 run = "bun run typecheck"
 
-[tasks."web:typecheck"]
+[tasks."typecheck:web"]
 description = "Run tsc (web)"
 dir = "web"
 run = "bun run typecheck"
 
-[tasks."web:build"]
-description = "Build the web app"
-dir = "web"
-run = "bun run build"
+# --- test / build ---------------------------------------------------------
 
 [tasks.test]
 description = "Run pytest"
 dir = "crawl"
 run = "uv run python -m pytest"
+
+[tasks."web:build"]
+description = "Build the web app (SSR smoke)"
+dir = "web"
+run = "bun run build"
+
+# --- dev ------------------------------------------------------------------
 
 [tasks.dev]
 description = "Start dev stack (web + crawl) with hot reload"
@@ -99,14 +99,6 @@ run = "docker compose -f compose.yaml -f compose.dev.yaml down"
 [tasks."dev:logs"]
 description = "Tail dev stack logs"
 run = "docker compose -f compose.yaml -f compose.dev.yaml logs -f"
-
-[tasks."scheduler:thaigov"]
-description = "Start the hourly thaigov crawl (residential/TH egress; writes to .env DATABASE_URL)"
-run = "docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov up -d --build scheduler-thaigov"
-
-[tasks."scheduler:thaigov:stop"]
-description = "Stop the thaigov scheduler"
-run = "docker compose -f compose.yaml -f compose.dev.yaml --profile thaigov stop scheduler-thaigov"
 
 [tasks.migrate]
 description = "Apply migrations to the dev database"
