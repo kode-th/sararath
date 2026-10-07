@@ -97,14 +97,14 @@ mise run web:build       # vite build (SSR smoke)
 ```
 
 - `lefthook` runs format-check/lint/typecheck pre-commit, `pytest` pre-push, and a Conventional Commits check on the message.
-- Web lint is `oxlint --type-aware` (needs `oxlint-tsgolint`) and loads local JS plugins in `web/tools/oxlint/` (`jsx/child-element-spacing`, `regex-safety/no-super-linear-backtracking`, `design-system/no-member-expression`).
+- Web lint is `oxlint --type-aware` (needs `oxlint-tsgolint`) and loads local JS plugins in `web/tools/oxlint/` (`jsx/child-element-spacing`, `regex-safety/no-super-linear-backtracking`, `design-system/no-member-expression`, `filename/single-dash`).
 - Design-system boundaries: `@base-ui/react` imports and JSX member expressions (`<Foo.Bar />`) are restricted to `web/src/components/ui/` (via `no-restricted-imports` and `design-system/no-member-expression`, both lifted by a `src/components/ui/**` override). Wrap primitives there as named, styled components and import those everywhere else.
 
 ## Deploy notes
 
-- `DATABASE_URL` must use the `postgresql+psycopg://` scheme. The app uses the pooled host; alembic works on either.
+- `DATABASE_URL` must use the `postgresql+psycopg://` scheme. The app uses the pooled host; alembic works on either. Rotating the Neon password means updating it in **three** places: the GitHub secret `DATABASE_URL`, Render's env `DATABASE_URL`, and local `.env`.
 - GitHub secret `DATABASE_URL` feeds the hourly workflow, which runs inside `api/`.
-- Render builds from the frozen lock (`uv sync --frozen --no-dev`). The blueprint sets `rootDir: api`, `CORS_ORIGINS=*`, and a `buildFilter` so only `api/**` changes redeploy. Blueprint edits require Dashboard → Blueprint → Apply.
-- Frontend: `cd web && bun run deploy` (build + `wrangler deploy`); set `VITE_API_URL` for non-local APIs.
+- Render: service **Sararath APIs** at `https://sararath-apis.fasu.dev` (custom domain; the `onrender.com` subdomain is disabled). It builds from the frozen lock (`uv sync --frozen --no-dev`); the blueprint sets `rootDir: api`, `CORS_ORIGINS=*`, and a `buildFilter` so only `api/**` changes redeploy. `render.yaml`'s `name` must match the service, and blueprint edits require Dashboard → Blueprint → Apply.
+- Frontend: worker `sararath` (`web/wrangler.jsonc`); `cd web && bun run deploy` (build + `wrangler deploy`). `VITE_API_URL` is optional — the client defaults to `https://sararath-apis.fasu.dev`.
 - Full stack on one host: `docker compose up -d` (db + api on :8001 + hourly scheduler).
 - `thaigov` is not crawled by Actions; start `mise run scheduler:thaigov` on a residential/TH host to keep it fresh against the Neon `DATABASE_URL`.
