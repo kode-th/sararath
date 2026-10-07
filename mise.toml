@@ -64,6 +64,11 @@ description = "Run tsc (worker)"
 dir = "api"
 run = "bun run typecheck"
 
+[tasks."api:db:pull"]
+description = "Regenerate the worker Drizzle schema from the database"
+dir = "api"
+run = "DATABASE_URL=$(grep '^DATABASE_URL=' .dev.vars | cut -d= -f2-) bun run db:pull"
+
 [tasks."typecheck:web"]
 description = "Run tsc (web)"
 dir = "web"

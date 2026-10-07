@@ -2,7 +2,7 @@ import { and, asc, count, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
 
 import type { CategoryOut } from '../../schemas';
 import type { Db } from '../client';
-import { articles, sources } from '../schema';
+import { articles, sources } from '../generated/schema';
 
 export async function listCategories(
   db: Db,

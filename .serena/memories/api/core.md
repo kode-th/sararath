@@ -5,7 +5,7 @@
 - `index.ts`: worker entry and app — CORS, mounts `routes` at `/v1`, `/openapi.json` (generated from the mounted `base` so paths keep `/v1`), Scalar `/docs`, `onError`; default-exports `app` + `AppType`; the package `.` export points here.
 - `routes/__root.ts`: mounts each sub-app at its resource prefix (`.route('/articles', …)` …); the `/v1` base lives only in `index.ts`.
 - `routes/`: one file per resource — `articles` (list + `/:article_id`), `categories`, `suggest`, `runs`, `sources`, `health` — each a sub-app whose routes are relative to its own prefix, with `describeRoute` + `validator` (hono-openapi).
-- `db/`: `client.ts` (`getDb` → `drizzle(neon(url))` via `drizzle-orm/neon-http`), `schema.ts` (pgTable mirror of the Alembic-owned tables, read-only), `row.ts` (`UUID_RE`, `toIso`), and `queries/` with one module per resource (`articles`, `categories`, `suggest`, `runs`, `sources`, `health`) using the Drizzle query builder. No barrel.
+- `db/`: `client.ts` (`getDb` → `drizzle(neon(url))` via `drizzle-orm/neon-http`), `row.ts` (`UUID_RE`, `toIso` — normalizes Postgres text timestamps like `+00`), `queries/` with one module per resource, and `generated/schema.ts` (Drizzle tables produced by `drizzle-kit pull` from the live DB; never hand-edit; regenerate with `bun run db:pull` or `mise run api:db:pull`). No barrel.
 - `schemas.ts`: zod response + query schemas (mirror the former Pydantic models).
 - `env.ts`: explicit `Env` (DATABASE_URL secret, CORS_ORIGINS var).
 - `index.ts`: worker entry, default-exports app.

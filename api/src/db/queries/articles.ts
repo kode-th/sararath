@@ -2,12 +2,12 @@ import { and, desc, eq, inArray, isNull, like, lt, or, sql, type SQL } from 'dri
 
 import type { ArticleOut } from '../../schemas';
 import type { Db } from '../client';
+import { articles, attachments, sources } from '../generated/schema';
 import { toIso } from '../row';
-import { articles, attachments, sources } from '../schema';
 
 export interface CursorRow {
   id: string;
-  publishedAt: Date | null;
+  publishedAt: string | null;
 }
 
 const articleColumns = {

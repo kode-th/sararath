@@ -5,8 +5,12 @@ node_modules/
 .wrangler/
 .dev.vars
 .dev.vars.*
-!.dev.vars.example
 dist/
+
+# generated schema extras (only src/db/generated/schema.ts is committed)
+src/db/generated/meta/
+src/db/generated/relations.ts
+src/db/generated/*.sql
 
 # logs
 logs/

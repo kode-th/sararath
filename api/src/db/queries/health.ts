@@ -2,8 +2,8 @@ import { asc, sql } from 'drizzle-orm';
 
 import type { HealthOut } from '../../schemas';
 import type { Db } from '../client';
+import { sources } from '../generated/schema';
 import { toIso } from '../row';
-import { sources } from '../schema';
 
 export async function health(db: Db): Promise<HealthOut | null> {
   try {

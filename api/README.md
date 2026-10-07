@@ -26,6 +26,16 @@ bun run api:dev        # or: cd api && bun run dev  → http://localhost:8787
 
 The web app's `VITE_API_URL` points here in local dev.
 
+## Database schema
+
+The Worker only reads. Its Drizzle tables live in `src/db/generated/schema.ts`, generated from the live DB (whose schema is owned by Alembic in [`../crawl`](../crawl)):
+
+```bash
+bun run db:pull        # or: mise run api:db:pull
+```
+
+Never hand-edit the generated file; rerun after a migration.
+
 ## OpenAPI
 
 The document is generated at request time from the route `describeRoute`/`validator` metadata and served at `/openapi.json`; `/docs` renders it with Scalar (downloadable as JSON or YAML). Nothing is committed.

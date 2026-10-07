@@ -8,6 +8,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "db:pull": "drizzle-kit pull && rm -rf src/db/generated/meta src/db/generated/relations.ts && rm -f src/db/generated/*.sql && sed -i '/^import { sql } from \"drizzle-orm\"$/d' src/db/generated/schema.ts",
     "deploy": "wrangler deploy --minify",
     "dev": "wrangler dev",
     "format": "oxfmt",
@@ -26,6 +27,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261007.1",
+    "@types/node": "^26.6.4",
+    "drizzle-kit": "^0.31.11",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
     "oxlint-tsgolint": "^7.0.2003",
