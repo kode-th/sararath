@@ -3,7 +3,7 @@
 ## crawl/ (Python)
 
 - Python 3.13, uv (build backend `uv_build`). Import module `sararath`, distribution `sararath-crawl`.
-- SQLAlchemy 2 + Alembic, psycopg (pooled Neon). Collectors: httpx, feedparser, selectolax (Lexbor).
+- SQLAlchemy 2 + Alembic, psycopg (pooled Neon). Collectors: httpx (default) + a curl_cffi Chrome-impersonation fallback for `IMPERSONATE_HOSTS` (thaigov) in `collectors/http.py`; feedparser; selectolax (Lexbor). `collectors/http.py` also does per-host rate limiting + retry/backoff.
 - No web framework: the read API moved to the Worker (fastapi/uvicorn/scalar-fastapi removed).
 
 ## api/ (Cloudflare Worker)

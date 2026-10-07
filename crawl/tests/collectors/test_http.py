@@ -4,7 +4,7 @@ import time
 import httpx
 import pytest
 
-from sararath.collectors.http import RateLimiter, fetch
+from sararath.collectors.http import RateLimiter, fetch, should_impersonate
 
 _real_sleep = asyncio.sleep
 
@@ -106,3 +106,27 @@ def test_rate_limiter_per_host():
         return time.monotonic() - start
 
     assert asyncio.run(main()) < 1.0
+
+
+def test_should_impersonate_by_host():
+    assert should_impersonate("https://www.thaigov.go.th/x", None) is True
+    assert should_impersonate("https://www.prd.go.th/x", None) is False
+    assert should_impersonate("https://www.prd.go.th/x", True) is True
+    assert should_impersonate("https://www.thaigov.go.th/x", False) is False
+
+
+def test_injected_client_takes_precedence():
+    """An explicit httpx client wins even for an impersonate host (tests inject one)."""
+    calls: list = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, text="ok")
+
+    async def main() -> httpx.Response:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            return await fetch(client, "https://www.thaigov.go.th/x", {})
+
+    response = asyncio.run(main())
+    assert response.status_code == 200
+    assert len(calls) == 1
