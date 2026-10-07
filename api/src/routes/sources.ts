@@ -7,7 +7,7 @@ import type { Env } from '../env';
 import { SourcesPageSchema } from '../schemas';
 
 export const sourcesRoute = new Hono<{ Bindings: Env }>().get(
-  '/sources',
+  '/',
   describeRoute({
     tags: ['ops'],
     summary: 'Configured sources',

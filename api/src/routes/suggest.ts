@@ -7,7 +7,7 @@ import type { Env } from '../env';
 import { SuggestSchema, suggestQuerySchema } from '../schemas';
 
 export const suggestRoute = new Hono<{ Bindings: Env }>().get(
-  '/suggest',
+  '/',
   describeRoute({
     tags: ['articles'],
     summary: 'Suggest sources and articles for a query',

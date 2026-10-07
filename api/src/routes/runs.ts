@@ -7,7 +7,7 @@ import type { Env } from '../env';
 import { RunsPageSchema, runsQuerySchema } from '../schemas';
 
 export const runsRoute = new Hono<{ Bindings: Env }>().get(
-  '/runs',
+  '/',
   describeRoute({
     tags: ['ops'],
     summary: 'Recent collector runs',

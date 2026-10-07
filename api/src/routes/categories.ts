@@ -7,7 +7,7 @@ import type { Env } from '../env';
 import { CategoriesPageSchema, categoriesQuerySchema } from '../schemas';
 
 export const categoriesRoute = new Hono<{ Bindings: Env }>().get(
-  '/categories',
+  '/',
   describeRoute({
     tags: ['articles'],
     summary: 'List categories with counts',

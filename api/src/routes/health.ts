@@ -7,7 +7,7 @@ import type { Env } from '../env';
 import { ErrorSchema, HealthSchema } from '../schemas';
 
 export const healthRoute = new Hono<{ Bindings: Env }>().get(
-  '/health',
+  '/',
   describeRoute({
     tags: ['ops'],
     summary: 'Health check',
