@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from sararath.collectors.rss import FeedConfig, parse_feed
-from sararath.services.links import moac_article_url
+from sararath.domain.links import moac_article_url
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "rss"
 

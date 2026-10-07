@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from sararath.collectors.base import ParsedArticle
 from sararath.models import Article, Attachment, Base, CollectorRun, Source
-from sararath.services import runner
+from sararath.pipeline import runner
 
 
 def memory_session() -> Session:

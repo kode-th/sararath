@@ -8,7 +8,7 @@ from sararath.collectors.thaigov import (
     list_url,
     parse_detail,
 )
-from sararath.services.thai_date import parse_thai_date
+from sararath.domain.thai_date import parse_thai_date
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "thaigov"
 

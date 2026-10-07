@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sararath.services.thai_date import parse_thai_date
+from sararath.domain.thai_date import parse_thai_date
 
 
 def utc(*args: int) -> datetime:

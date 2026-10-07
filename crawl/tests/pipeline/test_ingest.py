@@ -1,5 +1,5 @@
 from sararath.collectors.base import ParsedArticle
-from sararath.services.ingest import ingest
+from sararath.pipeline.ingest import ingest
 
 
 def make(suffix: str = "1", url: str = "https://x.go.th/1") -> ParsedArticle:

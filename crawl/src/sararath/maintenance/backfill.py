@@ -16,7 +16,7 @@ from sararath.collectors.moac import parse_article as parse_moac_article
 from sararath.collectors.prd import PrdCollector
 from sararath.collectors.thaigov import ThaigovCollector
 from sararath.models import Article, Attachment, Source
-from sararath.services.dedupe import content_hash
+from sararath.domain.dedupe import content_hash
 
 # Markers left behind when inline script/style text leaked into body_text.
 DIRTY_MARKERS = ("%function(%", "%jQuery(%", "%$(")

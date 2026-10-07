@@ -1,4 +1,4 @@
-from sararath.services.dedupe import Article, content_hash, dedupe
+from sararath.domain.dedupe import Article, content_hash, dedupe
 
 
 def make(

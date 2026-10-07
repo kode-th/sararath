@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from sararath.models import Article, Base, Source
-from sararath.services.export_legacy import (
+from sararath.maintenance.export_legacy import (
     export_date,
     post_from_article,
     update_manifest,

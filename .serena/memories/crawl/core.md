@@ -3,7 +3,10 @@
 ## Layout (crawl/src/sararath/)
 
 - `collectors/`: base, http, html (`html_to_text`), rss (generic), prd, moac, thaigov.
-- `services/`: runner, scheduler, seed, ingest, dedupe, normalize, backfill, cleanup, links, images, thai_date, export_legacy.
+- `pipeline/`: runner, scheduler, ingest, seed (crawl orchestration).
+- `domain/`: normalize, thai_date, links, images, dedupe (pure helpers).
+- `maintenance/`: backfill, cleanup, export_legacy (CLI repair commands).
+- Tests mirror these under `tests/{collectors,pipeline,domain,maintenance}`.
 - `models.py`, `database.py`, `cli.py`; `migrations/` + alembic.ini, `sources/sources.yaml`, `tests/`, `typings/`, Dockerfile, pyproject (dist `sararath-crawl`).
 
 ## Invariants

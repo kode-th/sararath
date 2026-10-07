@@ -19,7 +19,7 @@ Live API: `https://sararath-apis.fasu.dev` — `/v1/articles`, `/v1/articles/{id
 Root holds the glue: bun workspaces (`api`, `web`), shared oxc config (`.oxlintrc.json`, `.oxfmtrc.json`, `tools/oxlint/`), `compose.yaml` + `compose.dev.yaml`, `mise.toml`, `lefthook.yml`, `commitlint.config.mjs`, and `.github/workflows/`.
 
 ```txt
-crawl/  src/sararath/{collectors,services,models.py,cli.py}
+crawl/  src/sararath/{collectors,pipeline,domain,maintenance,models.py,cli.py}
         migrations/ + alembic.ini, sources/sources.yaml, tests/, typings/, Dockerfile
 api/    src/{app.ts,db.ts,schemas.ts,env.ts,index.ts}   Hono worker (exports AppType)
         wrangler.jsonc, tsconfig.json

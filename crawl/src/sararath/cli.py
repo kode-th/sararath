@@ -6,18 +6,18 @@ import argparse
 from pathlib import Path
 
 from sararath.database import get_session
-from sararath.services.backfill import backfill_bodies
-from sararath.services.cleanup import dedupe_articles, strip_script_text
-from sararath.services.export_legacy import (
+from sararath.domain.images import prune_attachments
+from sararath.domain.links import repair_links
+from sararath.maintenance.backfill import backfill_bodies
+from sararath.maintenance.cleanup import dedupe_articles, strip_script_text
+from sararath.maintenance.export_legacy import (
     export_date,
     update_manifest,
     write_export,
 )
-from sararath.services.images import prune_attachments
-from sararath.services.links import repair_links
-from sararath.services.runner import run_crawl
-from sararath.services.scheduler import due_sources, stale_sources
-from sararath.services.seed import DEFAULT_PATH, seed_sources
+from sararath.pipeline.runner import run_crawl
+from sararath.pipeline.scheduler import due_sources, stale_sources
+from sararath.pipeline.seed import DEFAULT_PATH, seed_sources
 
 
 def build_parser() -> argparse.ArgumentParser:

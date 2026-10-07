@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from sararath.models import Article, Attachment, Base, Source
-from sararath.services.cleanup import dedupe_articles, strip_script_text
+from sararath.maintenance.cleanup import dedupe_articles, strip_script_text
 
 
 def memory_session() -> Session:

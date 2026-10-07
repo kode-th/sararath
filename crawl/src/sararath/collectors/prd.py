@@ -13,8 +13,8 @@ from sararath.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
 from sararath.collectors.html import html_to_text, strip_trailing_attribution
 from sararath.collectors.http import USER_AGENT
 from sararath.collectors.http import fetch as http_fetch
-from sararath.services.normalize import normalize_whitespace
-from sararath.services.thai_date import parse_thai_date
+from sararath.domain.normalize import normalize_whitespace
+from sararath.domain.thai_date import parse_thai_date
 
 BASE = "https://www.prd.go.th"
 LIST_URL = f"{BASE}/th/content/category/index/id/39"

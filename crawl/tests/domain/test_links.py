@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from sararath.models import Article, Base, Source
-from sararath.services.links import (
+from sararath.domain.links import (
     moac_article_url,
     normalizer_for,
     repair_links,

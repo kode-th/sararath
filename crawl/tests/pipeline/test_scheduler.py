@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from sararath.models import Base, Source
-from sararath.services.scheduler import due_sources, stale_sources
+from sararath.pipeline.scheduler import due_sources, stale_sources
 
 
 def memory_session() -> Session:

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sararath.services.normalize import (
+from sararath.domain.normalize import (
     normalize_record,
     normalize_url,
     normalize_whitespace,

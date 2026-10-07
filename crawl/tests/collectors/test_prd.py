@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sararath.collectors.prd import discover_from_html, parse_article
-from sararath.services.thai_date import parse_thai_date
+from sararath.domain.thai_date import parse_thai_date
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "prd"
 

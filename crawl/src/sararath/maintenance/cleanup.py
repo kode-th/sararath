@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from sararath.collectors.html import strip_trailing_attribution
 from sararath.models import Article, Attachment, Source
-from sararath.services.dedupe import content_hash
+from sararath.domain.dedupe import content_hash
 
 CHUNK = 500
 

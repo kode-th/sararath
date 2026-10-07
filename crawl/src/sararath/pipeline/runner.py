@@ -22,11 +22,11 @@ from sararath.collectors.prd import PrdCollector
 from sararath.collectors.rss import FeedConfig, RssCollector, parse_feed
 from sararath.collectors.thaigov import ThaigovCollector
 from sararath.models import Article, Attachment, CollectorRun, Source
-from sararath.services.dedupe import content_hash
-from sararath.services.images import filter_broken_attachments
-from sararath.services.ingest import ingest
-from sararath.services.links import normalizer_for
-from sararath.services.normalize import normalize_url
+from sararath.domain.dedupe import content_hash
+from sararath.domain.images import filter_broken_attachments
+from sararath.pipeline.ingest import ingest
+from sararath.domain.links import normalizer_for
+from sararath.domain.normalize import normalize_url
 
 
 @dataclass(frozen=True)

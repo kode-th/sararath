@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from sararath.collectors.base import ParsedArticle
 from sararath.models import Article, Attachment, Base, Source
-from sararath.services import images
+from sararath.domain import images
 
 
 def article(urls: tuple[str, ...]) -> ParsedArticle:

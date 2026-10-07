@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from sararath.models import Base, Source
-from sararath.services.seed import seed_sources
+from sararath.pipeline.seed import seed_sources
 
 
 def memory_session() -> Session:

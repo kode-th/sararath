@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, TypedDict
 from urllib.parse import urlparse, urlunparse
 
-from sararath.services.thai_date import parse_thai_date
+from sararath.domain.thai_date import parse_thai_date
 
 
 class NormalizedRecord(TypedDict):

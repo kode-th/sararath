@@ -11,12 +11,13 @@ src/sararath/
   cli.py           command-line entrypoint
   database.py      engine + session factory (DATABASE_URL required, no default)
   models.py        SQLAlchemy: sources, articles, attachments, collector_runs
-  collectors/      base, http, rss, prd, thaigov
-  services/        runner, scheduler, seed, normalize, dedupe, thai_date,
-                   ingest, export_legacy
+  collectors/      base, http, html, rss, prd, moac, thaigov
+  pipeline/        runner, scheduler, ingest, seed
+  domain/          normalize, thai_date, links, images, dedupe
+  maintenance/     backfill, cleanup, export_legacy
 migrations/        alembic (env.py + versions/)
 sources/           sources.yaml
-tests/             pytest
+tests/             pytest (collectors/, pipeline/, domain/, maintenance/)
 typings/           pyi stubs (feedparser, yaml)
 Dockerfile         base + prod + dev stages
 ```
