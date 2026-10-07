@@ -20,6 +20,6 @@ Pipeline: collectors → Postgres (Neon) → FastAPI read API → TanStack Start
 
 ## References
 
-- `mem:tech_stack`, `mem:suggested_commands`, `mem:conventions`, `mem:task_completion`
+- `mem:tech_stack`, `mem:suggested_commands`, `mem:conventions`, `mem:task_completion`, `mem:git_policy`
 - `mem:domain` (sources, article data model)
 - `mem:api/core`, `mem:web/core`
