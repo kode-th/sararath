@@ -80,7 +80,7 @@ function Results() {
     ...categoriesQuery(search.source, search.q),
     initialData: loader.categories,
   });
-  const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
+  const { items, hasMore, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   return (
     <main id="content" className="container max-w-6xl">
@@ -125,7 +125,7 @@ function Results() {
       ) : (
         <section aria-label="ผลการค้นหา" className="mt-6">
           <StoryList items={items} thumbnail />
-          <LoadMore cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
+          <LoadMore hasMore={hasMore} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>

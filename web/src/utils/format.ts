@@ -1,20 +1,30 @@
 import type { ArticleItem } from '@/lib/api';
 
+const thaiDate = new Intl.DateTimeFormat('th-TH', {
+  dateStyle: 'long',
+  timeZone: 'Asia/Bangkok',
+});
+
+const thaiTime = new Intl.DateTimeFormat('th-TH', {
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'Asia/Bangkok',
+});
+
+const thaiShortDate = new Intl.DateTimeFormat('th-TH', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'Asia/Bangkok',
+});
+
 export function formatDate(value: string | null) {
   if (!value) return '';
-  return new Intl.DateTimeFormat('th-TH', {
-    dateStyle: 'long',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date(value));
+  return thaiDate.format(new Date(value));
 }
 
 export function formatTime(value: string | null) {
   if (!value) return '';
-  return new Intl.DateTimeFormat('th-TH', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date(value));
+  return thaiTime.format(new Date(value));
 }
 
 export function leadImage(item: ArticleItem) {
@@ -52,11 +62,7 @@ export function excerpt(value: string, length = 220) {
 
 export function formatShortDate(value: string | null) {
   if (!value) return '';
-  return new Intl.DateTimeFormat('th-TH', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date(value));
+  return thaiShortDate.format(new Date(value));
 }
 
 export type FeedItem = ArticleItem & { agencies: string[]; duplicate: boolean };

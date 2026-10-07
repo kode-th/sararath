@@ -65,7 +65,7 @@ function Feed() {
     ...sourcesQuery,
     initialData: loader.sources,
   });
-  const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
+  const { items, hasMore, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   const [lead, ...rest] = items;
   const newest = items[0]?.last_seen_at ?? items[0]?.retrieved_at ?? items[0]?.published_at ?? null;
@@ -131,7 +131,7 @@ function Feed() {
             </Link>
           </div>
           <StoryList items={more} thumbnail className="grid gap-x-12 md:grid-cols-2" />
-          <LoadMore cursor={cursor} loading={loadingMore} onLoadMore={loadMore} />
+          <LoadMore hasMore={hasMore} loading={loadingMore} onLoadMore={loadMore} />
         </section>
       )}
     </main>

@@ -11,7 +11,7 @@
 
 - `src/lib/api.ts` builds `hc<AppType>(API_URL)` (Hono RPC) and re-exports response types from `@sararath/api` (`ArticleItem`=ArticleOut, etc.). Errors thrown as `api {status}`; `isMissingArticle` checks 404/422.
 - Env: `import { env } from 'virtual:env/client'` (`env.VITE_API_URL`, default `https://sararath-apis.fasu.dev`); schema `web/env.ts`.
-- Query options in `src/utils/feed.ts`; hooks in `src/hooks/` (camelCase).
+- Query options in `src/utils/feed.ts` (`feedQuery` for the SSR loader, `feedInfiniteQuery` for cursor paging, `sourcesQuery`, `categoriesQuery`, `suggestQuery`); hooks in `src/hooks/` (camelCase). `useFeedPagination` uses `useInfiniteQuery`; `LoadMore` takes `hasMore`; `article-gallery` uses `embla-carousel-react`.
 - `components/ui/` = Base UI wrappers; `layout/`, `filters/`, `feed/`, `news/`.
 - Removed: openapi-fetch, openapi-typescript, `api-schema.d.ts`, `generate:api`. Types are RPC-only now.
 

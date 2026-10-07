@@ -3,13 +3,13 @@ import { ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface LoadMoreProps {
-  cursor: string | null;
+  hasMore: boolean;
   loading: boolean;
   onLoadMore: () => void;
 }
 
-export function LoadMore({ cursor, loading, onLoadMore }: Readonly<LoadMoreProps>) {
-  if (!cursor) return null;
+export function LoadMore({ hasMore, loading, onLoadMore }: Readonly<LoadMoreProps>) {
+  if (!hasMore) return null;
 
   return (
     <Button onClick={onLoadMore} disabled={loading} className="mt-6 w-full">

@@ -1,36 +1,22 @@
-import { useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { LOAD_MORE_LIMIT } from '@/constants/feed';
-import { fetchArticles, type ArticleItem, type ArticlesPage } from '@/lib/api';
-import type { FeedSearch } from '@/utils/feed';
+import type { ArticlesPage } from '@/lib/api';
+import { feedInfiniteQuery, type FeedSearch } from '@/utils/feed';
 import { markDuplicates } from '@/utils/format';
 
 export function useFeedPagination(page: ArticlesPage, search: FeedSearch) {
-  const [extra, setExtra] = useState<ArticleItem[]>([]);
-  const [cursor, setCursor] = useState(page.next_cursor);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState('');
-
-  async function loadMore() {
-    if (!cursor || loadingMore) return;
-    setLoadingMore(true);
-    setError('');
-    try {
-      const next = await fetchArticles({ ...search, cursor, limit: LOAD_MORE_LIMIT });
-      setExtra((prev) => [...prev, ...next.items]);
-      setCursor(next.next_cursor);
-    } catch {
-      setError('โหลดข่าวเพิ่มไม่สำเร็จ ลองกดอีกครั้ง');
-    } finally {
-      setLoadingMore(false);
-    }
-  }
+  const query = useInfiniteQuery({
+    ...feedInfiniteQuery(search),
+    initialData: { pages: [page], pageParams: [undefined] },
+  });
 
   return {
-    items: markDuplicates([...page.items, ...extra]),
-    cursor,
-    loadingMore,
-    error,
-    loadMore,
+    items: markDuplicates(query.data.pages.flatMap((p) => p.items)),
+    hasMore: query.hasNextPage,
+    loadingMore: query.isFetchingNextPage,
+    error: query.isFetchNextPageError ? 'โหลดข่าวเพิ่มไม่สำเร็จ ลองกดอีกครั้ง' : '',
+    loadMore: () => {
+      void query.fetchNextPage();
+    },
   };
 }

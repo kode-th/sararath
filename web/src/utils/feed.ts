@@ -1,6 +1,6 @@
-import { keepPreviousData, queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, keepPreviousData, queryOptions } from '@tanstack/react-query';
 
-import { FEED_LIMIT } from '@/constants/feed';
+import { FEED_LIMIT, LOAD_MORE_LIMIT } from '@/constants/feed';
 import {
   fetchArticles,
   fetchCategories,
@@ -37,6 +37,22 @@ export const feedQuery = (search: FeedSearch) =>
     staleTime: 60_000,
   });
 
+export const feedInfiniteQuery = (search: FeedSearch) =>
+  infiniteQueryOptions({
+    queryKey: ['feed', search],
+    queryFn: ({ pageParam }) =>
+      fetchArticles({
+        q: search.q,
+        category: search.category,
+        source: search.source,
+        cursor: pageParam,
+        limit: pageParam ? LOAD_MORE_LIMIT : FEED_LIMIT,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.next_cursor ?? undefined,
+    staleTime: 60_000,
+  });
+
 export const sourcesQuery = queryOptions({
   queryKey: ['news-sources'],
   queryFn: fetchSources,
@@ -67,12 +83,14 @@ export async function quietFetch<T>(run: () => Promise<T>): Promise<T | undefine
   }
 }
 
+const bangkokDay = new Intl.DateTimeFormat('th-TH', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'Asia/Bangkok',
+});
+
 export function bangkokToday() {
-  return new Intl.DateTimeFormat('th-TH', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Asia/Bangkok',
-  }).format(new Date());
+  return bangkokDay.format(new Date());
 }

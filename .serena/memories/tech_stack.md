@@ -17,7 +17,7 @@
 - Bun (installs/scripts), Vite, TanStack Start + Router + Query, React 19.
 - Tailwind v4 (`@theme` tokens in `src/assets/css/theme.css`).
 - Base UI (`@base-ui/react`) — imports only in `src/components/ui/`. `@unpic/react` `<Image>`.
-- Hono RPC client (`hono/client`); no generated OpenAPI types.
+- Hono RPC client (`hono/client`); no generated OpenAPI types. `embla-carousel-react` for the article-gallery carousel.
 - `@vite-env/core` + zod env (`web/env.ts`, `virtual:env/client`).
 
 ## tooling / infra
