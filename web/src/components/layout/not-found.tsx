@@ -5,7 +5,7 @@ import { buttonVariants } from '@/components/ui/button';
 
 export function NotFound() {
   return (
-    <main className="container grid max-w-3xl grow place-items-center py-20 sm:py-28">
+    <main id="content" className="container grid max-w-3xl grow place-items-center py-20 sm:py-28">
       <div className="text-center">
         <p className="font-display text-6xl leading-none font-bold text-foreground sm:text-7xl">
           <span className="highlight">404</span>

@@ -15,7 +15,7 @@ export function FeedError({ reset }: Readonly<ErrorComponentProps>) {
   }, [queryReset]);
 
   return (
-    <main className="container max-w-6xl py-16">
+    <main id="content" className="container max-w-6xl py-16">
       <h1 className="text-title-md font-bold text-foreground sm:text-5xl">โหลดข่าวไม่สำเร็จ</h1>
       <p className="mt-3 max-w-[60ch] text-pretty text-muted-foreground">
         เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่

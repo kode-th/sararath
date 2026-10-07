@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { hideBrokenImage } from '@/utils/format';
 
-export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
+export function ArticleGallery({ images, title }: Readonly<{ images: string[]; title?: string }>) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const last = images.length - 1;
@@ -38,7 +38,7 @@ export function ArticleGallery({ images }: Readonly<{ images: string[] }>) {
           <Image
             key={src}
             src={src}
-            alt=""
+            alt={title ? `${title} — ภาพที่ ${position + 1}` : ''}
             width={1200}
             height={675}
             layout="constrained"

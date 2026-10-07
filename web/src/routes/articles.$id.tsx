@@ -63,7 +63,7 @@ export const Route = createFileRoute('/articles/$id')({
 
 function ArticleNotFound() {
   return (
-    <main className="container max-w-6xl py-16">
+    <main id="content" className="container max-w-6xl py-16">
       <div className="max-w-3xl">
         <h1 className="text-title-md font-bold text-foreground sm:text-4xl">ไม่พบข่าวนี้</h1>
         <p className="mt-3 text-pretty text-muted-foreground">ข่าวนี้อาจถูกลบหรือไม่มีอยู่ในระบบแล้ว</p>
@@ -88,7 +88,7 @@ function ArticleError({ reset }: Readonly<ErrorComponentProps>) {
   }, [queryReset]);
 
   return (
-    <main className="container max-w-6xl py-16">
+    <main id="content" className="container max-w-6xl py-16">
       <div className="max-w-3xl">
         <h1 className="text-title-md font-bold text-foreground sm:text-4xl">โหลดข่าวไม่สำเร็จ</h1>
         <p className="mt-3 text-pretty text-muted-foreground">
@@ -136,7 +136,7 @@ function ArticleDetail() {
   ).slice(0, ARTICLE_ASIDE_COUNT);
 
   return (
-    <main className="container max-w-6xl pt-6 pb-4 sm:pt-10">
+    <main id="content" className="container max-w-6xl pt-6 pb-4 sm:pt-10">
       <div className="lg:grid lg:grid-cols-12 lg:gap-12">
         <div className="max-w-3xl lg:col-span-8">
           <Link
@@ -148,7 +148,7 @@ function ArticleDetail() {
                 router.history.back();
               }
             }}
-            className="inline-flex items-center gap-1.5 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-1.5 py-1 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
           </Link>
@@ -186,7 +186,7 @@ function ArticleDetail() {
               {article.last_seen_at && ` · อัปเดต ${formatTime(article.last_seen_at)} น.`}
             </p>
 
-            {images.length > 0 && <ArticleGallery images={images} />}
+            {images.length > 0 && <ArticleGallery images={images} title={article.title} />}
 
             {(summary || paragraphs.length > 0) && (
               <div className="mt-6 border-t-2 border-foreground pt-5">

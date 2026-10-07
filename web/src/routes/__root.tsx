@@ -58,6 +58,12 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:border-2 focus:border-foreground focus:bg-card focus:px-4 focus:py-2 focus:font-display focus:text-sm focus:font-semibold focus:text-foreground"
+      >
+        ข้ามไปที่เนื้อหาหลัก
+      </a>
       <Header />
       <Outlet />
       <Footer />

@@ -81,7 +81,7 @@ function Feed() {
   const today = loader.today;
 
   return (
-    <main className="container max-w-6xl">
+    <main id="content" className="container max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 pt-5 sm:pt-10">
         <h1 className="text-title-md font-bold text-foreground sm:text-5xl">ข่าวหน่วยงานรัฐวันนี้</h1>
         <p className="text-sm text-muted-foreground">

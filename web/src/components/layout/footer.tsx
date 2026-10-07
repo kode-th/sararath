@@ -21,7 +21,7 @@ export function Footer() {
             href={`${env.VITE_API_URL}/reference`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"
+            className="inline-flex items-center gap-1 py-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"
           >
             API สำหรับนักพัฒนา <ArrowUpRight aria-hidden="true" className="size-3" />
           </a>

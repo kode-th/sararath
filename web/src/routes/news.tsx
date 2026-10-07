@@ -83,7 +83,7 @@ function Results() {
   const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   return (
-    <main className="container max-w-6xl">
+    <main id="content" className="container max-w-6xl">
       <h1 className="pt-5 text-title-md font-bold text-foreground sm:pt-10 sm:text-5xl">
         {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวทั้งหมด'}
       </h1>

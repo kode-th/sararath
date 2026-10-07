@@ -33,7 +33,7 @@ export function Header() {
           <Link
             to="/news"
             search={{ q: undefined, source: undefined, category: undefined }}
-            className="font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
+            className="py-1 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
           >
             ข่าวทั้งหมด
           </Link>

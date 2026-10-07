@@ -31,7 +31,7 @@ export function FilterBar({
           <Link
             to="/news"
             search={{ q: undefined, source: undefined, category: undefined }}
-            className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
+            className="py-1 font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
           >
             ล้างตัวกรอง
           </Link>
