@@ -15,6 +15,7 @@ Pipeline: collectors → Postgres (Neon) → FastAPI read API → TanStack Start
 - UI copy is Thai; brand is สาระรัฐ (Latin: Sararath). Tagline: ข่าวหน่วยงานรัฐ รวมไว้ที่เดียว.
 - Must read as independent, never official; never imitate government branding (no Garuda).
 - The API is read-only; the web app never writes to the DB.
+- No local Postgres: dev, GitHub Actions, and Render share the same Neon `DATABASE_URL`, so local crawls/backfills/migrations write to production.
 - Every article links back to its canonical source URL.
 - Search route is `/news` (renamed from `/search`); no redirect for the old path.
 

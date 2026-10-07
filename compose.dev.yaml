@@ -1,22 +1,6 @@
 name: sararath
 
 services:
-  db:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-govnews}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
-      POSTGRES_DB: ${POSTGRES_DB:-govnews}
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-govnews}"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
   api:
     build:
       context: ./api
@@ -35,7 +19,7 @@ services:
       - --reload-dir
       - src
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-govnews}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-govnews}
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
       CORS_ORIGINS: "*"
     volumes:
       - ./api/src:/app/src
@@ -44,9 +28,6 @@ services:
       - ./api/sources:/app/sources
     ports:
       - "8001:8000"
-    depends_on:
-      db:
-        condition: service_healthy
     develop:
       watch:
         - action: rebuild
@@ -77,5 +58,4 @@ services:
     profiles: ["jobs"]
 
 volumes:
-  pgdata:
   web_node_modules:

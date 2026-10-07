@@ -16,7 +16,9 @@
 
 ## Local stack
 
-- `mise run dev` (docker: db :5432, api :8001, web :3000); `mise run dev:down`, `mise run dev:logs`.
+- Dev uses the Neon production DB — there is no local Postgres. `mise run dev` (docker: api :8001, web :3000); `mise run dev:down`, `mise run dev:logs`.
 - Exec: `docker compose -f compose.yaml -f compose.dev.yaml exec <svc> ...`.
+- Migrations: `mise run migrate` (alembic against DATABASE_URL).
 - thaigov scheduler: `mise run scheduler:thaigov` (writes .env DATABASE_URL, i.e. Neon).
+- Web env: `cd web && bun run env:check | env:types | env:generate` (@vite-env/cli).
 - Git/files behave as standard Linux; no special line-ending setup needed.

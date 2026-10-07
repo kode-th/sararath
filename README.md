@@ -33,9 +33,11 @@ web/    src/routes/            __root.tsx, index.tsx, news.tsx, articles.$id.tsx
 
 ## Local dev
 
+Dev runs against the **Neon production database** — there is no local Postgres.
+
 ```bash
-cp .env.example .env                 # set POSTGRES_PASSWORD
-mise run dev                         # docker: db:5432, api:8001 (hot reload), web:3000
+cp .env.example .env                 # set DATABASE_URL to the Neon pooled URL
+mise run dev                         # docker: api:8001 (hot reload), web:3000
 ```
 
 Then, in another terminal:
@@ -50,9 +52,10 @@ docker compose -f compose.yaml -f compose.dev.yaml exec api \
 
 Open <http://localhost:3000>. `api/src/` edits reload the API; `web/` edits hot-reload the browser. Notes:
 
-- The `scheduler` service is parked behind the `jobs` profile (`docker compose --profile jobs up`); it crawls every due source into the local db. To keep production `thaigov` fresh, run `mise run scheduler:thaigov` on a residential/TH host (writes to the `.env` `DATABASE_URL`).
+- Dev, GitHub Actions, and Render all use the same Neon `DATABASE_URL`, so local crawls/backfills/migrations write to **production** — treat them accordingly.
+- The `scheduler` service is parked behind the `jobs` profile (`docker compose --profile jobs up`); it crawls every due source into `DATABASE_URL`. To keep `thaigov` fresh, run `mise run scheduler:thaigov` on a residential/TH host.
 - `web` runs with `network_mode: host` so SSR and the browser both reach `http://localhost:8001`; the container runs Vite on Node (bun is only used for installs).
-- Ports: db `5432`, api `8001`, web `3000`.
+- Ports: api `8001`, web `3000`.
 
 ## CLI
 
