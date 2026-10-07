@@ -25,7 +25,7 @@ export function Header() {
             </span>
           </Link>
           <Link
-            to="/search"
+            to="/news"
             search={{ q: undefined, source: undefined, category: undefined }}
             className="font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
           >

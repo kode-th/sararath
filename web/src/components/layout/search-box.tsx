@@ -80,7 +80,7 @@ export function SearchBox({ initialQuery }: Readonly<SearchBoxProps>) {
   const showPortal = groups.length > 0 || statusMessage !== null;
 
   function search() {
-    void navigate({ to: '/search', search: { q: query.trim() || undefined } });
+    void navigate({ to: '/news', search: { q: query.trim() || undefined } });
   }
 
   function submit(event: SubmitEvent<HTMLFormElement>) {

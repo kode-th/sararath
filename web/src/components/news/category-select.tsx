@@ -44,7 +44,7 @@ export function CategorySelect({
       onValueChange={(value) => {
         const category = typeof value === 'string' ? value : undefined;
         if (target === 'search') {
-          void navigate({ to: '/search', search: { q, category, source } });
+          void navigate({ to: '/news', search: { q, category, source } });
         } else {
           void navigate({ to: '/', search: { category, source, cursor: undefined } });
         }

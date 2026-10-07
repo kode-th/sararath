@@ -27,7 +27,7 @@ export function AgencyTabs({ sources, active, q, target }: Readonly<AgencyTabsPr
             <li key={tab.slug ?? 'all'}>
               {target === 'search' ? (
                 <Link
-                  to="/search"
+                  to="/news"
                   search={{ q, source: tab.slug }}
                   aria-current={current ? 'page' : undefined}
                   className={className}

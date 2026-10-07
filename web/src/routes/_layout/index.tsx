@@ -147,7 +147,7 @@ function Feed() {
           <div className="relative">
             <SectionTab id="more-heading">ข่าวก่อนหน้า</SectionTab>
             <Link
-              to="/search"
+              to="/news"
               search={{ q: undefined, source: undefined, category: undefined }}
               className="absolute top-0 right-0 font-display text-sm leading-7 font-semibold text-muted-foreground hover:text-foreground"
             >

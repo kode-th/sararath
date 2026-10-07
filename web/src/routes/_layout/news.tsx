@@ -27,7 +27,7 @@ interface SearchLoaderData {
   categories: CategoryItem[] | undefined;
 }
 
-export const Route = createFileRoute('/_layout/search')({
+export const Route = createFileRoute('/_layout/news')({
   validateSearch: (raw: Record<string, unknown>): SearchSearch => ({
     q: typeof raw['q'] === 'string' ? raw['q'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
@@ -91,7 +91,7 @@ function Results() {
         <div className="flex items-center gap-4">
           {(search.q || search.source || search.category) && (
             <Link
-              to="/search"
+              to="/news"
               search={{ q: undefined, source: undefined, category: undefined }}
               className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
             >
@@ -121,7 +121,7 @@ function Results() {
           </h2>
           {search.source || search.category ? (
             <Link
-              to="/search"
+              to="/news"
               search={{ q: search.q, source: undefined, category: undefined }}
               className="mt-3 inline-block font-display font-semibold text-foreground underline decoration-accent"
             >

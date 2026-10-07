@@ -21,7 +21,7 @@ Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.t
 ```txt
 api/    src/thai_gov_news/{collectors,services,api,models.py,cli.py}
         migrations/ + alembic.ini, sources/sources.yaml, tests/, typings/, Dockerfile
-web/    src/routes/            __root.tsx, _layout.tsx, _layout/index.tsx, _layout/search.tsx, _layout/articles.$id.tsx
+web/    src/routes/            __root.tsx, _layout.tsx, _layout/index.tsx, _layout/news.tsx, _layout/articles.$id.tsx
         src/components/        layout/{header,footer,not-found}, news/*, ui/*
         src/lib/               cn.ts, api.ts (typed client), api-schema.d.ts (generated)
         src/utils/             format.ts, feed.ts
