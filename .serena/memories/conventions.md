@@ -2,7 +2,7 @@
 
 - Frontend component/import/Tailwind rules: read `mem:frontend-conventions` before editing `web/`.
 - Base UI imports and JSX member expressions (`<Foo.Bar/>`) are allowed ONLY in `web/src/components/ui/`; wrap primitives there and export named components. Enforced by oxlint `no-restricted-imports` + `design-system/no-member-expression`.
-- Components live in a subfolder of `web/src/components/`: `ui/` (primitives), `layout/` (chrome), `news/` (news parts). Never directly in `components/`.
+- Components live in a subfolder of `web/src/components/`: `ui/` (global primitives), `layout/` (page chrome), `filters/` (filter/search controls), `feed/` (feed state and pagination), `news/` (news content). Never directly in `components/`.
 - `cn()` from `@/lib/cn` only for conditional/merged classNames; static strings stay plain. Tailwind utilities only; no custom classes except `@utility` in utilities.css.
 - `web/src/lib` = only `cn` + API client. App helpers → `src/utils/`, literals → `src/constants/`, hook files camelCase in `src/hooks/`.
 - Imports: `@/` alias; relative only `./` (never `../`).

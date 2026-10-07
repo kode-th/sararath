@@ -1,6 +1,6 @@
 import { Link, useSearch } from '@tanstack/react-router';
 
-import { SearchBox } from '@/components/layout/search-box';
+import { SearchBox } from '@/components/filters/search-box';
 
 export function Header() {
   const search = useSearch({ strict: false });

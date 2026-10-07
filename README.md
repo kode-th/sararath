@@ -22,7 +22,7 @@ Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.t
 api/    src/sararath/{collectors,services,api,models.py,cli.py}
         migrations/ + alembic.ini, sources/sources.yaml, tests/, typings/, Dockerfile
 web/    src/routes/            __root.tsx, index.tsx, news.tsx, articles.$id.tsx
-        src/components/        layout/{header,footer,not-found}, news/*, ui/*
+        src/components/        layout/{header,footer,not-found}, filters/*, feed/*, news/*, ui/*
         src/lib/               cn.ts, api.ts (typed client), api-schema.d.ts (generated)
         src/utils/             format.ts, feed.ts
         src/constants/         feed.ts

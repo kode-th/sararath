@@ -10,7 +10,7 @@
 ## Data & components
 
 - Query options in `src/utils/feed.ts` (`feedQuery`, `sourcesQuery`, `categoriesQuery`, `suggestQuery`); typed client in `src/lib/api.ts`.
-- `components/ui/` = Base UI wrappers (button, card, section-tab, select, autocomplete). `components/layout/` = header, footer, search-box, not-found. `components/news/` = lead-story, story-row, agency-tabs, category-select, article-gallery, highlight-title, feed-error.
+- `components/ui/` = Base UI wrappers (button, card, section-tab, select, autocomplete). `components/layout/` = header, footer, not-found. `components/filters/` = search-box, agency-tabs, category-select, filter-bar. `components/feed/` = feed-error, feed-fallback, error-card, load-more. `components/news/` = lead-story, story-row, story-list, article-gallery, highlight-title.
 - Favicons use a light plate (`favicon.svg`) so the navy mark reads on dark browser chrome; in-page `logo.svg` stays transparent.
 
 ## References

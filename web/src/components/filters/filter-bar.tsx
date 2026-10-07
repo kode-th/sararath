@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
-import { AgencyTabs } from '@/components/news/agency-tabs';
-import { CategorySelect } from '@/components/news/category-select';
+import { AgencyTabs } from '@/components/filters/agency-tabs';
+import { CategorySelect } from '@/components/filters/category-select';
 import type { CategoryItem, NewsSourceItem } from '@/lib/api';
 
 interface FilterBarProps {

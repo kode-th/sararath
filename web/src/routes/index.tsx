@@ -2,12 +2,12 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
-import { ErrorCard } from '@/components/news/error-card';
-import { FeedError } from '@/components/news/feed-error';
-import { FeedFallback } from '@/components/news/feed-fallback';
-import { FilterBar } from '@/components/news/filter-bar';
+import { ErrorCard } from '@/components/feed/error-card';
+import { FeedError } from '@/components/feed/feed-error';
+import { FeedFallback } from '@/components/feed/feed-fallback';
+import { LoadMore } from '@/components/feed/load-more';
+import { FilterBar } from '@/components/filters/filter-bar';
 import { LeadStory } from '@/components/news/lead-story';
-import { LoadMore } from '@/components/news/load-more';
 import { StoryList } from '@/components/news/story-list';
 import { SectionTab } from '@/components/ui/section-tab';
 import { HOME_ASIDE_COUNT } from '@/constants/feed';
