@@ -148,7 +148,7 @@ function ArticleDetail() {
                 router.history.back();
               }
             }}
-            className="inline-flex items-center gap-1.5 py-1 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
+            className="inline-flex min-h-11 items-center gap-1.5 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
           </Link>

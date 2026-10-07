@@ -118,7 +118,7 @@ function Feed() {
           <Link
             to="/"
             search={{ category: undefined, source: undefined, cursor: undefined }}
-            className="mt-3 inline-block font-display font-semibold text-foreground underline decoration-accent"
+            className="mt-3 inline-flex min-h-11 items-center font-display font-semibold text-foreground underline decoration-accent"
           >
             ดูข่าวจากทุกหน่วยงาน
           </Link>
