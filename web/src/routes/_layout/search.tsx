@@ -89,6 +89,15 @@ function Results() {
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <AgencyTabs sources={sources} active={search.source} q={search.q} target="search" />
         <div className="flex items-center gap-4">
+          {(search.q || search.source || search.category) && (
+            <Link
+              to="/search"
+              search={{ q: undefined, source: undefined, category: undefined }}
+              className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
+            >
+              ล้างตัวกรอง
+            </Link>
+          )}
           <CategorySelect
             categories={categories}
             source={search.source}
@@ -96,15 +105,6 @@ function Results() {
             q={search.q}
             target="search"
           />
-          {(search.source || search.category) && (
-            <Link
-              to="/search"
-              search={{ q: search.q, source: undefined, category: undefined }}
-              className="font-display text-sm font-semibold whitespace-nowrap text-muted-foreground hover:text-foreground"
-            >
-              ล้างตัวกรอง
-            </Link>
-          )}
         </div>
       </div>
 
