@@ -20,4 +20,5 @@
 
 - mise tasks orchestrate gates; lefthook git hooks; commitlint Conventional Commits.
 - Scheduler: GitHub Actions hourly `crawl-due` (moac/rd/prd); `thaigov` from a residential/TH host.
-- API host: Render (`https://sararath-apis.fasu.dev`). DB: Neon.
+- API host: Render (`https://sararath-apis.fasu.dev`). DB: Neon (shared by dev and prod; no local Postgres).
+- Web env: `@vite-env/core` + zod — schema in `web/env.ts`, plugin `viteEnv({ configFile: './env.ts' })`, app imports `env` from `virtual:env/client`; generated `web/vite-env.d.ts`; CLI scripts `env:check|env:types|env:generate`.

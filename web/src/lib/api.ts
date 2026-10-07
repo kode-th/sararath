@@ -1,4 +1,5 @@
 import createClient from 'openapi-fetch';
+import { env } from 'virtual:env/client';
 
 import type { components, paths } from '@/lib/api-schema';
 
@@ -8,7 +9,7 @@ export type CategoryItem = components['schemas']['CategoryOut'];
 export type NewsSourceItem = components['schemas']['SourceOut'];
 export type SuggestResult = components['schemas']['SuggestOut'];
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'https://sararath-apis.fasu.dev';
+export const API_URL = env.VITE_API_URL;
 
 const client = createClient<paths>({ baseUrl: API_URL });
 

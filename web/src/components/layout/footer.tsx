@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
+import { env } from 'virtual:env/client';
 
 export function Footer() {
   return (
@@ -17,7 +18,7 @@ export function Footer() {
         <div className="flex items-center gap-4">
           <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐประมาณทุก 1–2 ชั่วโมง</span>
           <a
-            href="https://sararath-apis.fasu.dev/reference"
+            href={`${env.VITE_API_URL}/reference`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent"

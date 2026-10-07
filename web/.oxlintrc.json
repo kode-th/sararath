@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react", "jsx-a11y"],
-  "ignorePatterns": ["src/lib/api-schema.d.ts"],
+  "ignorePatterns": ["src/lib/api-schema.d.ts", "vite-env.d.ts"],
   "overrides": [
     {
       "files": ["src/hooks/**"],
