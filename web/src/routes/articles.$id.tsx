@@ -160,8 +160,8 @@ function ArticleDetail() {
                 <>
                   <span aria-hidden="true">·</span>
                   <Link
-                    to="/"
-                    search={{ category: article.category, source: undefined, cursor: undefined }}
+                    to="/news"
+                    search={{ q: undefined, source: undefined, category: article.category }}
                     className="underline decoration-accent hover:text-foreground"
                   >
                     {article.category}

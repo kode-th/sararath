@@ -14,7 +14,6 @@ import { HOME_ASIDE_COUNT } from '@/constants/feed';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import {
   bangkokToday,
-  categoriesQuery,
   feedQuery,
   quietFetch,
   sourcesQuery,
@@ -33,12 +32,11 @@ export const Route = createFileRoute('/')({
   }),
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }): Promise<FeedLoaderData> => {
-    const [page, sources, categories] = await Promise.all([
+    const [page, sources] = await Promise.all([
       quietFetch(() => context.queryClient.query(feedQuery(deps))),
       quietFetch(() => context.queryClient.query(sourcesQuery)),
-      quietFetch(() => context.queryClient.query(categoriesQuery(deps.source))),
     ]);
-    return { page, sources, categories, today: bangkokToday() };
+    return { page, sources, today: bangkokToday() };
   },
   staleTime: 30_000,
   component: Newsroom,
@@ -67,10 +65,6 @@ function Feed() {
     ...sourcesQuery,
     initialData: loader.sources,
   });
-  const { data: categories } = useSuspenseQuery({
-    ...categoriesQuery(search.source),
-    initialData: loader.categories,
-  });
   const { items, cursor, loadingMore, error, loadMore } = useFeedPagination(page, search);
 
   const [lead, ...rest] = items;
@@ -92,7 +86,6 @@ function Feed() {
 
       <FilterBar
         sources={sources}
-        categories={categories}
         source={search.source}
         category={search.category}
         target="home"

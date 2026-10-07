@@ -6,7 +6,7 @@ import type { CategoryItem, NewsSourceItem } from '@/lib/api';
 
 interface FilterBarProps {
   sources: NewsSourceItem[];
-  categories: CategoryItem[];
+  categories?: CategoryItem[];
   source?: string;
   category?: string;
   q?: string;
@@ -36,13 +36,15 @@ export function FilterBar({
             ล้างตัวกรอง
           </Link>
         )}
-        <CategorySelect
-          categories={categories}
-          source={source}
-          active={category}
-          q={q}
-          target={target}
-        />
+        {target === 'search' && categories && (
+          <CategorySelect
+            categories={categories}
+            source={source}
+            active={category}
+            q={q}
+            target={target}
+          />
+        )}
       </div>
     </div>
   );

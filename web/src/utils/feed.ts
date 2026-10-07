@@ -7,7 +7,6 @@ import {
   fetchSources,
   fetchSuggest,
   type ArticlesPage,
-  type CategoryItem,
   type NewsSourceItem,
 } from '@/lib/api';
 
@@ -21,7 +20,6 @@ export interface FeedSearch {
 export interface FeedLoaderData {
   page: ArticlesPage | undefined;
   sources: NewsSourceItem[] | undefined;
-  categories: CategoryItem[] | undefined;
   today: string;
 }
 
