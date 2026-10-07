@@ -23,6 +23,7 @@ from sararath.collectors.rss import FeedConfig, RssCollector, parse_feed
 from sararath.collectors.thaigov import ThaigovCollector
 from sararath.models import Article, Attachment, CollectorRun, Source
 from sararath.services.dedupe import content_hash
+from sararath.services.images import filter_broken_attachments
 from sararath.services.ingest import ingest
 from sararath.services.links import normalizer_for
 from sararath.services.normalize import normalize_url
@@ -121,6 +122,14 @@ async def _collect(source: Source) -> list[tuple[ParsedArticle, str | None, str]
     if source.collector == "rss":
         return await _collect_rss(source)
     raise SystemExit(f"error: collector {source.collector!r} not implemented")
+
+
+async def _collect_and_filter(
+    source: Source,
+) -> list[tuple[ParsedArticle, str | None, str]]:
+    collected = await _collect(source)
+    articles = await filter_broken_attachments([parsed for parsed, _, _ in collected])
+    return [(article, raw, ext) for article, (_, raw, ext) in zip(articles, collected)]
 
 
 def _save_raw(slug: str, url: str, day: str, ext: str, raw: str) -> str:
@@ -292,7 +301,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
 
     started = _utcnow()
     try:
-        collected = asyncio.run(_collect(source))
+        collected = asyncio.run(_collect_and_filter(source))
     except SystemExit:
         raise
     except Exception as exc:

@@ -77,6 +77,11 @@ def test_crawl_backfills_missing_attachments(monkeypatch, tmp_path):
     session = memory_session()
     seed(session)
     monkeypatch.setattr(runner, "_collect_prd", one)
+
+    async def keep_all(articles):
+        return articles
+
+    monkeypatch.setattr(runner, "filter_broken_attachments", keep_all)
     runner.run_crawl(session, "prd")
     image = "https://www.prd.go.th/th/file/get/file/a.jpeg"
 

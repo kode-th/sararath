@@ -14,6 +14,7 @@ from sararath.services.export_legacy import (
     update_manifest,
     write_export,
 )
+from sararath.services.images import prune_attachments
 from sararath.services.links import repair_links
 from sararath.services.runner import run_crawl
 from sararath.services.scheduler import due_sources, stale_sources
@@ -78,6 +79,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     strip.add_argument("--source", default=None)
     strip.add_argument("--dry-run", action="store_true")
+
+    prune = sub.add_parser(
+        "prune-attachments", help="Drop image attachments that no longer resolve"
+    )
+    prune.add_argument("--source", default=None)
+    prune.add_argument("--dry-run", action="store_true")
 
     return parser
 
@@ -210,6 +217,16 @@ def _cmd_strip_script(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_prune_attachments(args: argparse.Namespace) -> int:
+    with get_session() as session:
+        result = prune_attachments(session, source=args.source, dry_run=args.dry_run)
+    print(
+        f"prune-attachments: scanned={result.scanned} removed={result.removed} "
+        f"dry_run={args.dry_run}"
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "seed":
@@ -234,4 +251,6 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_repair_links(args)
     if args.command == "strip-script":
         return _cmd_strip_script(args)
+    if args.command == "prune-attachments":
+        return _cmd_prune_attachments(args)
     return 2
