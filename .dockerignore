@@ -1,0 +1,22 @@
+# Build context for the dev web/api images (root context).
+.git
+.github
+.private
+.serena
+.impeccable
+
+node_modules
+**/node_modules
+
+# Wrangler/Vite/TanStack caches are volatile and break the classic builder.
+**/.wrangler
+**/.tanstack
+**/dist
+**/.output
+
+crawl/.venv
+crawl/raw
+
+.env
+**/.env
+**/.dev.vars

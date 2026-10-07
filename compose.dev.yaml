@@ -1,9 +1,30 @@
 name: sararath
 
 services:
+  # Installs the bun workspace once; api and web wait for it to finish.
+  deps:
+    build:
+      context: .
+      dockerfile: web/Dockerfile.dev
+      args:
+        UID: '${LOCAL_UID:-1000}'
+        GID: '${LOCAL_GID:-1000}'
+    working_dir: /app
+    volumes:
+      - .:/app
+      - bun_node_modules:/app/node_modules
+    command: sh -c "bun install --frozen-lockfile"
+    develop:
+      watch:
+        - action: rebuild
+          path: ./bun.lock
+        - action: rebuild
+          path: ./api/package.json
+        - action: rebuild
+          path: ./web/package.json
+
   # Build target and interactive shell for migrations/seeds/CLI against the dev
-  # database. The read API is a Cloudflare Worker (see ../api); run it with
-  # `mise run dev:api` on the host.
+  # database. Runs `sleep infinity`; exec into it for one-off commands.
   crawl:
     build:
       context: ./crawl
@@ -23,24 +44,43 @@ services:
         - action: rebuild
           path: ./crawl/uv.lock
 
+  # Read API (Hono worker) via `wrangler dev` on :8787.
+  api:
+    build:
+      context: .
+      dockerfile: web/Dockerfile.dev
+      args:
+        UID: '${LOCAL_UID:-1000}'
+        GID: '${LOCAL_GID:-1000}'
+    working_dir: /app
+    network_mode: host
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    volumes:
+      - .:/app
+      - bun_node_modules:/app/node_modules
+    command: sh -c "exec bun run --filter @sararath/api dev"
+
+  # SSR frontend via Vite on :3000, pointed at the local worker.
   web:
     build:
       context: .
       dockerfile: web/Dockerfile.dev
+      args:
+        UID: '${LOCAL_UID:-1000}'
+        GID: '${LOCAL_GID:-1000}'
     working_dir: /app
     network_mode: host
+    depends_on:
+      deps:
+        condition: service_completed_successfully
     environment:
       VITE_API_URL: http://localhost:8787
     volumes:
       - .:/app
-      - web_node_modules:/app/node_modules
-    command: sh -c "bun install && exec bun run --filter @sararath/web dev"
-    develop:
-      watch:
-        - action: rebuild
-          path: ./bun.lock
-        - action: rebuild
-          path: ./web/package.json
+      - bun_node_modules:/app/node_modules
+    command: sh -c "exec bun run --filter @sararath/web dev"
 
 volumes:
-  web_node_modules:
+  bun_node_modules:
