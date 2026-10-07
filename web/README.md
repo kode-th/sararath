@@ -1,6 +1,6 @@
-# Thai Gov News Web
+# Sararath Web
 
-TanStack Start (React 19, SSR) frontend for thai-gov-news. Bun for installs and scripts, Vite for dev/build, Tailwind v4 for styling, oxc (oxlint/oxfmt) for lint/format. Deploys to Cloudflare Workers.
+TanStack Start (React 19, SSR) frontend for sararath. Bun for installs and scripts, Vite for dev/build, Tailwind v4 for styling, oxc (oxlint/oxfmt) for lint/format. Deploys to Cloudflare Workers.
 
 See the [root README](../README.md) for the full project.
 

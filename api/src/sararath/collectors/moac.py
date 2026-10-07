@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 from selectolax.lexbor import LexborHTMLParser
 
-from thai_gov_news.collectors.html import html_to_text
+from sararath.collectors.html import html_to_text
 
 CONTENT = "div.txt-desc"
 GALLERY = ".gallery-item img"

@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
-from thai_gov_news.models import Article, Attachment, Base, Source
-from thai_gov_news.services.cleanup import dedupe_articles, strip_script_text
+from sararath.models import Article, Attachment, Base, Source
+from sararath.services.cleanup import dedupe_articles, strip_script_text
 
 
 def memory_session() -> Session:

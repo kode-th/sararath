@@ -1,4 +1,4 @@
-from thai_gov_news.cli import build_parser
+from sararath.cli import build_parser
 
 
 def test_parser_export_legacy_args():

@@ -14,18 +14,18 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from thai_gov_news.collectors.base import ParsedArticle
-from thai_gov_news.collectors.http import USER_AGENT
-from thai_gov_news.collectors.http import fetch as http_fetch
-from thai_gov_news.collectors.moac import parse_article
-from thai_gov_news.collectors.prd import PrdCollector
-from thai_gov_news.collectors.rss import FeedConfig, RssCollector, parse_feed
-from thai_gov_news.collectors.thaigov import ThaigovCollector
-from thai_gov_news.models import Article, Attachment, CollectorRun, Source
-from thai_gov_news.services.dedupe import content_hash
-from thai_gov_news.services.ingest import ingest
-from thai_gov_news.services.links import normalizer_for
-from thai_gov_news.services.normalize import normalize_url
+from sararath.collectors.base import ParsedArticle
+from sararath.collectors.http import USER_AGENT
+from sararath.collectors.http import fetch as http_fetch
+from sararath.collectors.moac import parse_article
+from sararath.collectors.prd import PrdCollector
+from sararath.collectors.rss import FeedConfig, RssCollector, parse_feed
+from sararath.collectors.thaigov import ThaigovCollector
+from sararath.models import Article, Attachment, CollectorRun, Source
+from sararath.services.dedupe import content_hash
+from sararath.services.ingest import ingest
+from sararath.services.links import normalizer_for
+from sararath.services.normalize import normalize_url
 
 
 @dataclass(frozen=True)

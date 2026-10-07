@@ -4,7 +4,7 @@ import time
 import httpx
 import pytest
 
-from thai_gov_news.collectors.http import RateLimiter, fetch
+from sararath.collectors.http import RateLimiter, fetch
 
 _real_sleep = asyncio.sleep
 

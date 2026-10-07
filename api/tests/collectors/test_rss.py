@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from thai_gov_news.collectors.rss import FeedConfig, parse_feed
-from thai_gov_news.services.links import moac_article_url
+from sararath.collectors.rss import FeedConfig, parse_feed
+from sararath.services.links import moac_article_url
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "rss"
 

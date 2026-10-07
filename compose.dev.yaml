@@ -1,4 +1,4 @@
-name: thai-gov-news
+name: sararath
 
 services:
   db:
@@ -26,7 +26,7 @@ services:
       - run
       - --no-sync
       - uvicorn
-      - thai_gov_news.api.app:app
+      - sararath.api.app:app
       - --host
       - 0.0.0.0
       - --port

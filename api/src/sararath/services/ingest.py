@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
-from thai_gov_news.collectors.base import ParsedArticle
-from thai_gov_news.services.dedupe import Article, dedupe
-from thai_gov_news.services.normalize import NormalizedRecord, normalize_record
+from sararath.collectors.base import ParsedArticle
+from sararath.services.dedupe import Article, dedupe
+from sararath.services.normalize import NormalizedRecord, normalize_record
 
 
 @dataclass(frozen=True)

@@ -17,7 +17,7 @@ jobs:
           python-version-file: api/.python-version
       - run: uv sync --no-dev
         working-directory: api
-      - run: uv run python -m thai_gov_news crawl-due --source moac --source rd --source prd
+      - run: uv run python -m sararath crawl-due --source moac --source rd --source prd
         working-directory: api
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

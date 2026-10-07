@@ -10,12 +10,12 @@ from typing import Any
 import httpx
 from selectolax.lexbor import LexborHTMLParser
 
-from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
-from thai_gov_news.collectors.html import html_to_text
-from thai_gov_news.collectors.http import USER_AGENT
-from thai_gov_news.collectors.http import fetch as http_fetch
-from thai_gov_news.services.normalize import normalize_whitespace
-from thai_gov_news.services.thai_date import parse_thai_date
+from sararath.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from sararath.collectors.html import html_to_text
+from sararath.collectors.http import USER_AGENT
+from sararath.collectors.http import fetch as http_fetch
+from sararath.services.normalize import normalize_whitespace
+from sararath.services.thai_date import parse_thai_date
 
 BASE = "https://www.thaigov.go.th"
 LIST_API = f"{BASE}/api/proxy/v1/news/th"

@@ -13,7 +13,7 @@ from scalar_fastapi import get_scalar_api_reference
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.api.schemas import (
+from sararath.api.schemas import (
     ArticleOut,
     ArticlesPage,
     CategoriesPage,
@@ -22,10 +22,10 @@ from thai_gov_news.api.schemas import (
     SourcesPage,
     SuggestOut,
 )
-from thai_gov_news.database import get_session
-from thai_gov_news.models import Article, Attachment, CollectorRun, Source
+from sararath.database import get_session
+from sararath.models import Article, Attachment, CollectorRun, Source
 
-app = FastAPI(title="thai-gov-news")
+app = FastAPI(title="Sararath")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
@@ -36,7 +36,7 @@ app.add_middleware(
 
 @app.get("/reference", include_in_schema=False)
 def reference():  # type: ignore[no-untyped-def]
-    return get_scalar_api_reference(openapi_url="/openapi.json", title="thai-gov-news")
+    return get_scalar_api_reference(openapi_url="/openapi.json", title="sararath")
 
 
 def get_db() -> Iterator[Session]:

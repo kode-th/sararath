@@ -6,22 +6,22 @@ import argparse
 import json
 from pathlib import Path
 
-from thai_gov_news.database import get_session
-from thai_gov_news.services.backfill import backfill_bodies
-from thai_gov_news.services.cleanup import dedupe_articles, strip_script_text
-from thai_gov_news.services.export_legacy import (
+from sararath.database import get_session
+from sararath.services.backfill import backfill_bodies
+from sararath.services.cleanup import dedupe_articles, strip_script_text
+from sararath.services.export_legacy import (
     export_date,
     update_manifest,
     write_export,
 )
-from thai_gov_news.services.links import repair_links
-from thai_gov_news.services.runner import run_crawl
-from thai_gov_news.services.scheduler import due_sources, stale_sources
-from thai_gov_news.services.seed import DEFAULT_PATH, seed_sources
+from sararath.services.links import repair_links
+from sararath.services.runner import run_crawl
+from sararath.services.scheduler import due_sources, stale_sources
+from sararath.services.seed import DEFAULT_PATH, seed_sources
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="thai-gov-news")
+    parser = argparse.ArgumentParser(prog="sararath")
     sub = parser.add_subparsers(dest="command", required=True)
 
     seed = sub.add_parser("seed", help="Upsert sources from sources.yaml")
@@ -107,7 +107,7 @@ def _cmd_export(args: argparse.Namespace) -> int:
 def _cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
-    uvicorn.run("thai_gov_news.api.app:app", host=args.host, port=args.port)
+    uvicorn.run("sararath.api.app:app", host=args.host, port=args.port)
     return 0
 
 
@@ -151,7 +151,7 @@ def _cmd_check(args: argparse.Namespace) -> int:
 
 
 def _cmd_openapi(_args: argparse.Namespace) -> int:
-    from thai_gov_news.api.app import app
+    from sararath.api.app import app
 
     print(json.dumps(app.openapi(), indent=2, sort_keys=True))
     return 0

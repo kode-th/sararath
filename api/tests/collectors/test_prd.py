@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
-from thai_gov_news.collectors.prd import discover_from_html, parse_article
-from thai_gov_news.services.thai_date import parse_thai_date
+from sararath.collectors.prd import discover_from_html, parse_article
+from sararath.services.thai_date import parse_thai_date
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "prd"
 

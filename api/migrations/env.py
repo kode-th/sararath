@@ -7,7 +7,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from thai_gov_news.models import Base
+from sararath.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -5,8 +5,8 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from thai_gov_news.models import Article, Base, Source
-from thai_gov_news.services.export_legacy import (
+from sararath.models import Article, Base, Source
+from sararath.services.export_legacy import (
     export_date,
     post_from_article,
     update_manifest,
@@ -102,7 +102,7 @@ def test_export_filters_bangkok_date():
     seed(session)
     payload = export_date(session, "2026-09-18")
     assert payload["date"] == "2026-09-18"
-    assert payload["pipeline"].startswith("thai-gov-news-")
+    assert payload["pipeline"].startswith("sararath-")
     assert [p["id"] for p in payload["posts"]] == ["thaigov-thaigov-1"]
     assert payload["stats"] == {"total": 1, "direct": 1, "indirect": 0}
     payload = export_date(session, "2026-09-19")

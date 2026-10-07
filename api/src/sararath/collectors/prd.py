@@ -9,12 +9,12 @@ from urllib.parse import urljoin
 import httpx
 from selectolax.lexbor import LexborHTMLParser, LexborNode
 
-from thai_gov_news.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
-from thai_gov_news.collectors.html import html_to_text, strip_trailing_attribution
-from thai_gov_news.collectors.http import USER_AGENT
-from thai_gov_news.collectors.http import fetch as http_fetch
-from thai_gov_news.services.normalize import normalize_whitespace
-from thai_gov_news.services.thai_date import parse_thai_date
+from sararath.collectors.base import DiscoveredItem, ParsedArticle, RawArticle
+from sararath.collectors.html import html_to_text, strip_trailing_attribution
+from sararath.collectors.http import USER_AGENT
+from sararath.collectors.http import fetch as http_fetch
+from sararath.services.normalize import normalize_whitespace
+from sararath.services.thai_date import parse_thai_date
 
 BASE = "https://www.prd.go.th"
 LIST_URL = f"{BASE}/th/content/category/index/id/39"

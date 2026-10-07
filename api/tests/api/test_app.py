@@ -5,8 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from thai_gov_news.api.app import app, get_db
-from thai_gov_news.models import Article, Base, Source
+from sararath.api.app import app, get_db
+from sararath.models import Article, Base, Source
 
 
 def client(duplicate_titles: int = 0) -> TestClient:

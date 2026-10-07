@@ -1,4 +1,4 @@
-from thai_gov_news.collectors.html import html_to_text
+from sararath.collectors.html import html_to_text
 
 
 def test_paragraph_break():

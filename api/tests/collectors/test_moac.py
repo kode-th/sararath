@@ -1,4 +1,4 @@
-from thai_gov_news.collectors.moac import parse_article
+from sararath.collectors.moac import parse_article
 
 HTML = (
     '<html><head><meta property="og:image" '

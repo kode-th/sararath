@@ -1,4 +1,4 @@
-# thai-gov-news
+# Sararath
 
 Independent index of Thai government news. Collectors crawl agency sites into Postgres, a read API serves it, and a TanStack Start frontend renders it. The site is not affiliated with any government agency and links every item back to its source.
 
@@ -7,7 +7,7 @@ Independent index of Thai government news. Collectors crawl agency sites into Po
 | Part       | Tech                        | Notes                                                                                             |
 | ---------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
 | Postgres   | Neon free                   | Pooled URL, `?sslmode=require`                                                                    |
-| Collectors | Python 3.13, uv             | `rss`, `prd`, `thaigov` collectors in `api/src/thai_gov_news/collectors/`                         |
+| Collectors | Python 3.13, uv             | `rss`, `prd`, `thaigov` collectors in `api/src/sararath/collectors/`                              |
 | Scheduler  | GitHub Actions              | Hourly `crawl-due` (`.github/workflows/crawl.yml`): moac/rd/prd only; thaigov 403s datacenter IPs |
 | API        | FastAPI, Render free        | Blueprint `render.yaml`, `rootDir: api`, keep-alive via cron-job.org every 10 min                 |
 | Frontend   | TanStack Start, Tailwind v4 | `web/`, SSR; deploy to Cloudflare Workers with `wrangler`                                         |
@@ -19,7 +19,7 @@ Live API: `https://thai-gov-news-apis.onrender.com` — `/v1/articles`, `/v1/art
 Root holds the glue: `compose.yaml` + `compose.dev.yaml`, `render.yaml`, `mise.toml`, `lefthook.yml`, `commitlint.config.mjs`, `package.json`, `.github/workflows/`.
 
 ```txt
-api/    src/thai_gov_news/{collectors,services,api,models.py,cli.py}
+api/    src/sararath/{collectors,services,api,models.py,cli.py}
         migrations/ + alembic.ini, sources/sources.yaml, tests/, typings/, Dockerfile
 web/    src/routes/            __root.tsx, _layout.tsx, _layout/index.tsx, _layout/news.tsx, _layout/articles.$id.tsx
         src/components/        layout/{header,footer,not-found}, news/*, ui/*
@@ -43,9 +43,9 @@ Then, in another terminal:
 ```bash
 mise run migrate                     # alembic upgrade head
 docker compose -f compose.yaml -f compose.dev.yaml exec api \
-  uv run --no-sync python -m thai_gov_news seed
+  uv run --no-sync python -m sararath seed
 docker compose -f compose.yaml -f compose.dev.yaml exec api \
-  uv run --no-sync python -m thai_gov_news crawl --source rd
+  uv run --no-sync python -m sararath crawl --source rd
 ```
 
 Open <http://localhost:3000>. `api/src/` edits reload the API; `web/` edits hot-reload the browser. Notes:
@@ -56,19 +56,19 @@ Open <http://localhost:3000>. `api/src/` edits reload the API; `web/` edits hot-
 
 ## CLI
 
-Run from `api/`, via `uv run python -m thai_gov_news <command>` (bare `uv run pytest`/`uv run alembic` can fail to spawn in this environment — always go through `python -m`).
+Run from `api/`, via `uv run python -m sararath <command>` (bare `uv run pytest`/`uv run alembic` can fail to spawn in this environment — always go through `python -m`).
 
 ```bash
-uv run python -m thai_gov_news crawl --source prd      # one source
-uv run python -m thai_gov_news crawl-due               # all due (respects intervals)
-uv run python -m thai_gov_news crawl-due --source rd   # restrict to sources
-uv run python -m thai_gov_news check                   # exit 1 when a source is stale
-uv run python -m thai_gov_news export-legacy --date 2026-09-20 --out data.json
-uv run python -m thai_gov_news openapi                 # print the OpenAPI schema
-uv run python -m thai_gov_news backfill-body --source moac  # refresh bodies (prd, moac)
-uv run python -m thai_gov_news dedupe-articles --source moac --dry-run  # drop duplicate rows
-uv run python -m thai_gov_news repair-links --source moac --dry-run    # fix malformed source URLs
-uv run python -m thai_gov_news strip-script --source prd --dry-run     # drop leaked script text
+uv run python -m sararath crawl --source prd      # one source
+uv run python -m sararath crawl-due               # all due (respects intervals)
+uv run python -m sararath crawl-due --source rd   # restrict to sources
+uv run python -m sararath check                   # exit 1 when a source is stale
+uv run python -m sararath export-legacy --date 2026-09-20 --out data.json
+uv run python -m sararath openapi                 # print the OpenAPI schema
+uv run python -m sararath backfill-body --source moac  # refresh bodies (prd, moac)
+uv run python -m sararath dedupe-articles --source moac --dry-run  # drop duplicate rows
+uv run python -m sararath repair-links --source moac --dry-run    # fix malformed source URLs
+uv run python -m sararath strip-script --source prd --dry-run     # drop leaked script text
 ```
 
 ## Sources and cadence
@@ -79,7 +79,7 @@ uv run python -m thai_gov_news strip-script --source prd --dry-run     # drop le
 
 Web types are generated from the API schema; nothing is mirrored by hand.
 
-1. API routes declare Pydantic response models (`api/src/thai_gov_news/api/schemas.py` + `response_model=`), so `/openapi.json` has real schemas.
+1. API routes declare Pydantic response models (`api/src/sararath/api/schemas.py` + `response_model=`), so `/openapi.json` has real schemas.
 2. `mise run api:openapi` writes the committed `api/openapi.json`.
 3. `mise run web:api-schema` runs `openapi-typescript` to generate the committed `web/src/lib/api-schema.d.ts`.
 4. `web/src/lib/api.ts` wraps `openapi-fetch`; `ArticleItem`, `ArticlesPage`, `NewsSourceItem` are derived from the schema.

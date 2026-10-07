@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from thai_gov_news.models import Base, Source
-from thai_gov_news.services.seed import seed_sources
+from sararath.models import Base, Source
+from sararath.services.seed import seed_sources
 
 
 def memory_session() -> Session:

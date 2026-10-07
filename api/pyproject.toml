@@ -1,5 +1,5 @@
 [project]
-name = "thai-gov-news"
+name = "sararath"
 version = "0.1.0"
 description = "Independent index of Thai government news"
 readme = "README.md"
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-thai-gov-news = "thai_gov_news:main"
+sararath = "sararath:main"
 
 [build-system]
 requires = ["uv_build>=0.12.17,<0.13.0"]

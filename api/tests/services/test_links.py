@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
-from thai_gov_news.models import Article, Base, Source
-from thai_gov_news.services.links import (
+from sararath.models import Article, Base, Source
+from sararath.services.links import (
     moac_article_url,
     normalizer_for,
     repair_links,

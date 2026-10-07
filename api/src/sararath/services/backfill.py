@@ -9,14 +9,14 @@ import httpx
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.collectors.base import DiscoveredItem
-from thai_gov_news.collectors.http import USER_AGENT
-from thai_gov_news.collectors.http import fetch as http_fetch
-from thai_gov_news.collectors.moac import parse_article as parse_moac_article
-from thai_gov_news.collectors.prd import PrdCollector
-from thai_gov_news.collectors.thaigov import ThaigovCollector
-from thai_gov_news.models import Article, Attachment, Source
-from thai_gov_news.services.dedupe import content_hash
+from sararath.collectors.base import DiscoveredItem
+from sararath.collectors.http import USER_AGENT
+from sararath.collectors.http import fetch as http_fetch
+from sararath.collectors.moac import parse_article as parse_moac_article
+from sararath.collectors.prd import PrdCollector
+from sararath.collectors.thaigov import ThaigovCollector
+from sararath.models import Article, Attachment, Source
+from sararath.services.dedupe import content_hash
 
 # Markers left behind when inline script/style text leaked into body_text.
 DIRTY_MARKERS = ("%function(%", "%jQuery(%", "%$(")

@@ -3,9 +3,9 @@ from datetime import datetime, timezone
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
-from thai_gov_news.collectors.base import ParsedArticle
-from thai_gov_news.models import Article, Attachment, Base, CollectorRun, Source
-from thai_gov_news.services import runner
+from sararath.collectors.base import ParsedArticle
+from sararath.models import Article, Attachment, Base, CollectorRun, Source
+from sararath.services import runner
 
 
 def memory_session() -> Session:

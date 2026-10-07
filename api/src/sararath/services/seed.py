@@ -9,7 +9,7 @@ import yaml
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.models import Source
+from sararath.models import Source
 
 DEFAULT_PATH = Path("sources/sources.yaml")
 

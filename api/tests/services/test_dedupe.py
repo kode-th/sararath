@@ -1,4 +1,4 @@
-from thai_gov_news.services.dedupe import Article, content_hash, dedupe
+from sararath.services.dedupe import Article, content_hash, dedupe
 
 
 def make(

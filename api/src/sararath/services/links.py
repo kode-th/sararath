@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.models import Article, Source
+from sararath.models import Article, Source
 
 # moac's canonical article path; every feed id maps back to this shape.
 _MOAC_CLEAN = "https://www.moac.go.th/news-preview-{}"

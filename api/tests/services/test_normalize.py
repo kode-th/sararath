@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from thai_gov_news.services.normalize import (
+from sararath.services.normalize import (
     normalize_record,
     normalize_url,
     normalize_whitespace,

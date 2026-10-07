@@ -9,9 +9,9 @@ from dataclasses import dataclass
 from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session
 
-from thai_gov_news.collectors.html import strip_trailing_attribution
-from thai_gov_news.models import Article, Attachment, Source
-from thai_gov_news.services.dedupe import content_hash
+from sararath.collectors.html import strip_trailing_attribution
+from sararath.models import Article, Attachment, Source
+from sararath.services.dedupe import content_hash
 
 CHUNK = 500
 

@@ -11,10 +11,10 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.models import Article, Source
+from sararath.models import Article, Source
 
 BANGKOK = ZoneInfo("Asia/Bangkok")
-PIPELINE = "thai-gov-news-export-legacy-1.0"
+PIPELINE = "sararath-export-legacy-1.0"
 
 
 def is_direct(url: str) -> bool:

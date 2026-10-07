@@ -1,5 +1,5 @@
 {
-  "name": "thai-gov-news",
+  "name": "sararath",
   "private": true,
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",

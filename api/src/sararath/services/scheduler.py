@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from thai_gov_news.models import Source
+from sararath.models import Source
 
 
 def _utcnow() -> datetime:

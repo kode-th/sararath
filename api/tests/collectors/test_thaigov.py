@@ -2,13 +2,13 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from thai_gov_news.collectors.thaigov import (
+from sararath.collectors.thaigov import (
     detail_url,
     discover_from_payload,
     list_url,
     parse_detail,
 )
-from thai_gov_news.services.thai_date import parse_thai_date
+from sararath.services.thai_date import parse_thai_date
 
 FIXTURES = Path(__file__).parent.parent / "fixtures" / "thaigov"
 
