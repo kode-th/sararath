@@ -59,6 +59,17 @@ export async function getArticleRow(db: Db, id: string) {
 
 export type ArticleRow = NonNullable<Awaited<ReturnType<typeof getArticleRow>>>;
 
+function cursorFilter(marker: CursorRow): SQL | undefined {
+  if (marker.publishedAt === null) {
+    return and(isNull(articles.publishedAt), lt(articles.id, marker.id));
+  }
+  return or(
+    lt(articles.publishedAt, marker.publishedAt),
+    isNull(articles.publishedAt),
+    and(eq(articles.publishedAt, marker.publishedAt), lt(articles.id, marker.id)),
+  );
+}
+
 export async function listArticleRows(
   db: Db,
   filters: ArticleFilters,
@@ -82,15 +93,7 @@ export async function listArticleRows(
           like(articles.agencyName, likeQ),
         )
       : undefined,
-    marker
-      ? marker.publishedAt === null
-        ? and(isNull(articles.publishedAt), lt(articles.id, marker.id))
-        : or(
-            lt(articles.publishedAt, marker.publishedAt),
-            isNull(articles.publishedAt),
-            and(eq(articles.publishedAt, marker.publishedAt), lt(articles.id, marker.id)),
-          )
-      : undefined,
+    marker ? cursorFilter(marker) : undefined,
   ];
 
   return db
