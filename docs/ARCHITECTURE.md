@@ -117,7 +117,7 @@ None. There is no authentication and no user account model.
 ## 07 Integrations
 
 - **I1 — Neon Postgres.** Read by `api` (`postgresql://` scheme) and dev web; written by `crawl` (`postgresql+psycopg://` scheme, ADR-2). Failure: API returns `{detail}` with 503 on DB error; crawl records status `error` and retries next tick.
-- **I2 — Cloudflare Workers.** Hosts `api` (`sararath-api`, custom domain `sararath-apis.fasu.dev`) and `web` (`sararath.fasu.dev`). Deploy on push to `main` via Workers Builds. Failure: the web app shows its feed-error state (R3.2 adjacent); no cold start.
+- **I2 — Cloudflare Workers.** Hosts `api` (`sararath-api`, custom domain `sararath-apis.fasu.dev`) and `web` (`sararath.fasu.dev`). Deploy on push to `main` via Workers Builds. Failure: the web app shows its feed-error state (R3.3); no cold start.
 - **I3 — GitHub Actions.** `crawl.yml` runs `crawl-due --source moac --source rd --source prd` hourly (`cron: 15 * * * *`), plus `ci.yml` runs the gates on PRs. Failure: a source stays stale until the next tick; `M1` detects it.
 - **I4 — Agency sites (thaigov, prd, moac, rd).** Fetched over HTTP. thaigov's API returns 403 to datacenter IPs, so it is crawled from a residential/TH host (ADR-5). `http.py` adds per-host rate limiting, retry/backoff, and a `curl_cffi` impersonation fallback. Failure: the collector logs an error and skips; existing rows remain.
 - **I5 — OpenAPI / Scalar docs.** `/openapi.json` is generated at request time from route metadata; `/docs` renders it with Scalar. Nothing is committed. It exists for public consumers, not for the web client (ADR-4).

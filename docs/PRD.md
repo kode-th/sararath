@@ -69,16 +69,17 @@ MVP = shipped and live. Each feature lists its user need and its metric.
 
 Business rules and constraints. Acceptance criteria are EARS-style: _When `<trigger>`, the system shall `<response>`_.
 
-- **R1.1 Independence notice.** When any page renders, the site shall show the independence statement ("สาระรัฐ…ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด") and shall not imitate official government branding. (F1–F4)
+- **R1.1 Independence notice.** When any page renders, the site shall show the independence statement ("สาระรัฐ…ไม่ใช่เว็บของทางราชการและไม่ได้สังกัดหน่วยงานใด") and shall not imitate official government branding. (F1, F2, F4)
 - **R1.2 Source first.** When an item is listed or shown, the UI shall name its agency and link to its `canonical_url`. (F1, F2, F4)
 - **R1.3 Time ordering.** When items are listed, the system shall order by `published_at` descending, then id, with null dates last. No editorial ranking. (F1, F2, F5)
 - **R2.1 Read-only API.** When the API receives a request, it shall support reads only and shall never write to the database. Only `crawl/` writes. (F5)
 - **R3.1 Duplicate handling.** When the same story arrives from two agencies, the system shall keep separate rows and mark the repeat when it appears in a list. (F1, F4, F5)
 - **R3.2 Missing images.** When an item has no image, the layout shall still work (the lead collapses its image column; rows drop the thumbnail). (F1, F2, F4)
+- **R3.3 Load failure.** When a feed or article request fails, the UI shall show the error state with a retry action. (F1, F2, F4)
 - **R4.1 Crawl cadence.** When `crawl-due` runs, a source shall be crawled only if `now - last_success_at >= crawl_interval_minutes`; a failed source shall retry on the next tick. (F6)
 - **R4.2 thaigov host constraint.** When crawling `thaigov`, the system shall run from a residential/TH host, because its API returns 403 to datacenter IPs. GitHub Actions shall crawl only moac/rd/prd. (F6)
 - **R5.1 Data requirements.** An article shall carry: title, agency name, category, `published_at` plus `published_raw`, retrieved time, body text or summary, `canonical_url`, and zero or more image URLs. `(source_id, external_id)` and `canonical_url` are unique. (F5, F6)
-- **R5.2 Language.** When the UI renders, copy shall be Thai. (All F)
+- **R5.2 Language.** When the UI renders, copy shall be Thai. (F1–F4; F5/F6 are non-visual)
 - **R6.1 Accessibility.** The UI shall meet WCAG 2.2 AA, gate motion behind `prefers-reduced-motion`, and never use color as the only signal. (F1–F4)
 
 ## Open Questions
