@@ -148,4 +148,6 @@ class ThaigovCollector:
 
     async def _get_response(self, url: str) -> httpx.Response:
         headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
-        return await http_fetch(self._client, url, headers)
+        # robots.txt disallows /api/; this public read API is the only list
+        # endpoint (see ROBOTS_OVERRIDES in collectors/http.py).
+        return await http_fetch(self._client, url, headers, check_robots=False)

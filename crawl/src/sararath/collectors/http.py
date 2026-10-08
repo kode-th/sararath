@@ -14,6 +14,7 @@ import socket
 import time
 from collections.abc import Mapping
 from urllib.parse import urlsplit
+from urllib.robotparser import RobotFileParser
 
 import httpx
 
@@ -130,6 +131,60 @@ async def ensure_public_url(url: str) -> None:
             raise UnsafeUrlError(f"blocked address {address} for {host}")
 
 
+# Sources whose robots.txt disallows a path we still crawl. Each entry is an
+# audited exception; the value is the reason. Keep this list tiny.
+ROBOTS_OVERRIDES: dict[str, str] = {
+    "thaigov": (
+        "news list is only served by /api/, which robots.txt disallows; it is a "
+        "public read API the site's own frontend calls"
+    ),
+}
+
+
+class DisallowedByRobotsError(Exception):
+    """A URL that the host's robots.txt forbids for our user agent."""
+
+
+class RobotsCache:
+    """Per-origin robots.txt, fetched once and evaluated per URL."""
+
+    def __init__(self) -> None:
+        self._by_origin: dict[str, RobotFileParser | None] = {}
+
+    async def allows(self, client: httpx.AsyncClient | None, url: str) -> bool:
+        parts = urlsplit(url)
+        origin = f"{parts.scheme}://{parts.netloc}"
+        if origin not in self._by_origin:
+            self._by_origin[origin] = await self._load(client, origin)
+        parser = self._by_origin[origin]
+        return True if parser is None else parser.can_fetch(USER_AGENT, url)
+
+    async def _load(
+        self, client: httpx.AsyncClient | None, origin: str
+    ) -> RobotFileParser | None:
+        robots_url = f"{origin}/robots.txt"
+        await ensure_public_url(robots_url)
+        headers = {"User-Agent": USER_AGENT}
+        try:
+            if client is not None:
+                response = await client.get(robots_url, headers=headers)
+            else:
+                async with httpx.AsyncClient() as owned:
+                    response = await owned.get(
+                        robots_url, headers=headers, timeout=TIMEOUT
+                    )
+        except httpx.HTTPError:
+            return None
+        if response.status_code != 200:
+            return None
+        parser = RobotFileParser()
+        parser.parse(response.text.splitlines())
+        return parser
+
+
+ROBOTS = RobotsCache()
+
+
 def _redirect_target(response: httpx.Response, current: str) -> str | None:
     location = response.headers.get("location")
     if not location:
@@ -153,7 +208,10 @@ async def fetch(
     headers: dict[str, str],
     retries: int = RETRIES,
     impersonate: bool | None = None,
+    check_robots: bool = True,
 ) -> httpx.Response:
+    if check_robots and not await ROBOTS.allows(client, url):
+        raise DisallowedByRobotsError(f"robots.txt disallows {url}")
     await limiter.wait(url)
     if client is not None:
         return await _fetch_following(client, url, headers, retries)

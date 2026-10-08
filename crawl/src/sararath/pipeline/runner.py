@@ -15,6 +15,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from sararath.collectors.base import ParsedArticle
+from sararath.collectors.http import ROBOTS_OVERRIDES
 from sararath.collectors.http import USER_AGENT
 from sararath.collectors.http import fetch as http_fetch
 from sararath.collectors.moac import parse_article
@@ -297,6 +298,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
     if source is None:
         raise SystemExit(f"error: unknown source {slug!r}, run seed first")
     source.last_attempt_at = _utcnow()
+    source.robots_ok = slug not in ROBOTS_OVERRIDES
     session.commit()
 
     started = _utcnow()
