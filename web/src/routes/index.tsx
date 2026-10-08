@@ -27,7 +27,10 @@ type HomeSearch = Pick<FeedSearch, 'source'>;
 
 export const Route = createFileRoute('/')({
   head: () => ({
-    meta: [{ property: 'og:url', content: `${SITE_URL}/` }],
+    meta: [
+      { title: 'สาระรัฐ · ข่าวหน่วยงานรัฐไทย รวมไว้ที่เดียว อัปเดตทุกวัน' },
+      { property: 'og:url', content: `${SITE_URL}/` },
+    ],
     links: [{ rel: 'canonical', href: `${SITE_URL}/` }],
   }),
   validateSearch: (raw: Record<string, unknown>): HomeSearch => ({

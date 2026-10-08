@@ -54,9 +54,11 @@ export const Route = createFileRoute('/articles/$id/{-$slug}')({
     const images = article.attachments ?? [];
     const slug = slugify(article.title);
     const canonical = [SITE_URL, 'articles', article.id, slug].filter(Boolean).join('/');
+    const pageTitle =
+      article.title.length > 50 ? `${article.title.slice(0, 50).trimEnd()}…` : article.title;
     return {
       meta: [
-        { title: `${article.title} · สาระรัฐ` },
+        { title: `${pageTitle} · สาระรัฐ` },
         { name: 'description', content: description },
         { property: 'og:title', content: article.title },
         { property: 'og:description', content: description },

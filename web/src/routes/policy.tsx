@@ -37,7 +37,7 @@ const SOURCES = [
 export const Route = createFileRoute('/policy')({
   head: () => ({
     meta: [
-      { title: 'นโยบายและแหล่งข่าว · สาระรัฐ' },
+      { title: 'นโยบายและแหล่งข่าว · ลิขสิทธิ์ ความเป็นส่วนตัว · สาระรัฐ' },
       {
         name: 'description',
         content:

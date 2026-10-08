@@ -41,7 +41,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
       {image && (
         <Image
           src={image}
-          alt=""
+          alt={article.title}
           width={1200}
           height={600}
           layout="constrained"

@@ -45,7 +45,7 @@ export const Route = createFileRoute('/news')({
   staleTime: 30_000,
   head: () => ({
     meta: [
-      { title: 'ข่าวทั้งหมด · สาระรัฐ' },
+      { title: 'ข่าวหน่วยงานรัฐทั้งหมด · ค้นหาและกรองตามหน่วยงาน · สาระรัฐ' },
       {
         name: 'description',
         content: 'ค้นหาและกรองข่าวจากหน่วยงานรัฐไทยทั้งหมดตามหน่วยงานและหมวดหมู่ พร้อมลิงก์กลับไปยังต้นฉบับ',
@@ -126,7 +126,10 @@ function Results() {
           )}
         </div>
       ) : (
-        <section aria-label="ผลการค้นหา" className="mt-6">
+        <section aria-labelledby="news-results" className="mt-6">
+          <h2 id="news-results" className="sr-only">
+            ผลการค้นหา
+          </h2>
           <StoryList items={items} thumbnail />
           <LoadMore hasMore={hasMore} loading={loadingMore} onLoadMore={loadMore} />
         </section>
