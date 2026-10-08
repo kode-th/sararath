@@ -50,3 +50,5 @@ bun run deploy                          # wrangler deploy --minify
 ```
 
 Served at the custom domain `sararath-apis.fasu.dev` on the `sararath-api` Worker. Workers have no cold start, so no keep-alive is needed.
+
+Pushes to `main` also deploy via Cloudflare Workers Builds (root dir `/`). To skip rebuilds for unrelated pushes, set **Settings → Build → Build watch paths** with include `api/*, bun.lock, package.json` (no excludes).

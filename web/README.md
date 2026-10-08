@@ -75,3 +75,5 @@ bun run deploy        # build + wrangler deploy
 ```
 
 `wrangler.jsonc` configures the Worker: `nodejs_compat`, the `sararath.fasu.dev` custom domain, and `workers_dev`/`preview_urls` off. `VITE_API_URL` is a build-time variable. Pushes to `main` deploy via Cloudflare Workers Builds (root dir `/`, build `bun run --filter @sararath/web build`, deploy `cd web && npx wrangler deploy`).
+
+To skip rebuilds for unrelated pushes, set **Settings → Build → Build watch paths** with include `web/*, api/src/*, bun.lock, package.json` (no excludes). `api/src/*` is included because `web/tsconfig.json` resolves `@api/*` to `../api/src/*`.
