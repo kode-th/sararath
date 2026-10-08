@@ -67,6 +67,53 @@ def test_is_image_uses_status_and_content_type(monkeypatch):
     asyncio.run(run())
 
 
+def test_is_image_blocks_non_public_urls(monkeypatch):
+    async def no_wait(_url):
+        return None
+
+    monkeypatch.setattr(images.limiter, "wait", no_wait)
+    calls: list = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(200, headers={"content-type": "image/jpeg"}, content=b"x")
+
+    async def run():
+        transport = httpx.MockTransport(handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            assert await images._is_image(client, "http://127.0.0.1/x") is False
+            assert await images._is_image(client, "http://10.0.0.1/x") is False
+            assert (
+                await images._is_image(
+                    client, "http://169.254.169.254/latest/meta-data/"
+                )
+                is False
+            )
+
+    asyncio.run(run())
+    assert calls == []
+
+
+def test_is_image_rejects_redirect_to_private(monkeypatch):
+    async def no_wait(_url):
+        return None
+
+    monkeypatch.setattr(images.limiter, "wait", no_wait)
+    calls: list = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(302, headers={"location": "http://10.0.0.1/secret"})
+
+    async def run():
+        transport = httpx.MockTransport(handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            assert await images._is_image(client, "https://93.184.216.34/x") is False
+
+    asyncio.run(run())
+    assert len(calls) == 1
+
+
 def memory_session() -> Session:
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine)

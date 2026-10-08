@@ -49,7 +49,7 @@ def _replace_attachments(
 
 async def _refresh_prd(session: Session, articles: list[Article]) -> tuple[int, int]:
     updated = failed = 0
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    async with httpx.AsyncClient() as client:
         collector = PrdCollector(client)
         for article in articles:
             try:
@@ -76,7 +76,7 @@ async def _refresh_prd(session: Session, articles: list[Article]) -> tuple[int, 
 
 async def _refresh_moac(session: Session, articles: list[Article]) -> tuple[int, int]:
     updated = failed = 0
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    async with httpx.AsyncClient() as client:
         for article in articles:
             try:
                 response = await http_fetch(
@@ -101,7 +101,7 @@ async def _refresh_thaigov(
     session: Session, articles: list[Article]
 ) -> tuple[int, int]:
     updated = failed = 0
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    async with httpx.AsyncClient() as client:
         collector = ThaigovCollector(client)
         for article in articles:
             try:

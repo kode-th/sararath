@@ -4,9 +4,12 @@ import time
 import httpx
 import pytest
 
+import sararath.collectors.http as http_module
 from sararath.collectors.http import (
     RateLimiter,
+    UnsafeUrlError,
     _decoded_headers,
+    ensure_public_url,
     fetch,
     should_impersonate,
 )
@@ -145,3 +148,99 @@ def test_injected_client_takes_precedence():
     response = asyncio.run(main())
     assert response.status_code == 200
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1/x",
+        "http://[::1]/x",
+        "http://10.0.0.1/x",
+        "http://192.168.1.10/x",
+        "http://169.254.169.254/latest/meta-data/",
+        "http://[fe80::1]/x",
+        "http://[::ffff:10.0.0.1]/x",
+    ],
+)
+def test_ensure_public_url_blocks_non_public(url):
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(ensure_public_url(url))
+
+
+@pytest.mark.parametrize(
+    "url", ["file:///etc/passwd", "ftp://example.com/x", "gopher://x"]
+)
+def test_ensure_public_url_blocks_non_http_scheme(url):
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(ensure_public_url(url))
+
+
+@pytest.mark.parametrize("url", ["https://93.184.216.34/x", "http://8.8.8.8/x"])
+def test_ensure_public_url_allows_public_ip(url):
+    assert asyncio.run(ensure_public_url(url)) is None
+
+
+def test_fetch_rejects_redirect_to_private(monkeypatch):
+    monkeypatch.setattr(asyncio, "sleep", lambda *args: _real_sleep(0))
+    calls: list = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(302, headers={"location": "http://10.0.0.1/secret"})
+
+    async def main() -> None:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            await fetch(client, "https://93.184.216.34/a", {})
+
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(main())
+    assert len(calls) == 1
+
+
+def test_fetch_follows_public_redirect():
+    calls: list = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        if request.url.host == "93.184.216.34":
+            return httpx.Response(302, headers={"location": "https://8.8.8.8/final"})
+        return httpx.Response(200, text="ok")
+
+    async def main() -> httpx.Response:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            return await fetch(client, "https://93.184.216.34/a", {})
+
+    response = asyncio.run(main())
+    assert response.status_code == 200
+    assert response.text == "ok"
+    assert len(calls) == 2
+
+
+def test_fetch_raises_on_too_many_redirects():
+    calls: list = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(302, headers={"location": "https://8.8.8.8/again"})
+
+    async def main() -> None:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            await fetch(client, "https://93.184.216.34/a", {})
+
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(main())
+    assert len(calls) == http_module.MAX_REDIRECTS + 1
+
+
+def test_fetch_rejects_oversized_response(monkeypatch):
+    monkeypatch.setattr(http_module, "MAX_RESPONSE_BYTES", 4)
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=b"x" * 5)
+
+    async def main() -> None:
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            await fetch(client, "https://93.184.216.34/a", {}, retries=0)
+
+    with pytest.raises(http_module.ResponseTooLargeError):
+        asyncio.run(main())

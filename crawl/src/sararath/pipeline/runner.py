@@ -96,7 +96,7 @@ async def _enrich_recent(articles: list[ParsedArticle]) -> list[ParsedArticle]:
     """Fill in body + gallery for recently published feed items (new articles)."""
     cutoff = _naive_utc(_utcnow() - RECENT_WINDOW)
     enriched = list(articles)
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    async with httpx.AsyncClient() as client:
         for index, article in enumerate(articles):
             published = _naive_utc(article.published_at)
             if cutoff is None or published is None or published < cutoff:

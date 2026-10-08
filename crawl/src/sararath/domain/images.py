@@ -16,7 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from sararath.collectors.base import ParsedArticle
-from sararath.collectors.http import USER_AGENT, RateLimiter
+from sararath.collectors.http import USER_AGENT, RateLimiter, open_stream
 from sararath.models import Article, Attachment, Source
 
 TIMEOUT = 8.0
@@ -29,25 +29,25 @@ limiter = RateLimiter(min_interval=0.25)
 async def _is_image(client: httpx.AsyncClient, url: str) -> bool:
     await limiter.wait(url)
     try:
-        async with (
-            asyncio.timeout(TIMEOUT),
-            client.stream(
-                "GET",
+        async with asyncio.timeout(TIMEOUT):
+            response = await open_stream(
+                client,
                 url,
-                headers={"User-Agent": USER_AGENT, "Range": "bytes=0-1"},
-                follow_redirects=True,
-            ) as response,
-        ):
-            content_type = response.headers.get("content-type", "")
-            is_image = response.status_code in (
-                200,
-                206,
-            ) and content_type.lower().startswith("image/")
-            if is_image:
-                # Read one chunk so the cancellation scope has a checkpoint.
-                async for _chunk in response.aiter_bytes():
-                    break
-            return is_image
+                {"User-Agent": USER_AGENT, "Range": "bytes=0-1"},
+            )
+            try:
+                content_type = response.headers.get("content-type", "")
+                is_image = response.status_code in (
+                    200,
+                    206,
+                ) and content_type.lower().startswith("image/")
+                if is_image:
+                    # Read one chunk so the cancellation scope has a checkpoint.
+                    async for _chunk in response.aiter_bytes():
+                        break
+                return is_image
+            finally:
+                await response.aclose()
     except Exception:
         return False
 
@@ -59,7 +59,7 @@ async def resolve_images(urls: Iterable[str]) -> set[str]:
         return set()
     semaphore = asyncio.Semaphore(CONCURRENCY)
 
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    async with httpx.AsyncClient() as client:
 
         async def check(url: str) -> str | None:
             async with semaphore:
