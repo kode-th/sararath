@@ -27,6 +27,7 @@ type HomeSearch = Pick<FeedSearch, 'source'>;
 
 export const Route = createFileRoute('/')({
   head: () => ({
+    meta: [{ property: 'og:url', content: `${SITE_URL}/` }],
     links: [{ rel: 'canonical', href: `${SITE_URL}/` }],
   }),
   validateSearch: (raw: Record<string, unknown>): HomeSearch => ({

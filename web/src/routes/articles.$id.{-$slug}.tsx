@@ -61,6 +61,7 @@ export const Route = createFileRoute('/articles/$id/{-$slug}')({
         { property: 'og:title', content: article.title },
         { property: 'og:description', content: description },
         { property: 'og:type', content: 'article' },
+        { property: 'og:url', content: canonical },
         { property: 'og:image', content: images[0] ?? OG_IMAGE },
         { name: 'twitter:image', content: images[0] ?? OG_IMAGE },
       ],

@@ -50,6 +50,7 @@ export const Route = createFileRoute('/news')({
         name: 'description',
         content: 'ค้นหาและกรองข่าวจากหน่วยงานรัฐไทยทั้งหมดตามหน่วยงานและหมวดหมู่ พร้อมลิงก์กลับไปยังต้นฉบับ',
       },
+      { property: 'og:url', content: `${SITE_URL}/news` },
     ],
     links: [{ rel: 'canonical', href: `${SITE_URL}/news` }],
   }),

@@ -43,6 +43,7 @@ export const Route = createFileRoute('/policy')({
         content:
           'นโยบายการดึงข้อมูล แหล่งข่าว ข้อมูลที่แสดง ลิขสิทธิ์ API ลิงก์ภายนอก ความเป็นส่วนตัว การเข้าถึง การสนับสนุน และช่องทางแจ้งแก้ไขหรือลบเนื้อหาของสาระรัฐ',
       },
+      { property: 'og:url', content: `${SITE_URL}/policy` },
     ],
     links: [{ rel: 'canonical', href: `${SITE_URL}/policy` }],
   }),
