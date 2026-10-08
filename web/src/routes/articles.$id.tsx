@@ -153,7 +153,7 @@ function ArticleDetail() {
             }}
             className="inline-flex min-h-11 items-center gap-1.5 font-display text-sm font-semibold text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
+            <ArrowLeft aria-hidden="true" className="size-4" /> ย้อนกลับ
           </Link>
 
           <article className="mt-5">
