@@ -11,6 +11,7 @@ import { LeadStory } from '@/components/news/lead-story';
 import { StoryList } from '@/components/news/story-list';
 import { SectionTab } from '@/components/ui/section-tab';
 import { HOME_ASIDE_COUNT } from '@/constants/feed';
+import { SITE_URL } from '@/constants/site';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import {
   bangkokToday,
@@ -25,6 +26,9 @@ import { formatTime } from '@/utils/format';
 type HomeSearch = Pick<FeedSearch, 'source'>;
 
 export const Route = createFileRoute('/')({
+  head: () => ({
+    links: [{ rel: 'canonical', href: `${SITE_URL}/` }],
+  }),
   validateSearch: (raw: Record<string, unknown>): HomeSearch => ({
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
   }),

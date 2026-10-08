@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
 import { formatShortDate, formatTime, leadImage } from '@/utils/format';
+import { slugify } from '@/utils/slug';
 
 interface StoryRowProps {
   article: FeedItem;
@@ -19,8 +20,8 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
   return (
     <li className="border-b border-foreground/15">
       <Link
-        to="/articles/$id"
-        params={{ id: article.id }}
+        to="/articles/$id/{-$slug}"
+        params={{ id: article.id, slug: slugify(article.title) }}
         className={cn(
           'group grid h-full gap-3 py-3 transition-colors duration-150 hover:bg-accent/40 focus-visible:bg-accent/40',
           image ? 'grid-cols-[3.5rem_minmax(0,1fr)_4.5rem]' : 'grid-cols-[3.5rem_minmax(0,1fr)]',

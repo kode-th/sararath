@@ -7,6 +7,7 @@ import type { PropsWithChildren } from 'react';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { NotFound } from '@/components/layout/not-found';
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from '@/constants/site';
 
 import appCss from '@/assets/css/styles.css?url';
 
@@ -30,7 +31,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           'รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยไว้ในที่เดียว ค้นหาและกรองตามหน่วยงานหรือหมวดหมู่ได้ พร้อมลิงก์กลับไปยังต้นฉบับ',
       },
       { property: 'og:type', content: 'website' },
+      { property: 'og:image', content: OG_IMAGE },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: SITE_TITLE },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:image', content: OG_IMAGE },
       { name: 'theme-color', content: '#123558' },
     ],
     links: [
@@ -47,6 +53,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
       { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+    ],
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: SITE_NAME,
+          alternateName: 'Sararath',
+          url: SITE_URL,
+          inLanguage: 'th',
+          description: SITE_DESCRIPTION,
+        }),
+      },
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'สาระรัฐ (Sararath)',
+          url: SITE_URL,
+          logo: `${SITE_URL}/logo.svg`,
+        }),
+      },
     ],
   }),
   shellComponent: RootDocument,

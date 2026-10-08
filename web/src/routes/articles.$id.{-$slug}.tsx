@@ -19,9 +19,11 @@ import { StoryList } from '@/components/news/story-list';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { SectionTab } from '@/components/ui/section-tab';
 import { ARTICLE_ASIDE_COUNT } from '@/constants/feed';
+import { OG_IMAGE, SITE_URL } from '@/constants/site';
 import { fetchArticle, isMissingArticle } from '@/lib/api';
 import { feedQuery, quietFetch } from '@/utils/feed';
 import { formatDate, formatTime, markDuplicates, plainText } from '@/utils/format';
+import { slugify } from '@/utils/slug';
 
 const articleQuery = (id: string) =>
   queryOptions({
@@ -30,7 +32,7 @@ const articleQuery = (id: string) =>
     staleTime: 300_000,
   });
 
-export const Route = createFileRoute('/articles/$id')({
+export const Route = createFileRoute('/articles/$id/{-$slug}')({
   loader: async ({ context, params }) => {
     const article = await context.queryClient
       .query({ ...articleQuery(params.id), staleTime: 'static' })
@@ -49,6 +51,9 @@ export const Route = createFileRoute('/articles/$id')({
     const description = plainText(article.summary || article.body_text || '')
       .replace(/\s+/g, ' ')
       .slice(0, 160);
+    const images = article.attachments ?? [];
+    const slug = slugify(article.title);
+    const canonical = [SITE_URL, 'articles', article.id, slug].filter(Boolean).join('/');
     return {
       meta: [
         { title: `${article.title} · สาระรัฐ` },
@@ -56,6 +61,34 @@ export const Route = createFileRoute('/articles/$id')({
         { property: 'og:title', content: article.title },
         { property: 'og:description', content: description },
         { property: 'og:type', content: 'article' },
+        { property: 'og:image', content: images[0] ?? OG_IMAGE },
+        { name: 'twitter:image', content: images[0] ?? OG_IMAGE },
+      ],
+      links: [{ rel: 'canonical', href: canonical }],
+      scripts: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'NewsArticle',
+            headline: article.title,
+            description,
+            url: canonical,
+            mainEntityOfPage: canonical,
+            image: images.slice(0, 3),
+            datePublished: article.published_at ?? undefined,
+            dateModified: article.last_seen_at ?? article.published_at ?? undefined,
+            inLanguage: 'th',
+            articleSection: article.category || undefined,
+            author: { '@type': 'Organization', name: article.source.name_th },
+            publisher: {
+              '@type': 'Organization',
+              name: 'สาระรัฐ (Sararath)',
+              url: SITE_URL,
+              logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.svg` },
+            },
+          }),
+        },
       ],
     };
   },

@@ -8,6 +8,7 @@ import { FeedFallback } from '@/components/feed/feed-fallback';
 import { LoadMore } from '@/components/feed/load-more';
 import { FilterBar } from '@/components/filters/filter-bar';
 import { StoryList } from '@/components/news/story-list';
+import { SITE_URL } from '@/constants/site';
 import { useFeedPagination } from '@/hooks/useFeedPagination';
 import type { ArticlesPage, CategoryItem, NewsSourceItem } from '@/lib/api';
 import {
@@ -50,6 +51,7 @@ export const Route = createFileRoute('/news')({
         content: 'ค้นหาและกรองข่าวจากหน่วยงานรัฐไทยทั้งหมดตามหน่วยงานและหมวดหมู่ พร้อมลิงก์กลับไปยังต้นฉบับ',
       },
     ],
+    links: [{ rel: 'canonical', href: `${SITE_URL}/news` }],
   }),
   component: SearchPage,
   errorComponent: FeedError,

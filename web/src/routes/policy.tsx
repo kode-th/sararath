@@ -4,6 +4,7 @@ import { env } from 'virtual:env/client';
 
 import { buttonVariants } from '@/components/ui/button';
 import { Section } from '@/components/ui/section';
+import { SITE_URL } from '@/constants/site';
 import { formatDate } from '@/utils/format';
 
 const CONTACT_EMAIL = 'contact@fasu.dev';
@@ -43,6 +44,7 @@ export const Route = createFileRoute('/policy')({
           'นโยบายการดึงข้อมูล แหล่งข่าว ข้อมูลที่แสดง ลิขสิทธิ์ API ลิงก์ภายนอก ความเป็นส่วนตัว การเข้าถึง การสนับสนุน และช่องทางแจ้งแก้ไขหรือลบเนื้อหาของสาระรัฐ',
       },
     ],
+    links: [{ rel: 'canonical', href: `${SITE_URL}/policy` }],
   }),
   component: PolicyPage,
 });

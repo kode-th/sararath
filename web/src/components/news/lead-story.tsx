@@ -7,6 +7,7 @@ import { HighlightTitle } from '@/components/news/highlight-title';
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
 import { excerpt, formatDate, formatTime, leadImage } from '@/utils/format';
+import { slugify } from '@/utils/slug';
 
 export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -22,8 +23,8 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
       <div className={cn(image && 'md:col-start-2')}>
         <h2 className="text-title-sm font-bold text-foreground sm:text-4xl sm:leading-tight lg:text-title-lg">
           <Link
-            to="/articles/$id"
-            params={{ id: article.id }}
+            to="/articles/$id/{-$slug}"
+            params={{ id: article.id, slug: slugify(article.title) }}
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
             <HighlightTitle text={article.title} />

@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import type { SuggestResult } from '@/lib/api';
 import { suggestQuery } from '@/utils/feed';
+import { slugify } from '@/utils/slug';
 
 type Suggestion =
   | { kind: 'source'; slug: string; label: string }
@@ -95,7 +96,10 @@ export function SearchBox({ initialQuery }: Readonly<SearchBoxProps>) {
         search: { source: item.slug },
       });
     } else {
-      void navigate({ to: '/articles/$id', params: { id: item.id } });
+      void navigate({
+        to: '/articles/$id/{-$slug}',
+        params: { id: item.id, slug: slugify(item.label) },
+      });
     }
     setQuery('');
   }
