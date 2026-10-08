@@ -6,6 +6,8 @@ import re
 
 from selectolax.lexbor import LexborHTMLParser
 
+from sararath.domain.normalize import normalize_body
+
 _BR = re.compile(r"<br\s*/?>", re.IGNORECASE)
 _PARAGRAPH_END = re.compile(
     r"</(?:p|h[1-6]|section|article|blockquote)>", re.IGNORECASE
@@ -31,15 +33,4 @@ def html_to_text(html: str) -> str:
     marked = _PARAGRAPH_END.sub(
         "\n\n", _LINE_END.sub("\n", _BR.sub("\n", tree.html or ""))
     )
-    lines = [
-        " ".join(line.split()) for line in LexborHTMLParser(marked).text().split("\n")
-    ]
-    out: list[str] = []
-    for line in lines:
-        if line:
-            out.append(line)
-        elif out and out[-1] != "":
-            out.append("")
-    while out and out[-1] == "":
-        out.pop()
-    return "\n".join(out)
+    return normalize_body(LexborHTMLParser(marked).text())

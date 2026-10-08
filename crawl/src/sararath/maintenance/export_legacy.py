@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from sararath.clock import utcnow
 from sararath.models import Article, Source
 
 BANGKOK = ZoneInfo("Asia/Bangkok")
@@ -71,7 +72,7 @@ def export_date(session: Session, date: str) -> dict:
     ]
     return {
         "date": date,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": utcnow().isoformat(),
         "pipeline": PIPELINE,
         "posts": posts,
         "stats": {

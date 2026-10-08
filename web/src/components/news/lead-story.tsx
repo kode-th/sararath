@@ -1,9 +1,7 @@
 import { Link } from '@tanstack/react-router';
-import { Image } from '@unpic/react';
 import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
-import { HighlightTitle } from '@/components/news/highlight-title';
 import { cn } from '@/lib/cn';
 import type { FeedItem } from '@/utils/format';
 import { excerpt, formatDate, formatTime, leadImage } from '@/utils/format';
@@ -27,7 +25,7 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
             params={{ id: article.id, slug: slugify(article.title) }}
             className="after:absolute after:inset-0 hover:underline hover:decoration-foreground"
           >
-            <HighlightTitle text={article.title} />
+            <span className="highlight motion-safe:animate-highlight-sweep">{article.title}</span>
           </Link>
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -39,12 +37,11 @@ export function LeadStory({ article }: Readonly<{ article: FeedItem }>) {
         </p>
       </div>
       {image && (
-        <Image
+        <img
           src={image}
           alt={article.title}
           width={1200}
           height={600}
-          layout="constrained"
           decoding="async"
           ref={(node) => {
             if (node?.complete && node.naturalWidth === 0) setImageFailed(true);

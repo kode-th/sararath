@@ -9,12 +9,7 @@
     "suspicious": "error",
     "perf": "warn"
   },
-  "jsPlugins": [
-    "./tools/oxlint/single-dash-filename.js",
-    "./tools/oxlint/no-super-linear-backtracking.js",
-    "./tools/oxlint/no-member-expression.js",
-    "./tools/oxlint/jsx-child-element-spacing.js"
-  ],
+  "jsPlugins": ["./tools/oxlint/single-dash-filename.js", "./tools/oxlint/no-member-expression.js"],
   "overrides": [
     {
       "files": ["**/src/**"],
@@ -42,7 +37,6 @@
     "no-var": "error",
     "prefer-const": "error",
     "prefer-template": "error",
-    "regex-safety/no-super-linear-backtracking": "error",
     "unicorn/prefer-string-slice": "error",
     "unicorn/throw-new-error": "error",
     "promise/no-return-wrap": "error",

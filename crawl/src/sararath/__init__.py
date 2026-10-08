@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from sararath!")
+"""Sararath crawlers: collectors, domain rules, pipeline, and maintenance."""

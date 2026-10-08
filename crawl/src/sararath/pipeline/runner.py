@@ -6,7 +6,7 @@ import asyncio
 import hashlib
 import uuid
 from dataclasses import dataclass, replace
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +14,7 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from sararath.clock import naive_utc, utcnow
 from sararath.collectors.base import ParsedArticle
 from sararath.collectors.http import ROBOTS_OVERRIDES
 from sararath.collectors.http import USER_AGENT
@@ -27,7 +28,7 @@ from sararath.domain.dedupe import content_hash
 from sararath.domain.images import filter_broken_attachments
 from sararath.pipeline.ingest import ingest
 from sararath.domain.links import normalizer_for
-from sararath.domain.normalize import normalize_url
+from sararath.domain.normalize import normalize_url, normalize_whitespace
 
 
 @dataclass(frozen=True)
@@ -36,10 +37,6 @@ class CrawlResult:
     found: int
     inserted: int
     skipped: int
-
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 EXT_HTML = ".html"
@@ -95,12 +92,14 @@ async def _collect_rss(source: Source) -> list[tuple[ParsedArticle, str | None, 
 
 async def _enrich_recent(articles: list[ParsedArticle]) -> list[ParsedArticle]:
     """Fill in body + gallery for recently published feed items (new articles)."""
-    cutoff = _naive_utc(_utcnow() - RECENT_WINDOW)
+    cutoff = naive_utc(utcnow() - RECENT_WINDOW)
     enriched = list(articles)
     async with httpx.AsyncClient() as client:
         for index, article in enumerate(articles):
-            published = _naive_utc(article.published_at)
-            if cutoff is None or published is None or published < cutoff:
+            if article.published_at is None:
+                continue
+            published = naive_utc(article.published_at)
+            if published < cutoff:
                 continue
             try:
                 response = await http_fetch(
@@ -165,8 +164,8 @@ def _build_article(
         agency_name=str(article.get("agency_name", "")),
         published_at=published if isinstance(published, datetime) else None,
         published_raw=str(article.get("published_raw", "")),
-        first_seen_at=_utcnow(),
-        last_seen_at=_utcnow(),
+        first_seen_at=utcnow(),
+        last_seen_at=utcnow(),
         raw_path=raw_path,
         content_hash=str(
             article.get("content_hash")
@@ -178,16 +177,13 @@ def _build_article(
     )
 
 
-def _naive_utc(value: datetime | None) -> datetime | None:
-    if isinstance(value, datetime) and value.tzinfo is not None:
-        return value.astimezone(timezone.utc).replace(tzinfo=None)
-    return value
-
-
 def _story_key(
     title: str, published_at: datetime | None
 ) -> tuple[str, datetime | None]:
-    return (" ".join(title.split()).casefold(), _naive_utc(published_at))
+    return (
+        normalize_whitespace(title).casefold(),
+        None if published_at is None else naive_utc(published_at),
+    )
 
 
 def _collapse_stories(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -198,11 +194,7 @@ def _collapse_stories(articles: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     by_story: dict[tuple[str, datetime | None], dict[str, Any]] = {}
     for article in articles:
-        published = article.get("published_at")
-        key = _story_key(
-            str(article.get("title", "")),
-            published if isinstance(published, datetime) else None,
-        )
+        key = _article_key(article)
         current = by_story.get(key)
         if current is None or len(str(article.get("body_text", ""))) > len(
             str(current.get("body_text", ""))
@@ -280,7 +272,7 @@ def _store_articles(
     ).all()
     by_url = {a.canonical_url: a for a in rows}
     by_story = {_story_key(a.title, a.published_at): a for a in rows}
-    now = _utcnow()
+    now = utcnow()
     fresh: list[dict[str, Any]] = []
     for article in articles:
         known = by_story.get(_article_key(article)) or by_url.get(
@@ -297,11 +289,11 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
     source = session.scalar(select(Source).where(Source.slug == slug))
     if source is None:
         raise SystemExit(f"error: unknown source {slug!r}, run seed first")
-    source.last_attempt_at = _utcnow()
+    source.last_attempt_at = utcnow()
     source.robots_ok = slug not in ROBOTS_OVERRIDES
     session.commit()
 
-    started = _utcnow()
+    started = utcnow()
     try:
         collected = asyncio.run(_collect_and_filter(source))
     except SystemExit:
@@ -313,7 +305,7 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
             CollectorRun(
                 source_id=source.id,
                 started_at=started,
-                finished_at=_utcnow(),
+                finished_at=utcnow(),
                 status="error",
                 error=detail[:1000],
             )
@@ -326,13 +318,13 @@ def run_crawl(session: Session, slug: str) -> CrawlResult:
     result = ingest([p for p, _, _ in collected])
     inserted = _store_articles(session, source, slug, day, raws, result.articles)
 
-    source.last_success_at = _utcnow()
+    source.last_success_at = utcnow()
     source.last_error = None
     session.add(
         CollectorRun(
             source_id=source.id,
             started_at=started,
-            finished_at=_utcnow(),
+            finished_at=utcnow(),
             status="ok",
             http_status=200,
             found_count=result.stats.found,

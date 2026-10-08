@@ -28,11 +28,8 @@ def moac_article_url(url: str) -> str:
     return _MOAC_CLEAN.format(ids[-1]) if ids else url
 
 
-_NORMALIZERS: dict[str, Callable[[str], str]] = {"moac": moac_article_url}
-
-
 def normalizer_for(slug: str) -> Callable[[str], str] | None:
-    return _NORMALIZERS.get(slug)
+    return moac_article_url if slug == "moac" else None
 
 
 @dataclass(frozen=True)

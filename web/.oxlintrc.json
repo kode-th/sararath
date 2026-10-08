@@ -5,10 +5,8 @@
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "react", "jsx-a11y"],
   "jsPlugins": [
     "@shadcn/lint",
-    "../tools/oxlint/jsx-child-element-spacing.js",
     "../tools/oxlint/no-member-expression.js",
-    "../tools/oxlint/single-dash-filename.js",
-    "../tools/oxlint/no-super-linear-backtracking.js"
+    "../tools/oxlint/single-dash-filename.js"
   ],
   "settings": {
     "shadcn": {
@@ -56,7 +54,6 @@
     ],
     "shadcn/no-arbitrary-values": ["error", { "allow": ["layout"] }],
     "shadcn/no-unknown-classes": "error",
-    "jsx/child-element-spacing": "error",
     "design-system/no-member-expression": "error",
     "react/react-in-jsx-scope": "off"
   }

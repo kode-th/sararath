@@ -14,7 +14,6 @@ export interface FeedSearch {
   q?: string;
   category?: string;
   source?: string;
-  cursor?: string;
 }
 
 export interface FeedLoaderData {
@@ -31,7 +30,6 @@ export const feedQuery = (search: FeedSearch) =>
         q: search.q,
         category: search.category,
         source: search.source,
-        cursor: search.cursor,
         limit: FEED_LIMIT,
       }),
     staleTime: 60_000,

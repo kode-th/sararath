@@ -2,26 +2,17 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from sararath.clock import naive_utc, utcnow
 from sararath.models import Source
 
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-def _naive_utc(moment: datetime) -> datetime:
-    if moment.tzinfo is not None:
-        return moment.astimezone(timezone.utc).replace(tzinfo=None)
-    return moment
-
-
 def due_sources(session: Session, now: datetime | None = None) -> list[Source]:
-    ref = _naive_utc(now or _utcnow())
+    ref = naive_utc(now or utcnow())
     rows = session.scalars(
         select(Source).where(Source.enabled).order_by(Source.slug)
     ).all()
@@ -29,7 +20,7 @@ def due_sources(session: Session, now: datetime | None = None) -> list[Source]:
         s
         for s in rows
         if s.last_success_at is None
-        or ref - _naive_utc(s.last_success_at)
+        or ref - naive_utc(s.last_success_at)
         >= timedelta(minutes=s.crawl_interval_minutes)
     ]
 
@@ -37,7 +28,7 @@ def due_sources(session: Session, now: datetime | None = None) -> list[Source]:
 def stale_sources(
     session: Session, max_age_hours: int = 26, now: datetime | None = None
 ) -> list[Source]:
-    ref = _naive_utc(now or _utcnow())
+    ref = naive_utc(now or utcnow())
     rows = session.scalars(
         select(Source).where(Source.enabled).order_by(Source.slug)
     ).all()
@@ -45,5 +36,5 @@ def stale_sources(
         s
         for s in rows
         if s.last_success_at is None
-        or ref - _naive_utc(s.last_success_at) >= timedelta(hours=max_age_hours)
+        or ref - naive_utc(s.last_success_at) >= timedelta(hours=max_age_hours)
     ]

@@ -17,15 +17,11 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
+from sararath.clock import utcnow
+
 
 class Base(DeclarativeBase):
     pass
-
-
-def _utcnow() -> datetime:
-    from datetime import timezone
-
-    return datetime.now(timezone.utc)
 
 
 class Source(Base):
@@ -84,10 +80,10 @@ class Article(Base):
         DateTime(timezone=True), nullable=True
     )
     first_seen_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow
+        DateTime(timezone=True), default=utcnow
     )
     last_seen_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow
+        DateTime(timezone=True), default=utcnow
     )
     content_hash: Mapped[str] = mapped_column(Text)
     raw_path: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -119,7 +115,7 @@ class CollectorRun(Base):
     )
     source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sources.id"))
     started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow
+        DateTime(timezone=True), default=utcnow
     )
     finished_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True

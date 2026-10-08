@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { Image } from '@unpic/react';
 import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
@@ -50,12 +49,11 @@ export function StoryRow({ article, thumbnail = false }: Readonly<StoryRowProps>
           </span>
         </span>
         {image && (
-          <Image
+          <img
             src={image}
             alt=""
             width={72}
             height={72}
-            layout="fixed"
             loading="lazy"
             decoding="async"
             ref={(node) => {

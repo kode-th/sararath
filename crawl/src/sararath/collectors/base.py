@@ -1,10 +1,9 @@
-"""Collector contract: discover list pages, fetch articles, parse HTML."""
+"""Collector data types: discovered items, raw fetches, parsed articles."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Protocol
 
 
 @dataclass(frozen=True)
@@ -36,9 +35,3 @@ class ParsedArticle:
     published_at: datetime | None
     published_raw: str
     attachments: tuple[str, ...] = ()
-
-
-class Collector(Protocol):
-    async def discover(self) -> list[DiscoveredItem]: ...
-    async def fetch(self, item: DiscoveredItem) -> RawArticle: ...
-    def parse(self, raw: RawArticle) -> ParsedArticle: ...

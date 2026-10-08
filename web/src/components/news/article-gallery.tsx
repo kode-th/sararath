@@ -1,44 +1,23 @@
-import { Image } from '@unpic/react';
-import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useSyncExternalStore } from 'react';
+import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { hideBrokenImage } from '@/utils/format';
 
 const reduceMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-function parseState(snapshot: string): [number, boolean, boolean] {
-  const [index, prev, next] = snapshot.split('|');
-  return [Number(index), prev === 'true', next === 'true'];
-}
-
 export function ArticleGallery({ images, title }: Readonly<{ images: string[]; title?: string }>) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    duration: reduceMotion ? 0 : 18,
-  });
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
 
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      if (!emblaApi) return () => {};
-      emblaApi.on('select', onChange).on('reInit', onChange);
-      return () => {
-        emblaApi.off('select', onChange).off('reInit', onChange);
-      };
-    },
-    [emblaApi],
-  );
-
-  const getSnapshot = useCallback(() => {
-    if (!emblaApi) return '0|false|false';
-    return [emblaApi.selectedScrollSnap(), emblaApi.canScrollPrev(), emblaApi.canScrollNext()].join(
-      '|',
-    );
-  }, [emblaApi]);
-
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => '0|false|false');
-  const [index, canPrev, canNext] = parseState(snapshot);
+  function scrollTo(position: number) {
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollTo({
+      left: position * track.clientWidth,
+      behavior: reduceMotion ? 'auto' : 'smooth',
+    });
+  }
 
   return (
     <section
@@ -46,45 +25,48 @@ export function ArticleGallery({ images, title }: Readonly<{ images: string[]; t
       aria-roledescription="carousel"
       aria-label={title ?? 'ภาพประกอบ'}
     >
-      <div className="overflow-hidden border border-foreground/15" ref={emblaRef}>
-        <div className="flex">
-          {images.map((src, position) => (
-            <div key={src} className="min-w-0 shrink-0 grow-0 basis-full">
-              <Image
-                src={src}
-                alt={title ? `${title} — ภาพที่ ${position + 1}` : ''}
-                width={1200}
-                height={675}
-                layout="constrained"
-                loading={position === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                onError={hideBrokenImage}
-                className="aspect-video w-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
+      <div
+        ref={trackRef}
+        onScroll={(event) => {
+          const track = event.currentTarget;
+          setIndex(Math.round(track.scrollLeft / track.clientWidth));
+        }}
+        className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto border border-foreground/15"
+      >
+        {images.map((src, position) => (
+          <img
+            key={src}
+            src={src}
+            alt={title ? `${title} — ภาพที่ ${position + 1}` : ''}
+            width={1200}
+            height={675}
+            loading={position === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            onError={hideBrokenImage}
+            className="aspect-video w-full shrink-0 snap-center object-cover"
+          />
+        ))}
       </div>
 
       {images.length > 1 && (
         <>
-          {canPrev && (
+          {index > 0 && (
             <Button
               aria-label="รูปก่อนหน้า"
               variant="solid"
               size="icon"
-              onClick={() => emblaApi?.scrollPrev()}
+              onClick={() => scrollTo(index - 1)}
               className="absolute top-1/2 left-3 -translate-y-1/2"
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </Button>
           )}
-          {canNext && (
+          {index < images.length - 1 && (
             <Button
               aria-label="รูปถัดไป"
               variant="solid"
               size="icon"
-              onClick={() => emblaApi?.scrollNext()}
+              onClick={() => scrollTo(index + 1)}
               className="absolute top-1/2 right-3 -translate-y-1/2"
             >
               <ChevronRight aria-hidden="true" className="size-4" />
