@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { ArrowUpRight } from 'lucide-react';
 import { env } from 'virtual:env/client';
 
@@ -17,6 +18,12 @@ export function Footer() {
         </p>
         <div className="mt-3 flex items-center gap-4 lg:col-start-2 lg:row-start-1 lg:mt-0 lg:items-end">
           <span>ดึงข่าวใหม่จากเว็บไซต์หน่วยงานรัฐประมาณทุก 1–2 ชั่วโมง</span>
+          <Link
+            to="/policy"
+            className="inline-flex min-h-11 items-center font-semibold whitespace-nowrap text-foreground hover:underline hover:decoration-accent lg:min-h-0"
+          >
+            นโยบายและแหล่งข่าว
+          </Link>
           <a
             href={`${env.VITE_API_URL}/docs`}
             target="_blank"

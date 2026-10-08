@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as PolicyRouteImport } from './routes/policy'
 import { Route as ArticlesIdRouteImport } from './routes/articles.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PolicyRoute = PolicyRouteImport.update({
+  id: '/policy',
+  path: '/policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticlesIdRoute = ArticlesIdRouteImport.update({
   id: '/articles/$id',
   path: '/articles/$id',
@@ -32,30 +38,34 @@ const ArticlesIdRoute = ArticlesIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
+  '/policy': typeof PolicyRoute
   '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
+  '/policy': typeof PolicyRoute
   '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
+  '/policy': typeof PolicyRoute
   '/articles/$id': typeof ArticlesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/news' | '/articles/$id'
+  fullPaths: '/' | '/news' | '/policy' | '/articles/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/news' | '/articles/$id'
-  id: '__root__' | '/' | '/news' | '/articles/$id'
+  to: '/' | '/news' | '/policy' | '/articles/$id'
+  id: '__root__' | '/' | '/news' | '/policy' | '/articles/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NewsRoute: typeof NewsRoute
+  PolicyRoute: typeof PolicyRoute
   ArticlesIdRoute: typeof ArticlesIdRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/policy': {
+      id: '/policy'
+      path: '/policy'
+      fullPath: '/policy'
+      preLoaderRoute: typeof PolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/articles/$id': {
       id: '/articles/$id'
       path: '/articles/$id'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NewsRoute: NewsRoute,
+  PolicyRoute: PolicyRoute,
   ArticlesIdRoute: ArticlesIdRoute,
 }
 export const routeTree = rootRouteImport
