@@ -36,6 +36,11 @@ export interface ArticleFilters {
   q?: string;
 }
 
+/** Escape LIKE wildcards so caller input matches literally (backslash is the default escape). */
+export function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, '\\$&');
+}
+
 export async function resolveCursor(db: Db, id: string): Promise<CursorRow | null> {
   const [row] = await db
     .select({ id: articles.id, publishedAt: articles.publishedAt })
@@ -78,11 +83,11 @@ export async function listArticleRows(
 ): Promise<ArticleRow[]> {
   const { source, agency, category, published_from, published_to, q } = filters;
 
-  const likeQ = q ? `%${q}%` : undefined;
+  const likeQ = q ? `%${escapeLike(q)}%` : undefined;
 
   const conditions: (SQL | undefined)[] = [
     source ? eq(sources.slug, source) : undefined,
-    agency ? like(articles.agencyName, `%${agency}%`) : undefined,
+    agency ? like(articles.agencyName, `%${escapeLike(agency)}%`) : undefined,
     category ? eq(articles.category, category) : undefined,
     published_from ? sql`${articles.publishedAt}::date >= ${published_from}::date` : undefined,
     published_to ? sql`${articles.publishedAt}::date <= ${published_to}::date` : undefined,

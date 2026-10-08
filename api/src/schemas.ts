@@ -113,7 +113,7 @@ export const articlesQuerySchema = z.object({
   category: z.string().optional(),
   published_from: dateOnly.optional(),
   published_to: dateOnly.optional(),
-  q: z.string().optional(),
+  q: z.string().min(1).max(100).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   cursor: z.string().optional(),
 });

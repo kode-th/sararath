@@ -62,6 +62,16 @@ describe('articles', () => {
     expect(await res.json()).toEqual({ detail: 'limit must be 1..100' });
   });
 
+  it('rejects an over-long search term', async () => {
+    const res = await app.request(`/v1/articles?q=${'a'.repeat(101)}`, undefined, env);
+    expect(res.status).toBe(422);
+  });
+
+  it('rejects an empty search term', async () => {
+    const res = await app.request('/v1/articles?q=', undefined, env);
+    expect(res.status).toBe(422);
+  });
+
   it('rejects a malformed cursor', async () => {
     const res = await app.request('/v1/articles?cursor=nope', undefined, env);
     expect(res.status).toBe(422);
