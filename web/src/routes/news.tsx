@@ -91,6 +91,13 @@ function Results() {
         {search.q ? `ผลการค้นหา “${search.q}”` : 'ข่าวทั้งหมด'}
       </h1>
 
+      {!search.q && !search.source && !search.category && (
+        <p className="mt-3 max-w-3xl text-pretty text-muted-foreground">
+          รวมข่าว ประกาศ และข้อมูลจากเว็บไซต์หน่วยงานรัฐไทยทั้งหมด ค้นหาด้วยคำสำคัญ หรือกรองตามหน่วยงานและหมวดหมู่
+          แต่ละรายการมีลิงก์กลับไปยังต้นฉบับ
+        </p>
+      )}
+
       <FilterBar
         sources={sources}
         categories={categories}

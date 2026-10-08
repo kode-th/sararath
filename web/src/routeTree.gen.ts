@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as PolicyRouteImport } from './routes/policy'
+import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ArticlesIdChar123SlugChar125RouteImport } from './routes/articles.$id.{-$slug}'
 
@@ -30,6 +31,11 @@ const PolicyRoute = PolicyRouteImport.update({
   path: '/policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RssDotxmlRoute = RssDotxmlRouteImport.update({
+  id: '/rss.xml',
+  path: '/rss.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
   '/policy': typeof PolicyRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/articles/$id/{-$slug}': typeof ArticlesIdChar123SlugChar125Route
 }
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
   '/policy': typeof PolicyRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/articles/$id/{-$slug}': typeof ArticlesIdChar123SlugChar125Route
 }
@@ -61,20 +69,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/news': typeof NewsRoute
   '/policy': typeof PolicyRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/articles/$id/{-$slug}': typeof ArticlesIdChar123SlugChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/news' | '/policy' | '/sitemap.xml' | '/articles/$id/{-$slug}'
+    | '/'
+    | '/news'
+    | '/policy'
+    | '/rss.xml'
+    | '/sitemap.xml'
+    | '/articles/$id/{-$slug}'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/news' | '/policy' | '/sitemap.xml' | '/articles/$id/{-$slug}'
+  to:
+    | '/'
+    | '/news'
+    | '/policy'
+    | '/rss.xml'
+    | '/sitemap.xml'
+    | '/articles/$id/{-$slug}'
   id:
     | '__root__'
     | '/'
     | '/news'
     | '/policy'
+    | '/rss.xml'
     | '/sitemap.xml'
     | '/articles/$id/{-$slug}'
   fileRoutesById: FileRoutesById
@@ -83,6 +104,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NewsRoute: typeof NewsRoute
   PolicyRoute: typeof PolicyRoute
+  RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ArticlesIdChar123SlugChar125Route: typeof ArticlesIdChar123SlugChar125Route
 }
@@ -110,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rss.xml': {
+      id: '/rss.xml'
+      path: '/rss.xml'
+      fullPath: '/rss.xml'
+      preLoaderRoute: typeof RssDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -131,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NewsRoute: NewsRoute,
   PolicyRoute: PolicyRoute,
+  RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ArticlesIdChar123SlugChar125Route: ArticlesIdChar123SlugChar125Route,
 }

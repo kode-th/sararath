@@ -8,6 +8,7 @@ import {
   Link,
   createFileRoute,
   notFound,
+  redirect,
   useRouter,
   type ErrorComponentProps,
 } from '@tanstack/react-router';
@@ -32,6 +33,14 @@ const articleQuery = (id: string) =>
     staleTime: 300_000,
   });
 
+// Cap the title, but back up to the last space so it never cuts mid-word.
+function clampTitle(title: string, max = 50) {
+  if (title.length <= max) return title;
+  const clipped = title.slice(0, max);
+  const boundary = clipped.lastIndexOf(' ');
+  return `${boundary > max / 2 ? clipped.slice(0, boundary) : clipped}…`;
+}
+
 export const Route = createFileRoute('/articles/$id/{-$slug}')({
   loader: async ({ context, params }) => {
     const article = await context.queryClient
@@ -40,6 +49,17 @@ export const Route = createFileRoute('/articles/$id/{-$slug}')({
         if (isMissingArticle(error)) throw notFound();
         throw error;
       });
+    const canonicalSlug = slugify(article.title);
+    if (params.slug && canonicalSlug) {
+      const requestedSlug = decodeURIComponent(params.slug);
+      if (requestedSlug !== canonicalSlug) {
+        throw redirect({
+          to: '/articles/$id/{-$slug}',
+          params: { id: params.id, slug: canonicalSlug },
+          replace: true,
+        });
+      }
+    }
     const related = await quietFetch(() =>
       context.queryClient.query(feedQuery({ source: article.source.slug })),
     );
@@ -48,14 +68,19 @@ export const Route = createFileRoute('/articles/$id/{-$slug}')({
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: 'ไม่พบข่าวนี้ · สาระรัฐ' }] };
     const { article } = loaderData;
-    const description = plainText(article.summary || article.body_text || '')
+    // Prefix the headline unless the body already leads with it, so descriptions
+    // stay unique when pages share the same opening boilerplate.
+    const bodyText = plainText(article.summary || article.body_text || '')
       .replace(/\s+/g, ' ')
+      .trim();
+    const source = bodyText || article.title;
+    const description = (source.startsWith(article.title) ? source : `${article.title}. ${source}`)
+      .trim()
       .slice(0, 160);
     const images = article.attachments ?? [];
     const slug = slugify(article.title);
     const canonical = [SITE_URL, 'articles', article.id, slug].filter(Boolean).join('/');
-    const pageTitle =
-      article.title.length > 50 ? `${article.title.slice(0, 50).trimEnd()}…` : article.title;
+    const pageTitle = clampTitle(article.title);
     return {
       meta: [
         { title: `${pageTitle} · สาระรัฐ` },

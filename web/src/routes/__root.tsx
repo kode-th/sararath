@@ -53,6 +53,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
       { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      {
+        rel: 'alternate',
+        type: 'application/rss+xml',
+        title: SITE_TITLE,
+        href: `${SITE_URL}/rss.xml`,
+      },
     ],
     scripts: [
       {
