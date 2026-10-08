@@ -17,9 +17,26 @@ jobs:
           python-version-file: crawl/.python-version
       - run: uv sync --no-dev
         working-directory: crawl
-      - run: uv run python -m sararath crawl-due --source moac --source rd --source prd
+
+      # thaigov 403s datacenter IPs; WARP gives a Cloudflare egress (others stay direct via NO_PROXY).
+      - name: Start Cloudflare WARP proxy
+        run: |
+          docker run -d --name warp -p 127.0.0.1:1080:1080 \
+            --cap-add NET_ADMIN \
+            caomingjun/warp@sha256:d50d29d859bd437420bf63256f803e9fac28657c346b6f5ba50e21ffeb93dff2
+          for _ in $(seq 1 30); do
+            if curl -sf -x http://127.0.0.1:1080 \
+              https://www.cloudflare.com/cdn-cgi/trace | grep -q 'warp=on'; then
+              echo "WARP connected"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "WARP did not connect; thaigov will fail this run"
+
+      - run: uv run python -m sararath crawl-due
         working-directory: crawl
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-# thaigov excluded: its API 403s datacenter IPs (bot protection).
-# Crawl thaigov from residential/TH networks with the scheduler-thaigov compose service.
+          ALL_PROXY: http://127.0.0.1:1080
+          NO_PROXY: localhost,127.0.0.1,moac.go.th,rd.go.th,prd.go.th
