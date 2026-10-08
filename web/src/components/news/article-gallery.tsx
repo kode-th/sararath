@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,9 @@ const reduceMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')
 
 export function ArticleGallery({ images, title }: Readonly<{ images: string[]; title?: string }>) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState(0);
+  const [zoomed, setZoomed] = useState<string | null>(null);
 
   function scrollTo(position: number) {
     const track = trackRef.current;
@@ -34,17 +36,27 @@ export function ArticleGallery({ images, title }: Readonly<{ images: string[]; t
         className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto border border-foreground/15"
       >
         {images.map((src, position) => (
-          <img
+          <button
             key={src}
-            src={src}
-            alt={title ? `${title} — ภาพที่ ${position + 1}` : ''}
-            width={1200}
-            height={675}
-            loading={position === 0 ? 'eager' : 'lazy'}
-            decoding="async"
-            onError={hideBrokenImage}
-            className="aspect-video w-full shrink-0 snap-center object-cover"
-          />
+            type="button"
+            aria-label={title ? `ดูภาพที่ ${position + 1} ขนาดเต็ม` : 'ดูภาพขนาดเต็ม'}
+            onClick={() => {
+              setZoomed(src);
+              dialogRef.current?.showModal();
+            }}
+            className="w-full shrink-0 cursor-zoom-in snap-center"
+          >
+            <img
+              src={src}
+              alt={title ? `${title} — ภาพที่ ${position + 1}` : ''}
+              width={1200}
+              height={675}
+              loading={position === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              onError={hideBrokenImage}
+              className="aspect-video w-full object-cover"
+            />
+          </button>
         ))}
       </div>
 
@@ -77,6 +89,30 @@ export function ArticleGallery({ images, title }: Readonly<{ images: string[]; t
           </span>
         </>
       )}
+
+      <dialog
+        ref={dialogRef}
+        aria-label="ภาพขนาดเต็ม"
+        onClose={() => setZoomed(null)}
+        className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-black/80"
+      >
+        <button
+          type="button"
+          aria-label="ปิดภาพขนาดเต็ม"
+          onClick={() => dialogRef.current?.close()}
+          className="flex h-full w-full cursor-zoom-out items-center justify-center"
+        >
+          {zoomed && <img src={zoomed} alt="" className="max-h-full max-w-full object-contain" />}
+        </button>
+        <button
+          type="button"
+          aria-label="ปิด"
+          onClick={() => dialogRef.current?.close()}
+          className="absolute top-3 right-3 flex size-11 items-center justify-center bg-foreground/80 text-primary-foreground hover:bg-foreground"
+        >
+          <X aria-hidden="true" className="size-5" />
+        </button>
+      </dialog>
     </section>
   );
 }
