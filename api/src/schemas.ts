@@ -6,6 +6,7 @@ const timestamp = z.string().nullable();
 export const SourceRefSchema = z.object({
   slug: z.string(),
   name_th: z.string(),
+  homepage_url: z.string(),
 });
 
 export const ArticleSchema = z.object({

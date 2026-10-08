@@ -25,6 +25,7 @@ const articleColumns = {
   lastSeenAt: articles.lastSeenAt,
   slug: sources.slug,
   nameTh: sources.nameTh,
+  homepageUrl: sources.homepageUrl,
 };
 
 export interface ArticleFilters {
@@ -38,7 +39,7 @@ export interface ArticleFilters {
 
 /** Escape LIKE wildcards so caller input matches literally (backslash is the default escape). */
 export function escapeLike(value: string): string {
-  return value.replace(/[\\%_]/g, '\\$&');
+  return value.replace(/[\\%_]/g, String.raw`\$&`);
 }
 
 export async function resolveCursor(db: Db, id: string): Promise<CursorRow | null> {
@@ -132,7 +133,7 @@ export async function attachmentsFor(db: Db, ids: string[]): Promise<Map<string,
 export function toArticle(row: ArticleRow, attachmentUrls: string[]): ArticleOut {
   return {
     id: row.id,
-    source: { slug: row.slug, name_th: row.nameTh },
+    source: { slug: row.slug, name_th: row.nameTh, homepage_url: row.homepageUrl },
     title: row.title,
     summary: row.summary,
     body_text: row.bodyText,

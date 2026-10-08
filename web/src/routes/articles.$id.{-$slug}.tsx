@@ -80,7 +80,11 @@ export const Route = createFileRoute('/articles/$id/{-$slug}')({
             dateModified: article.last_seen_at ?? article.published_at ?? undefined,
             inLanguage: 'th',
             articleSection: article.category || undefined,
-            author: { '@type': 'Organization', name: article.source.name_th },
+            author: {
+              '@type': 'Organization',
+              name: article.source.name_th,
+              url: article.source.homepage_url,
+            },
             publisher: {
               '@type': 'Organization',
               name: 'สาระรัฐ (Sararath)',

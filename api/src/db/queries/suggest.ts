@@ -9,7 +9,7 @@ export async function suggest(db: Db, term: string, limit: number): Promise<Sugg
   const likeTerm = `%${term}%`;
 
   const sourceRows = await db
-    .select({ slug: sources.slug, nameTh: sources.nameTh })
+    .select({ slug: sources.slug, nameTh: sources.nameTh, homepageUrl: sources.homepageUrl })
     .from(sources)
     .where(like(sources.nameTh, likeTerm))
     .orderBy(asc(sources.slug))
@@ -36,6 +36,7 @@ export async function suggest(db: Db, term: string, limit: number): Promise<Sugg
     sources: sourceRows.map((row) => ({
       slug: row.slug,
       name_th: row.nameTh,
+      homepage_url: row.homepageUrl,
     })),
     articles: articlesOut,
   };
