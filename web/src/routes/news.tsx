@@ -115,7 +115,7 @@ function Results() {
           ) : (
             <Link
               to="/"
-              search={{ category: undefined, source: undefined, cursor: undefined }}
+              search={{ source: undefined }}
               className="mt-3 inline-flex min-h-11 items-center font-display font-semibold text-foreground underline decoration-accent"
             >
               ดูข่าวจากทุกหน่วยงาน

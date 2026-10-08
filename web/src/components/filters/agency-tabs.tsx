@@ -37,7 +37,7 @@ export function AgencyTabs({ sources, active, q, target }: Readonly<AgencyTabsPr
               ) : (
                 <Link
                   to="/"
-                  search={{ category: undefined, source: tab.slug, cursor: undefined }}
+                  search={{ source: tab.slug }}
                   aria-current={current ? 'page' : undefined}
                   className={className}
                 >

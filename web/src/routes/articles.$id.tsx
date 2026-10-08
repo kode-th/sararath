@@ -72,7 +72,7 @@ function ArticleNotFound() {
         <p className="mt-3 text-pretty text-muted-foreground">ข่าวนี้อาจถูกลบหรือไม่มีอยู่ในระบบแล้ว</p>
         <Link
           to="/"
-          search={{ category: undefined, source: undefined, cursor: undefined }}
+          search={{ source: undefined }}
           className={buttonVariants({ className: 'mt-6' })}
         >
           <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
@@ -98,11 +98,7 @@ function ArticleError({ reset }: Readonly<ErrorComponentProps>) {
           เซิร์ฟเวอร์ข่าวอาจกำลังเริ่มทำงานอยู่ ใช้เวลาประมาณหนึ่งนาที รอสักครู่แล้วกดลองใหม่
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            to="/"
-            search={{ category: undefined, source: undefined, cursor: undefined }}
-            className={buttonVariants()}
-          >
+          <Link to="/" search={{ source: undefined }} className={buttonVariants()}>
             <ArrowLeft aria-hidden="true" className="size-4" /> กลับหน้าแรก
           </Link>
           <Button
@@ -148,7 +144,7 @@ function ArticleDetail() {
         <div className="max-w-3xl lg:col-span-8">
           <Link
             to="/"
-            search={{ category: undefined, source: undefined, cursor: undefined }}
+            search={{ source: undefined }}
             onClick={(event) => {
               if (router.history.canGoBack()) {
                 event.preventDefault();

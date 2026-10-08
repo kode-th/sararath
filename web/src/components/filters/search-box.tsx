@@ -92,7 +92,7 @@ export function SearchBox({ initialQuery }: Readonly<SearchBoxProps>) {
     if (item.kind === 'source') {
       void navigate({
         to: '/',
-        search: { category: undefined, source: item.slug, cursor: undefined },
+        search: { source: item.slug },
       });
     } else {
       void navigate({ to: '/articles/$id', params: { id: item.id } });

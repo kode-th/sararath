@@ -46,7 +46,7 @@ export function CategorySelect({
         if (target === 'search') {
           void navigate({ to: '/news', search: { q, category, source } });
         } else {
-          void navigate({ to: '/', search: { category, source, cursor: undefined } });
+          void navigate({ to: '/', search: { source } });
         }
       }}
     >

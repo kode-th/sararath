@@ -22,15 +22,13 @@ import {
 } from '@/utils/feed';
 import { formatTime } from '@/utils/format';
 
-type HomeSearch = Omit<FeedSearch, 'q'>;
+type HomeSearch = Pick<FeedSearch, 'source'>;
 
 export const Route = createFileRoute('/')({
   validateSearch: (raw: Record<string, unknown>): HomeSearch => ({
-    category: typeof raw['category'] === 'string' ? raw['category'] : undefined,
     source: typeof raw['source'] === 'string' ? raw['source'] : undefined,
-    cursor: typeof raw['cursor'] === 'string' ? raw['cursor'] : undefined,
   }),
-  loaderDeps: ({ search }) => search,
+  loaderDeps: ({ search }) => ({ source: search.source }),
   loader: async ({ context, deps }): Promise<FeedLoaderData> => {
     const [page, sources] = await Promise.all([
       quietFetch(() => context.queryClient.query(feedQuery(deps))),
@@ -45,7 +43,7 @@ export const Route = createFileRoute('/')({
 
 function Newsroom() {
   const search = Route.useSearch();
-  const feedKey = `${search.category ?? ''}|${search.source ?? ''}`;
+  const feedKey = search.source ?? '';
 
   return (
     <Suspense fallback={<FeedFallback message="กำลังโหลดข่าว…" />}>
@@ -55,7 +53,8 @@ function Newsroom() {
 }
 
 function Feed() {
-  const search = Route.useSearch();
+  const { source } = Route.useSearch();
+  const search = { source };
   const loader = Route.useLoaderData();
   const { data: page } = useSuspenseQuery({
     ...feedQuery(search),
@@ -84,12 +83,7 @@ function Feed() {
         </p>
       </div>
 
-      <FilterBar
-        sources={sources}
-        source={search.source}
-        category={search.category}
-        target="home"
-      />
+      <FilterBar sources={sources} source={source} target="home" />
 
       {error && <ErrorCard message={error} />}
 
@@ -110,7 +104,7 @@ function Feed() {
           <h2 className="text-2xl font-bold text-foreground">ยังไม่มีข่าวจากหน่วยงานนี้</h2>
           <Link
             to="/"
-            search={{ category: undefined, source: undefined, cursor: undefined }}
+            search={{ source: undefined }}
             className="mt-3 inline-flex min-h-11 items-center font-display font-semibold text-foreground underline decoration-accent"
           >
             ดูข่าวจากทุกหน่วยงาน

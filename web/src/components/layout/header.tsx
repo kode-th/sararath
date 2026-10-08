@@ -13,11 +13,7 @@ export function Header() {
       </p>
       <header className="sm:sticky sm:top-0 sm:z-10 sm:border-b sm:border-foreground/15 sm:bg-background">
         <div className="container flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 py-3 sm:py-4">
-          <Link
-            to="/"
-            search={{ category: undefined, source: undefined, cursor: undefined }}
-            className="mr-auto flex items-center gap-3"
-          >
+          <Link to="/" search={{ source: undefined }} className="mr-auto flex items-center gap-3">
             <img src="/logo.svg" alt="" width={44} height={44} className="size-11" />
             <span className="leading-tight">
               <img
