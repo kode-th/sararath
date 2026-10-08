@@ -1,4 +1,4 @@
-"""CLI: seed, crawl, export-legacy."""
+"""Command line entry point: seeding, crawling, and maintenance commands."""
 
 from __future__ import annotations
 
