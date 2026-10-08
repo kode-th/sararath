@@ -67,5 +67,5 @@ Anchors `(A1)`…`(A8)` are in the `AGENTS.md` headings.
 ## Gaps (accepted)
 
 - **M5 (reader engagement)** has no measurement tool, so F1–F4 have no live engagement number. Recorded as an open question in `docs/PRD.md`; do not invent one.
-- **No `U` for F5/F6** — the API and crawlers are non-visual; that is correct, not missing.
+- **No `U` for F5/F6**: the API and crawlers are non-visual; that is correct, not missing.
 - **Long-term goal and English UI** are undecided; PRD records them as open questions rather than inventing scope.

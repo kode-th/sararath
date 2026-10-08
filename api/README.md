@@ -40,7 +40,7 @@ Never hand-edit the generated file; rerun after a migration.
 
 The document is generated at request time from the route `describeRoute`/`validator` metadata and served at `/openapi.json`; `/docs` renders it with Scalar (downloadable as JSON or YAML). Nothing is committed.
 
-The web client does **not** read this document — it imports the worker's `AppType` for Hono RPC types (`@sararath/api`). The document exists for public consumers and `/docs`.
+The web client does **not** read this document; it imports the worker's `AppType` for Hono RPC types (`@sararath/api`). The document exists for public consumers and `/docs`.
 
 ## Deploy
 

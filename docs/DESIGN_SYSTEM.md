@@ -29,7 +29,7 @@ Two-ink palette: navy on a faintly blue white sheet, with a gold marker in two s
 | T9    | `muted`                | `oklch(0.955 0.01 251)`  | Tab Grey: resting fill of inactive agency tabs                            |
 | T10   | `muted-foreground`     | `oklch(0.48 0.045 251)`  | Pencil Blue: dates, row agency names, captions, placeholders, footer      |
 | T11   | `accent`               | `oklch(0.86 0.12 92)`    | Highlighter Gold: marker band, active tab, `::selection`, hover underline |
-| T12   | `accent-foreground`    | `oklch(0.55 0.115 83)`   | Gold text use; currently unused — prefer T2 on gold                       |
+| T12   | `accent-foreground`    | `oklch(0.55 0.115 83)`   | Gold text use; currently unused. Prefer T2 on gold                        |
 | T13   | `destructive`          | `oklch(0.55 0.19 27)`    | Correction Red: feed/load-more error text and border only                 |
 | T14   | `border`               | `oklch(0.88 0.02 251)`   | Border token                                                              |
 | T15   | `input`                | `oklch(0.88 0.02 251)`   | Input border token                                                        |
@@ -44,8 +44,8 @@ Two-ink palette: navy on a faintly blue white sheet, with a gold marker in two s
 
 ## 03 Typography
 
-- **T17 `font-display`:** `'Anuphan', 'IBM Plex Sans Thai Looped', sans-serif` — headings and pressable labels.
-- **T18 `font-sans`:** `'IBM Plex Sans Thai Looped', system-ui, sans-serif` — reading, dates, times, meta.
+- **T17 `font-display`:** `'Anuphan', 'IBM Plex Sans Thai Looped', sans-serif`. Headings and pressable labels.
+- **T18 `font-sans`:** `'IBM Plex Sans Thai Looped', system-ui, sans-serif`. Reading, dates, times, meta.
 - Numerals: `font-variant-numeric: tabular-nums` on the body, so time margins align column by column.
 
 | Token | Style    | Size / line-height                                                   | Use                                           |
@@ -103,7 +103,7 @@ Conventions for all components: live in a sub-category folder under `web/src/com
 | U13 | Article Detail (`routes/articles.$id.tsx`)                                    | Meta line, times, body, "อ่านที่ต้นฉบับ", back link (F4)                                        | default; category link; back returns to previous list when history exists                                                        |
 | U14 | Latest Rail (`routes/articles.$id.tsx`)                                       | "ล่าสุดจาก {agency}" ruled list, sticky (F4)                                                 | default, sticky ≥1024px                                                                                                          |
 | U15 | Load More (`feed/load-more.tsx`)                                              | Cursor pagination (F1, F2)                                                                 | hidden when no more, default, loading ("กำลังโหลด…", disabled)                                                                    |
-| U16 | Feed Error / Error Card (`feed/feed-error.tsx`, `feed/error-card.tsx`)        | Load failure — feed, article, load-more (R3.3)                                             | error (T13 text + border), retry ("ลองใหม่")                                                                                      |
+| U16 | Feed Error / Error Card (`feed/feed-error.tsx`, `feed/error-card.tsx`)        | Load failure: feed, article, load-more (R3.3)                                              | error (T13 text + border), retry ("ลองใหม่")                                                                                      |
 | U17 | Not Found (`layout/not-found.tsx`)                                            | Unknown route / missing article (F4)                                                       | static ("404", "ไม่พบหน้าที่คุณต้องการ")                                                                                               |
 | U18 | Marks (`web/public/*.svg`)                                                    | Logo, wordmark, favicons                                                                   | transparent in-page; light plate for favicons                                                                                    |
 

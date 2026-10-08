@@ -42,7 +42,7 @@ Conventions: component props are wrapped in `Readonly<…>` (use `PropsWithChild
 
 ## API client
 
-`src/lib/api.ts` builds `hc<AppType>(API_URL)` (Hono RPC) and re-exports response types from `@sararath/api` (`ArticleItem`, `ArticlesPage`, `NewsSourceItem`, …) — no generated schema.
+`src/lib/api.ts` builds `hc<AppType>(API_URL)` (Hono RPC) and re-exports response types from `@sararath/api` (`ArticleItem`, `ArticlesPage`, `NewsSourceItem`, …); no generated schema.
 
 The base URL comes from `VITE_API_URL` (schema in `env.ts`), defaulting to the live API (Cloudflare Worker). For local dev point it at `http://localhost:8787`.
 
@@ -58,7 +58,7 @@ The root Docker stack brings up the whole app with hot reload:
 mise run dev        # from the repo root; web :3000, api :8787, crawlers
 ```
 
-It points web at the local worker (`VITE_API_URL=http://localhost:8787`), so the feed needs the api service — which `mise run dev` now starts.
+It points web at the local worker (`VITE_API_URL=http://localhost:8787`), so the feed needs the api service, which `mise run dev` now starts.
 
 To run web alone on the host:
 

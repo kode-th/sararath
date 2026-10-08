@@ -73,10 +73,10 @@ Root holds the glue: `package.json` (bun workspaces `api`, `web`), `mise.toml`, 
 
 Schema is owned by Alembic in `crawl/migrations/`; `api/src/db/generated/schema.ts` is generated from the live DB with `drizzle-kit pull` and is never hand-edited (ADR-3).
 
-- **D1 Source** (`sources`) — `id` UUID PK, `slug` unique, `name_th`, `name_en`, `agency_type`, `homepage_url`, `feed_url` nullable, `collector`, `enabled`, `crawl_interval_minutes`, `category`, `last_attempt_at`, `last_success_at`, `last_error`, `robots_ok`.
-- **D2 Article** (`articles`) — `id` UUID PK, `source_id` FK→Source, `external_id`, `canonical_url` unique, `title`, `summary` nullable, `body_text`, `language` (default `th`), `category`, `agency_name`, `published_at` nullable, `published_raw`, `updated_at`, `first_seen_at`, `last_seen_at`, `content_hash`, `raw_path`. Unique `(source_id, external_id)`; index `(published_at, id)`.
-- **D3 Attachment** (`attachments`) — `id` UUID PK, `article_id` FK→Article, `url`, `media_type` nullable, `title` nullable, `checksum` nullable. Stores image URLs (rows with zero attachments render without images, R3.2).
-- **D4 CollectorRun** (`collector_runs`) — `id` UUID PK, `source_id` FK→Source, `started_at`, `finished_at` nullable, `status`, `http_status` nullable, `found_count`, `inserted_count`, `skipped_count`, `error` nullable. Backs source health.
+- **D1 Source** (`sources`): `id` UUID PK, `slug` unique, `name_th`, `name_en`, `agency_type`, `homepage_url`, `feed_url` nullable, `collector`, `enabled`, `crawl_interval_minutes`, `category`, `last_attempt_at`, `last_success_at`, `last_error`, `robots_ok`.
+- **D2 Article** (`articles`): `id` UUID PK, `source_id` FK→Source, `external_id`, `canonical_url` unique, `title`, `summary` nullable, `body_text`, `language` (default `th`), `category`, `agency_name`, `published_at` nullable, `published_raw`, `updated_at`, `first_seen_at`, `last_seen_at`, `content_hash`, `raw_path`. Unique `(source_id, external_id)`; index `(published_at, id)`.
+- **D3 Attachment** (`attachments`): `id` UUID PK, `article_id` FK→Article, `url`, `media_type` nullable, `title` nullable, `checksum` nullable. Stores image URLs (rows with zero attachments render without images, R3.2).
+- **D4 CollectorRun** (`collector_runs`): `id` UUID PK, `source_id` FK→Source, `started_at`, `finished_at` nullable, `status`, `http_status` nullable, `found_count`, `inserted_count`, `skipped_count`, `error` nullable. Backs source health.
 
 ```mermaid
 erDiagram
@@ -116,11 +116,11 @@ None. There is no authentication and no user account model.
 
 ## 07 Integrations
 
-- **I1 — Neon Postgres.** Read by `api` (`postgresql://` scheme) and dev web; written by `crawl` (`postgresql+psycopg://` scheme, ADR-2). Failure: API returns `{detail}` with 503 on DB error; crawl records status `error` and retries next tick.
-- **I2 — Cloudflare Workers.** Hosts `api` (`sararath-api`, custom domain `sararath-apis.fasu.dev`) and `web` (`sararath.fasu.dev`). Deploy on push to `main` via Workers Builds. Failure: the web app shows its feed-error state (R3.3); no cold start.
-- **I3 — GitHub Actions.** `crawl.yml` runs `crawl-due --source moac --source rd --source prd` hourly (`cron: 15 * * * *`), plus `ci.yml` runs the gates on PRs. Failure: a source stays stale until the next tick; `M1` detects it.
-- **I4 — Agency sites (thaigov, prd, moac, rd).** Fetched over HTTP. thaigov's API returns 403 to datacenter IPs, so it is crawled from a residential/TH host (ADR-5). `http.py` adds per-host rate limiting, retry/backoff, and a `curl_cffi` impersonation fallback. Failure: the collector logs an error and skips; existing rows remain.
-- **I5 — OpenAPI / Scalar docs.** `/openapi.json` is generated at request time from route metadata; `/docs` renders it with Scalar. Nothing is committed. It exists for public consumers, not for the web client (ADR-4).
+- **I1: Neon Postgres.** Read by `api` (`postgresql://` scheme) and dev web; written by `crawl` (`postgresql+psycopg://` scheme, ADR-2). Failure: API returns `{detail}` with 503 on DB error; crawl records status `error` and retries next tick.
+- **I2: Cloudflare Workers.** Hosts `api` (`sararath-api`, custom domain `sararath-apis.fasu.dev`) and `web` (`sararath.fasu.dev`). Deploy on push to `main` via Workers Builds. Failure: the web app shows its feed-error state (R3.3); no cold start.
+- **I3: GitHub Actions.** `crawl.yml` runs `crawl-due --source moac --source rd --source prd` hourly (`cron: 15 * * * *`), plus `ci.yml` runs the gates on PRs. Failure: a source stays stale until the next tick; `M1` detects it.
+- **I4: Agency sites (thaigov, prd, moac, rd).** Fetched over HTTP. thaigov's API returns 403 to datacenter IPs, so it is crawled from a residential/TH host (ADR-5). `http.py` adds per-host rate limiting, retry/backoff, and a `curl_cffi` impersonation fallback. Failure: the collector logs an error and skips; existing rows remain.
+- **I5: OpenAPI / Scalar docs.** `/openapi.json` is generated at request time from route metadata; `/docs` renders it with Scalar. Nothing is committed. It exists for public consumers, not for the web client (ADR-4).
 
 ## 08 Scalability & Constraints
 
@@ -150,7 +150,7 @@ None. There is no authentication and no user account model.
 - **Context:** The data is real agency news; a local database would start empty and drift.
 - **Decision:** Dev, GitHub Actions, and production share the Neon `DATABASE_URL`. There is no local Postgres.
 - **Alternatives:** Local Postgres in compose (rejected: empty data, drift, extra service); per-env databases (rejected: cost and seeding).
-- **Consequences:** Local runs and tests with real data work immediately. Local writes hit production — a real risk (see `AGENTS.md`).
+- **Consequences:** Local runs and tests with real data work immediately. Local writes hit production, a real risk (see `AGENTS.md`).
 
 ### ADR-3: Drizzle schema generated with `drizzle-kit pull`, not hand-written
 

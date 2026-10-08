@@ -1,6 +1,6 @@
 # Sararath crawlers
 
-Python 3.13 service (uv, `uv_build` src-layout, distribution `sararath-crawl`, import package `sararath`) that crawls Thai government sites into Postgres — the only writer of the shared database. The read API is a separate Cloudflare Worker in [`../api`](../api); see the [root README](../README.md) for the full project.
+Python 3.13 service (uv, `uv_build` src-layout, distribution `sararath-crawl`, import package `sararath`) that crawls Thai government sites into Postgres, the only writer of the shared database. The read API is a separate Cloudflare Worker in [`../api`](../api); see the [root README](../README.md) for the full project.
 
 ## Layout
 
@@ -33,7 +33,7 @@ uv run python -m sararath seed            # upsert sources from sources.yaml
 
 ## CLI
 
-Run from `crawl/` as `uv run python -m sararath <command>` — bare `uv run pytest` / `uv run alembic` can fail to spawn in some environments. Also installed as the console script `sararath`.
+Run from `crawl/` as `uv run python -m sararath <command>`; bare `uv run pytest` / `uv run alembic` can fail to spawn in some environments. Also installed as the console script `sararath`.
 
 ```bash
 uv run python -m sararath seed

@@ -20,7 +20,7 @@ Product requirements. Defines what the product is, who it serves, and how succes
 ## 03 Goals
 
 - **Release goal (current, live):** every enabled source is crawled within its interval and the feed, search, article pages, and read API serve the collected items without error. Measured by `M1`, `M2`, `M4`.
-- **Long-term goal (6–12 months):** `TBD` — the repo states no growth target. **Question:** is the goal more sources, more readers, an English UI, or all three? (See `docs/PRD.md` open questions.)
+- **Long-term goal (6–12 months):** `TBD`. The repo states no growth target. **Question:** is the goal more sources, more readers, an English UI, or all three? (See `docs/PRD.md` open questions.)
 - **Non-goals (decided, from the legacy MVP plan):**
   - No editorial layer: no rewriting, summarizing, opinion ranking, or priority scoring. Ordering is by publish time.
   - No Facebook scraping and no indirect content.
@@ -32,9 +32,9 @@ Product requirements. Defines what the product is, who it serves, and how succes
 
 Three audiences with equal weight (confirmed 2026-09-24 in the prior product brief):
 
-- **The general public** — wants to know what Thai government agencies announced without visiting each agency site. Most read on phones.
-- **Journalists and content creators** — follow government news daily; need speed and a link to the original.
-- **Developers** — use the public read API (`/v1/articles`, `/v1/categories`, `/v1/sources`, …).
+- **The general public:** wants to know what Thai government agencies announced without visiting each agency site. Most read on phones.
+- **Journalists and content creators:** follow government news daily; need speed and a link to the original.
+- **Developers:** use the public read API (`/v1/articles`, `/v1/categories`, `/v1/sources`, …).
 
 **Non-users:** people seeking a government service portal (this is not one), readers seeking editorial analysis or opinion, and anyone expecting push notifications or translation.
 
@@ -42,14 +42,14 @@ Three audiences with equal weight (confirmed 2026-09-24 in the prior product bri
 
 MVP = shipped and live. Each feature lists its user need and its metric.
 
-| ID  | Feature                                                                                                                                                   | User need                                          | Metric                   | Status |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------ | ------ |
-| F1  | Home feed (`/`) — lead story, "ล่าสุด", "ข่าวก่อนหน้า", agency tabs, category select, cursor "โหลดข่าวเพิ่ม"                                                      | See today's news without visiting each agency site | M5 (engagement, TBD), M3 | MVP    |
-| F2  | Browse / search (`/news`) — full-text `q` over title, body, agency; source and category filters; "ล้างตัวกรอง"                                              | Find a specific announcement fast                  | M5 (TBD)                 | MVP    |
-| F3  | Suggestions — header search autocompletes agency names and article titles via `/v1/suggest`                                                               | Reach the right agency or story with less typing   | M5 (TBD)                 | MVP    |
-| F4  | Article detail (`/articles/$id`) — agency, category, publish/retrieved times, image gallery, paragraphs, "อ่านที่ต้นฉบับ", "ล่าสุดจาก {agency}"                  | Verify the story and reach the original in one tap | M3, M5 (TBD)             | MVP    |
-| F5  | Public read API — `/v1/articles`, `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`; `/openapi.json`, `/docs` | Build a reader or integration on the data          | M4                       | MVP    |
-| F6  | Scheduled multi-source collection — four sources, per-source intervals, `crawl-due`, source health                                                        | The feed is current and complete                   | M1, M2                   | MVP    |
+| ID  | Feature                                                                                                                                                  | User need                                          | Metric                   | Status |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------ | ------ |
+| F1  | Home feed (`/`): lead story, "ล่าสุด", "ข่าวก่อนหน้า", agency tabs, category select, cursor "โหลดข่าวเพิ่ม"                                                      | See today's news without visiting each agency site | M5 (engagement, TBD), M3 | MVP    |
+| F2  | Browse / search (`/news`): full-text `q` over title, body, agency; source and category filters; "ล้างตัวกรอง"                                              | Find a specific announcement fast                  | M5 (TBD)                 | MVP    |
+| F3  | Suggestions: header search autocompletes agency names and article titles via `/v1/suggest`                                                               | Reach the right agency or story with less typing   | M5 (TBD)                 | MVP    |
+| F4  | Article detail (`/articles/$id`): agency, category, publish/retrieved times, image gallery, paragraphs, "อ่านที่ต้นฉบับ", "ล่าสุดจาก {agency}"                  | Verify the story and reach the original in one tap | M3, M5 (TBD)             | MVP    |
+| F5  | Public read API: `/v1/articles`, `/v1/articles/{id}`, `/v1/categories`, `/v1/suggest`, `/v1/sources`, `/v1/runs`, `/v1/health`; `/openapi.json`, `/docs` | Build a reader or integration on the data          | M4                       | MVP    |
+| F6  | Scheduled multi-source collection: four sources, per-source intervals, `crawl-due`, source health                                                        | The feed is current and complete                   | M1, M2                   | MVP    |
 
 ## 06 Scope (v1 / v2 / v3)
 
@@ -59,11 +59,11 @@ MVP = shipped and live. Each feature lists its user need and its metric.
 
 ## 07 Success Metrics
 
-- **M1 — Crawl freshness.** Every enabled source has a successful run within 2× its `crawl_interval_minutes` (prd/thaigov 60m, moac/rd 120m → within 120m/240m). Measured by `sararath check --max-age-hours` and `GET /v1/health`.
-- **M2 — Source coverage.** All 4 enabled sources have a successful run in the last 24h. Measured by `GET /v1/sources` and `GET /v1/runs`.
-- **M3 — Source link integrity.** 100% of articles expose a non-empty `canonical_url`. Measured from the database / API (`canonical_url` is a unique, non-null column).
-- **M4 — API health.** `GET /v1/health` returns `db: ok` and the Worker responds. Measured in Cloudflare Workers observability (logs + traces).
-- **M5 — Reader engagement** (sessions, searches, return visits): `TBD` — **no analytics is wired up.** Do not invent a number. **Question:** which tool (Cloudflare Web Analytics, Plausible, other) and what target?
+- **M1: Crawl freshness.** Every enabled source has a successful run within 2× its `crawl_interval_minutes` (prd/thaigov 60m, moac/rd 120m → within 120m/240m). Measured by `sararath check --max-age-hours` and `GET /v1/health`.
+- **M2: Source coverage.** All 4 enabled sources have a successful run in the last 24h. Measured by `GET /v1/sources` and `GET /v1/runs`.
+- **M3: Source link integrity.** 100% of articles expose a non-empty `canonical_url`. Measured from the database / API (`canonical_url` is a unique, non-null column).
+- **M4: API health.** `GET /v1/health` returns `db: ok` and the Worker responds. Measured in Cloudflare Workers observability (logs + traces).
+- **M5: Reader engagement** (sessions, searches, return visits): `TBD`. **No analytics is wired up.** Do not invent a number. **Question:** which tool (Cloudflare Web Analytics, Plausible, other) and what target?
 
 ## 08 Key Requirements
 

@@ -25,19 +25,19 @@ Sararath (สาระรัฐ) is an independent, read-only index of Thai gove
 
 ## 04 Do Not Touch (A3)
 
-Generated, vendored, or sensitive — regenerate or ask instead:
+Generated, vendored, or sensitive (regenerate or ask instead):
 
-- `api/src/db/generated/schema.ts` — produced by `drizzle-kit pull`; refresh with `mise run api:db:pull`. Never hand-edit.
-- `web/src/routeTree.gen.ts` — generated; refresh with `bun run generate:routes` (from `web/`).
-- `bun.lock`, `crawl/uv.lock` — lockfiles; nobody edits by hand.
-- `crawl/migrations/versions/**` — existing migrations are append-only; add a new revision, never edit a shipped one.
-- `crawl/raw/**`, `node_modules/**`, `dist/**` — crawl output and build output.
-- `.env`, `api/.dev.vars` — secrets; never read into docs or commit.
-- `.serena/` — tool state; read-only, never edit or cite paths from it in docs.
+- `api/src/db/generated/schema.ts`: produced by `drizzle-kit pull`; refresh with `mise run api:db:pull`. Never hand-edit.
+- `web/src/routeTree.gen.ts`: generated; refresh with `bun run generate:routes` (from `web/`).
+- `bun.lock`, `crawl/uv.lock`: lockfiles; nobody edits by hand.
+- `crawl/migrations/versions/**`: existing migrations are append-only; add a new revision, never edit a shipped one.
+- `crawl/raw/**`, `node_modules/**`, `dist/**`: crawl output and build output.
+- `.env`, `api/.dev.vars`: secrets; never read into docs or commit.
+- `.serena/`: tool state; read-only, never edit or cite paths from it in docs.
 
 ## 05 Coding Guidelines
 
-**Web (`web/`) (A4)** — see `docs/DESIGN_SYSTEM.md` § 05.
+**Web (`web/`) (A4)**: see `docs/DESIGN_SYSTEM.md` § 05.
 
 - Components live in a subfolder of `web/src/components/`: `ui/`, `layout/`, `filters/`, `feed/`, `news/`.
 - `@base-ui/react` imports and JSX member expressions (`<Foo.Bar />`) only inside `components/ui/`; wrap and re-export named components.
@@ -46,14 +46,14 @@ Generated, vendored, or sensitive — regenerate or ask instead:
 - Tailwind utilities only; no custom classes, no inline `style={{}}` in pages. Use tokens from `theme.css`, never raw color/size values.
 - Filenames: at most one dash (`story-row.tsx` ok, `foo-bar-baz.tsx` not).
 
-**API (`api/`) (A5)** — read-only.
+**API (`api/`) (A5)**: read-only.
 
 - Imports use `@api/*`; relative only `./`. Do **not** use `@/` in `api/` (web owns it).
 - Add a resource as a sub-app in `routes/` mounted in `routes/__root.ts`; carry `describeRoute` + `validator` metadata so `/openapi.json` stays correct.
 - Keep responses and errors matching the existing shape (`{ items, next_cursor }`, errors `{ detail }`).
 - Do not add runtime-only imports that break `web`'s DOM typecheck of `AppType`.
 
-**Crawl (`crawl/`) (A6)** — the only DB writer.
+**Crawl (`crawl/`) (A6)**: the only DB writer.
 
 - Run everything as `uv run python -m sararath <cmd>` (bare `uv run pytest`/`alembic` can fail to spawn).
 - Schema lives in `models.py` + Alembic; the API only queries it. After a schema change, generate a revision and rerun the API schema pull.
@@ -61,10 +61,10 @@ Generated, vendored, or sensitive — regenerate or ask instead:
 
 ## 06 Workflow (A7)
 
-1. **Plan** — state the approach and the files you will touch.
-2. **Implement** — the smallest change that satisfies the task.
-3. **Verify** — run the checks in § 07 for the modules you touched.
-4. **Report** — what changed, what you ran, what is left.
+1. **Plan**: state the approach and the files you will touch.
+2. **Implement**: the smallest change that satisfies the task.
+3. **Verify**: run the checks in § 07 for the modules you touched.
+4. **Report**: what changed, what you ran, what is left.
 
 ## 07 Test & Verification (A7)
 
@@ -80,7 +80,7 @@ mise run web:build  # SSR build smoke — add for SSR-affecting web changes
 
 Other tasks: `mise run dev` (docker stack: api :8787, web :3000, crawlers), `mise run dev:api` (worker on the host), `mise run migrate` (Alembic upgrade in the dev container), `mise run api:db:pull` (refresh the Drizzle schema).
 
-Module-level: `crawl/` — `uv run python -m sararath <cmd>`, `uv run python -m pytest`; `api/` — `bun run dev`, `bun run test`; `web/` — `bun run dev`, `bun run build`.
+Module-level: `crawl/`: `uv run python -m sararath <cmd>`, `uv run python -m pytest`; `api/`: `bun run dev`, `bun run test`; `web/`: `bun run dev`, `bun run build`.
 
 A task is done only when `format`, `lint`, `typecheck`, and `test` pass, plus `web:build` for SSR-affecting web changes. lefthook runs format-check, lint, and typecheck pre-commit, and tests pre-push. CI (`.github/workflows/ci.yml`) runs the same on PRs and `main`.
 
