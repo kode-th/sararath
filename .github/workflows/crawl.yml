@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '15 * * * *'
   workflow_dispatch:
+    inputs:
+      source:
+        description: Force one source, bypassing its interval
+        required: false
+        default: ''
 
 jobs:
   crawl:
@@ -34,9 +39,15 @@ jobs:
           done
           echo "WARP did not connect; thaigov will fail this run"
 
-      - run: uv run python -m sararath crawl-due
+      - run: |
+          if [ -n "$SOURCE" ]; then
+            uv run python -m sararath crawl --source "$SOURCE"
+          else
+            uv run python -m sararath crawl-due
+          fi
         working-directory: crawl
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SOURCE: ${{ inputs.source }}
           ALL_PROXY: http://127.0.0.1:1080
           NO_PROXY: localhost,127.0.0.1,moac.go.th,rd.go.th,prd.go.th
