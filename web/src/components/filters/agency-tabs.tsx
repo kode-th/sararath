@@ -29,6 +29,7 @@ export function AgencyTabs({ sources, active, q, target }: Readonly<AgencyTabsPr
                 <Link
                   to="/news"
                   search={{ q, source: tab.slug }}
+                  activeOptions={{ exact: true }}
                   aria-current={current ? 'page' : undefined}
                   className={className}
                 >
@@ -38,6 +39,7 @@ export function AgencyTabs({ sources, active, q, target }: Readonly<AgencyTabsPr
                 <Link
                   to="/"
                   search={{ source: tab.slug }}
+                  activeOptions={{ exact: true }}
                   aria-current={current ? 'page' : undefined}
                   className={className}
                 >
