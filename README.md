@@ -53,3 +53,18 @@ mise run web:build  # SSR build smoke
 ## Deploy
 
 Both Workers deploy from `main` via Cloudflare Workers Builds (root dir `/`). Secrets and build watch-path settings live in [`api/README.md`](./api/README.md) and [`web/README.md`](./web/README.md).
+
+## License
+
+Sararath: an independent, read-only index of Thai government news.
+Copyright (C) 2026 Pongsakorn Thipayanate
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>. The full text is in [LICENSE](./LICENSE).
+
+If you run a modified version of Sararath as a service for other people, you must publish your source code under the same license.
+
+The news content belongs to the government agencies that publish it. Each item links back to its original page.
