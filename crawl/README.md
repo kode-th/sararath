@@ -62,6 +62,21 @@ uv run python -m alembic upgrade head
 
 `sources/sources.yaml` defines each source and its `crawl_interval_minutes` (prd/thaigov 60, moac/rd 120). `crawl-due` crawls a source only when `now - last_success_at >= interval`, so a failure retries on the next tick. Collectors use `httpx` for fetch, `selectolax` (lexbor) for HTML, and `feedparser` for RSS.
 
+## Crawling policy
+
+The crawlers read public pages only. They follow these rules, set in `collectors/http.py`:
+
+- One request per host every 2 seconds (`MIN_INTERVAL`), with at most 3 retries and backoff on errors.
+- The User-Agent ends in `ThaiGovNewsBot/1.0`, so site operators can identify the crawler.
+- Before each fetch, the crawler reads the host's `robots.txt` and skips disallowed URLs.
+
+One source has an exception, listed in `ROBOTS_OVERRIDES`:
+
+- thaigov: `www.thaigov.go.th` serves its news list only through `/api/`, which its `robots.txt` disallows. This endpoint is the public read API that the site's own frontend calls. Once per crawl interval (60 minutes), the crawler reads one list page of 20 items and the articles in that list.
+- The same host rejects plain HTTP clients, so the crawler fetches it with a Chrome TLS profile (`IMPERSONATE_HOSTS`).
+
+If a site operator asks us to stop, we remove the source. To add an override, write the reason in `ROBOTS_OVERRIDES` and keep the list short.
+
 ## Tests and gates
 
 ```bash
