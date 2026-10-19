@@ -37,9 +37,9 @@ function stripMarkup(value: string) {
   return value
     .replace(/<[^<>]*>/g, ' ')
     .replaceAll('&nbsp;', ' ')
-    .replaceAll('&amp;', '&')
     .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'");
+    .replaceAll('&#39;', "'")
+    .replaceAll('&amp;', '&');
 }
 
 function cleanText(value: string) {
