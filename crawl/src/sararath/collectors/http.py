@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import asyncio
 import ipaddress
+import os
 import socket
 import time
 from collections.abc import Mapping
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 from urllib.robotparser import RobotFileParser
 
 import httpx
@@ -50,6 +51,15 @@ USER_AGENT = (
 # Hosts that fingerprint-block plain clients; fetched with a Chrome profile.
 IMPERSONATE_HOSTS: frozenset[str] = frozenset({"www.thaigov.go.th"})
 IMPERSONATE = "chrome"
+
+
+def impersonate_proxy(env: Mapping[str, str] = os.environ) -> str | None:
+    """Residential proxy for impersonated hosts, which 403 datacenter IPs."""
+    keys = ("PROXY_LOGIN", "PROXY_PASSWORD", "PROXY_HOST", "PROXY_PORT")
+    if not all(env.get(key) for key in keys):
+        return None
+    login, password, host, port = (env[key] for key in keys)
+    return f"http://{quote(login, safe='')}:{quote(password, safe='')}@{host}:{port}"
 
 
 class RateLimiter:
@@ -351,6 +361,7 @@ async def _fetch_cffi(
                     headers=headers,
                     impersonate=IMPERSONATE,
                     allow_redirects=False,
+                    proxy=impersonate_proxy(),
                 )
         except errors:
             if attempt >= retries:

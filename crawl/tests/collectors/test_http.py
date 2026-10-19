@@ -244,3 +244,17 @@ def test_fetch_rejects_oversized_response(monkeypatch):
 
     with pytest.raises(http_module.ResponseTooLargeError):
         asyncio.run(main())
+
+
+def test_impersonate_proxy_needs_all_keys_and_quotes():
+    env = {
+        "PROXY_LOGIN": "user__cr.th",
+        "PROXY_PASSWORD": "p@ss:w/rd",
+        "PROXY_HOST": "gw.dataimpulse.com",
+        "PROXY_PORT": "823",
+    }
+    assert (
+        http_module.impersonate_proxy(env)
+        == "http://user__cr.th:p%40ss%3Aw%2Frd@gw.dataimpulse.com:823"
+    )
+    assert http_module.impersonate_proxy({**env, "PROXY_PORT": ""}) is None

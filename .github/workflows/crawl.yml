@@ -20,9 +20,12 @@ jobs:
           python-version-file: crawl/.python-version
       - run: uv sync --no-dev
         working-directory: crawl
-      - run: uv run python -m sararath crawl-due --source moac --source rd --source prd
+      - run: uv run python -m sararath crawl-due
         working-directory: crawl
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-# thaigov excluded: its API 403s datacenter IPs (bot protection).
-# Crawl thaigov from residential/TH networks with the scheduler-thaigov compose service.
+          # thaigov 403s datacenter IPs, so its requests go through a Thai residential proxy.
+          PROXY_LOGIN: ${{ secrets.PROXY_LOGIN }}__cr.th
+          PROXY_PASSWORD: ${{ secrets.PROXY_PASSWORD }}
+          PROXY_HOST: ${{ secrets.PROXY_HOST }}
+          PROXY_PORT: ${{ secrets.PROXY_PORT }}
