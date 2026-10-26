@@ -148,6 +148,11 @@ ROBOTS_OVERRIDES: dict[str, str] = {
         "news list is only served by /api/, which robots.txt disallows; it is a "
         "public read API the site's own frontend calls"
     ),
+    "prd": (
+        "the CMS news list is only served by /api/article, which robots.txt "
+        "disallows since 2026-10-22; it is a public read API the site's own "
+        "frontend calls, and the article pages it points to stay allowed"
+    ),
 }
 
 

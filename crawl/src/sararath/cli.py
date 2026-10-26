@@ -131,12 +131,15 @@ def _cmd_crawl_due(args: argparse.Namespace) -> int:
         wanted = set(args.source)
         due = [s for s in due if s.slug in wanted]
     failed = 0
+    ok = 0
     for source in due:
         message, bad = _crawl_one(source.slug)
         print(message)
         failed += bad
+        ok += not bad
     print(f"crawl-due: due={len(due)} failed={failed}")
-    return 1 if failed else 0
+    # One broken source must not red the hourly run: the rest still ingest.
+    return 1 if due and not ok else 0
 
 
 def _cmd_check(args: argparse.Namespace) -> int:

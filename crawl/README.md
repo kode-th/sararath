@@ -70,10 +70,11 @@ The crawlers read public pages only. They follow these rules, set in `collectors
 - The User-Agent ends in `ThaiGovNewsBot/1.0`, so site operators can identify the crawler.
 - Before each fetch, the crawler reads the host's `robots.txt` and skips disallowed URLs.
 
-One source has an exception, listed in `ROBOTS_OVERRIDES`:
+Two sources have an exception, listed in `ROBOTS_OVERRIDES`:
 
 - thaigov: `www.thaigov.go.th` serves its news list only through `/api/`, which its `robots.txt` disallows. This endpoint is the public read API that the site's own frontend calls. Once per crawl interval (60 minutes), the crawler reads one list page of 20 items and the articles in that list.
 - The same host rejects plain HTTP clients, so the crawler fetches it with a Chrome TLS profile (`IMPERSONATE_HOSTS`).
+- prd: `prd.go.th` started disallowing `/api/` on 2026-10-22, and the CMS serves its news list only through `/api/article`. That is the public read API the site's own frontend calls; the article pages it points to stay allowed and are still fetched under the normal robots check.
 
 If a site operator asks us to stop, we remove the source. To add an override, write the reason in `ROBOTS_OVERRIDES` and keep the list short.
 

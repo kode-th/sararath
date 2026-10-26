@@ -126,7 +126,9 @@ class PrdCollector:
         self._client = client
 
     async def discover(self) -> list[DiscoveredItem]:
-        response = await http_fetch(self._client, list_url(), HEADERS)
+        response = await http_fetch(
+            self._client, list_url(), HEADERS, check_robots=False
+        )
         response.raise_for_status()
         return discover_from_json(response.json())
 

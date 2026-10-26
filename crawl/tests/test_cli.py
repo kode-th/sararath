@@ -1,3 +1,7 @@
+from contextlib import nullcontext
+from types import SimpleNamespace
+
+from sararath import cli
 from sararath.cli import build_parser
 
 
@@ -55,3 +59,33 @@ def test_parser_requires_command():
         assert exc.code == 2
     else:
         raise AssertionError("expected SystemExit")
+
+
+def _fake_due(monkeypatch, outcomes: dict[str, bool]) -> None:
+    """Make crawl-due see one source per entry, bad=True meaning it fails."""
+    monkeypatch.setattr(cli, "get_session", lambda: nullcontext())
+    monkeypatch.setattr(
+        cli,
+        "due_sources",
+        lambda session: [SimpleNamespace(slug=slug) for slug in outcomes],
+    )
+    monkeypatch.setattr(
+        cli,
+        "_crawl_one",
+        lambda slug: (f"crawl {slug}", outcomes[slug]),
+    )
+
+
+def test_crawl_due_one_broken_source_keeps_exit_zero(monkeypatch):
+    _fake_due(monkeypatch, {"rd": False, "prd": True})
+    assert cli._cmd_crawl_due(build_parser().parse_args(["crawl-due"])) == 0
+
+
+def test_crawl_due_all_broken_sources_exit_one(monkeypatch):
+    _fake_due(monkeypatch, {"rd": True, "prd": True})
+    assert cli._cmd_crawl_due(build_parser().parse_args(["crawl-due"])) == 1
+
+
+def test_crawl_due_nothing_due_exits_zero(monkeypatch):
+    _fake_due(monkeypatch, {})
+    assert cli._cmd_crawl_due(build_parser().parse_args(["crawl-due"])) == 0
